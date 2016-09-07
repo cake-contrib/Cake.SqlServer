@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cake.SqlServer", "Cake.SqlServer\Cake.SqlServer.csproj", "{98FC2609-EABB-45F4-A3E0-A25E9F5B0584}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{737DA87B-1FEF-43EB-890C-4AECC683FF0F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{98FC2609-EABB-45F4-A3E0-A25E9F5B0584}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98FC2609-EABB-45F4-A3E0-A25E9F5B0584}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98FC2609-EABB-45F4-A3E0-A25E9F5B0584}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98FC2609-EABB-45F4-A3E0-A25E9F5B0584}.Release|Any CPU.Build.0 = Release|Any CPU
+		{737DA87B-1FEF-43EB-890C-4AECC683FF0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{737DA87B-1FEF-43EB-890C-4AECC683FF0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{737DA87B-1FEF-43EB-890C-4AECC683FF0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{737DA87B-1FEF-43EB-890C-4AECC683FF0F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
