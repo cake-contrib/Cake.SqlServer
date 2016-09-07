@@ -46,8 +46,7 @@ namespace Cake.SqlServer
 
 
         [CakeMethodAlias]
-        public static void CreateDatabaseIfNotExists(this ICakeContext context, String connectionString,
-            String databaseName)
+        public static void CreateDatabaseIfNotExists(this ICakeContext context, String connectionString, String databaseName)
         {
             var createDbSql = $"if (select DB_ID('{databaseName}')) is null create database [{databaseName}]";
 
@@ -85,8 +84,16 @@ namespace Cake.SqlServer
                     if (sqlCommand.Trim() != "")
                     {
                         context.Log.Debug($"Executing SQL : {sqlCommand}");
-                        var command = new SqlCommand(sqlCommand, connection);
-                        command.ExecuteNonQuery();
+                        try
+                        {
+                            var command = new SqlCommand(sqlCommand, connection);
+                            command.ExecuteNonQuery();
+                        }
+                        catch (Exception)
+                        {
+                            context.Log.Warning($"Exception happened while executing this command: {sqlCommand}");
+                            throw;
+                        }
                     }
                 }
             }

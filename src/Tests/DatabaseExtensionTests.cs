@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using Cake.Core;
 using Cake.SqlServer;
+using FluentAssertions;
 using NUnit.Framework;
 
 // ReSharper disable InvokeAsExtensionMethod
@@ -15,7 +16,7 @@ namespace Tests
         {
             //Arrange
             var context = NSubstitute.Substitute.For<ICakeContext>();
-            
+
             // Act
             DatabaseExtension.CreateDatabaseIfNotExists(context, connectionString, "CakeTest");
 
@@ -28,8 +29,23 @@ namespace Tests
 
                 var reader = command.ExecuteReader();
 
-                Assert.True(reader.HasRows);
+
+                reader.HasRows.Should().BeTrue();
             }
+        }
+
+        [TestCase(@"data source=(LocalDb)\v12.0")]
+        [TestCase(@"data source=.\SQLEXPRESS;integrated security=SSPI;Initial Catalog=master;")]
+        public void DropDatabase_DoesNotExist_DoesNotThrow(String connectionString)
+        {
+            //Arrange
+            var context = NSubstitute.Substitute.For<ICakeContext>();
+
+            // Act
+            Action act = () => DatabaseExtension.DropDatabase(context, connectionString, "DoesNotExist");
+
+            // Assert
+            act.ShouldNotThrow();
         }
     }
 }
