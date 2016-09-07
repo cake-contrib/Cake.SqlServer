@@ -15,19 +15,17 @@ namespace Cake.SqlServer
         public static void DropDatabase(this ICakeContext context, String connectionString, String databaseName)
         {
             var dropDatabaseSql =
-            $@"if (select DB_ID('{databaseName}')) is not null
+                $@"if (select DB_ID('{databaseName}')) is not null
                begin
-                    alter database[{ databaseName}] set offline with rollback immediate;
-                    alter database[{ databaseName}] set online;
-                    drop database[{ databaseName}];
+                    alter database[{databaseName}] set offline with rollback immediate;
+                    alter database[{databaseName}] set online;
+                    drop database[{databaseName}];
                 end";
 
             try
             {
-                using (var connection = new SqlConnection(connectionString))
+                using (var connection = CreateOpenConnection(connectionString, context))
                 {
-                    connection.Open();
-
                     var command = new SqlCommand(dropDatabaseSql, connection);
 
                     context.Log.Information($"About to drop database {databaseName}");
@@ -48,14 +46,13 @@ namespace Cake.SqlServer
 
 
         [CakeMethodAlias]
-        public static void CreateDatabaseIfNotExists(this ICakeContext context, String connectionString, String databaseName)
+        public static void CreateDatabaseIfNotExists(this ICakeContext context, String connectionString,
+            String databaseName)
         {
             var createDbSql = $"if (select DB_ID('{databaseName}')) is null create database [{databaseName}]";
 
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = CreateOpenConnection(connectionString, context))
             {
-                connection.Open();
-
                 var sqlToExecute = String.Format(createDbSql, connection.Database);
                 context.Log.Debug($"Executing SQL : {sqlToExecute}");
 
@@ -78,12 +75,11 @@ namespace Cake.SqlServer
         [CakeMethodAlias]
         public static void ExecuteSqlCommand(this ICakeContext context, String connectionString, string sqlCommands)
         {
-            var commandStrings = Regex.Split(sqlCommands, @"^\s*GO\s*$", RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            var commandStrings = Regex.Split(sqlCommands, @"^\s*GO\s*$",
+                RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = CreateOpenConnection(connectionString, context))
             {
-                connection.Open();
-
                 foreach (var sqlCommand in commandStrings)
                 {
                     if (sqlCommand.Trim() != "")
@@ -95,8 +91,7 @@ namespace Cake.SqlServer
                 }
             }
         }
-
-
+        
 
         [CakeMethodAlias]
         public static void ExecuteSqlFile(this ICakeContext context, String connectionString, string sqlFile)
@@ -108,6 +103,27 @@ namespace Cake.SqlServer
             context.ExecuteSqlCommand(connectionString, allSqlCommands);
 
             context.Log.Information($"Finished executing SQL from {sqlFile}");
+        }
+
+
+        private static SqlConnection CreateOpenConnection(String connectionString, ICakeContext context)
+        {
+            try
+            {
+                var connection = new SqlConnection(connectionString);
+                context.Log.Debug($"About to open connection with this connection string: {connectionString}");
+                connection.Open();
+                return connection;
+            }
+            catch (SqlException exception)
+            {
+                if (exception.Message.StartsWith("A network-related or instance-specific error", StringComparison.InvariantCultureIgnoreCase) 
+                        && connectionString.ToLower().Contains("localdb"))
+                {
+                    context.Log.Warning("Looks like you are trying to connect to LocalDb. Have you correctly escaped your connection string with '@'. It should look like 'var connString = @\"(localDb)\\v12.0\"'");
+                }
+                throw;
+            }
         }
     }
 }
