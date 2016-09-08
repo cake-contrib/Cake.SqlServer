@@ -162,6 +162,7 @@ Task("Start-LocalDB")
 
 Task("Run-Unit-Tests")
     .IsDependentOn("Build")
+    .IsDependentOn("Start-LocalDB")
     .Does(() =>
 {
     var testsFile ="./src/**/bin/" + configuration + "/Tests.dll";
