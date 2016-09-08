@@ -22,7 +22,7 @@
     </metadata>
 
     <files>
-        <file src="Cake.SqlServer.dll" target="lib/net461" />
+        <file src="Cake.SqlServer.dll" target="lib/net45" />
         <file src="LICENSE" />
     </files>
 </package>
