@@ -42,7 +42,33 @@ Does what it says on the tin: executes the sql query. But this method accommodat
 
 Reads sql file and executes commands from it. Executes parts of scripts separated by `GO` as a separate command executions. 
 
+#Usage
 
+	#addin "nuget:?package=Cake.SqlServer"
+	
+	Task("Database-Operations")
+	    .Does(() => 
+	    {
+	        var masterConnectionString = @"data source=(LocalDb)\v12.0;";
+	        var connectionString = @"data source=(LocalDb)\v12.0;Database=CakeTest";
+
+			var dbName = "CakeTest";
+			
+			// first create database
+			CreateDatabaseIfNotExists(masterConnectionString, dbName);
+			
+			// then drop the database
+			DropDatabase(masterConnectionString, dbName);
+			
+			// and recreate the db again
+			DropAndCreateDatabase(masterConnectionString, dbName);
+
+			// and create some tables
+			ExecuteSqlCommand(connectionString, "create table dbo.Products(id int null)");
+			
+			// and execute sql from a file 
+			ExecuteSqlCommand(connectionString, "./src/install.sql");
+	    });
 
 
 #Reason to Develop
