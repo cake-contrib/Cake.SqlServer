@@ -5,12 +5,21 @@ using System.Text.RegularExpressions;
 using Cake.Core;
 using Cake.Core.Annotations;
 using Cake.Core.Diagnostics;
+using Cake.Core.IO;
 
 
 namespace Cake.SqlServer
 {
     public static class DatabaseExtension
     {
+        /// <summary>
+        /// Drops database. Before dropping the DB, database is set to be offline, then online again.
+        /// This is to be sure that there are no live connections, otherwise the script will fail.
+        /// Also if the database does not exist - it will not do anything.
+        /// </summary>
+        /// <param name="context">The Cake context.</param>
+        /// <param name="connectionString">Connection string where to connect to. For this operation it is preferrable to connect to master database</param>
+        /// <param name="databaseName">Database name to be dropped</param>
         [CakeMethodAlias]
         public static void DropDatabase(this ICakeContext context, String connectionString, String databaseName)
         {
@@ -45,6 +54,12 @@ namespace Cake.SqlServer
         }
 
 
+        /// <summary>
+        /// Creates an empty database if another database with the same does not already exist.
+        /// </summary>
+        /// <param name="context">The Cake context</param>
+        /// <param name="connectionString">Connection string where to connect to. For this operation it is preferrable to connect to master database</param>
+        /// <param name="databaseName">Database name to be created</param>
         [CakeMethodAlias]
         public static void CreateDatabaseIfNotExists(this ICakeContext context, String connectionString, String databaseName)
         {
@@ -63,6 +78,12 @@ namespace Cake.SqlServer
         }
 
 
+        /// <summary>
+        /// First drops, then recreates the database
+        /// </summary>
+        /// <param name="context">The Cake context.</param>
+        /// <param name="connectionString">Connection string where to connect to. For this operation it is preferrable to connect to master database</param>
+        /// <param name="databaseName">Database to be dropped and re-created</param>
         [CakeMethodAlias]
         public static void DropAndCreateDatabase(this ICakeContext context, String connectionString, String databaseName)
         {
@@ -71,6 +92,12 @@ namespace Cake.SqlServer
         }
 
 
+        /// <summary>
+        /// Execute any SQL command.
+        /// </summary>
+        /// <param name="context">The Cake context.</param>
+        /// <param name="connectionString">Connection string where to connect to. Connection script must specify what database to connect to</param>
+        /// <param name="sqlCommands">SQL to be executed</param>
         [CakeMethodAlias]
         public static void ExecuteSqlCommand(this ICakeContext context, String connectionString, string sqlCommands)
         {
@@ -98,18 +125,26 @@ namespace Cake.SqlServer
                 }
             }
         }
-        
 
+
+        /// <summary>
+        /// Reads sql commands from file and executes them.
+        /// </summary>
+        /// <param name="context">The Cake context.</param>
+        /// <param name="connectionString">Connection string where to connect to. Connection script must specify what database to connect to</param>
+        /// <param name="sqlFile">Path to a file with sql commands</param>
         [CakeMethodAlias]
-        public static void ExecuteSqlFile(this ICakeContext context, String connectionString, string sqlFile)
+        public static void ExecuteSqlFile(this ICakeContext context, String connectionString, FilePath sqlFile)
         {
-            context.Log.Information($"Executing sql file {sqlFile}");
+            var sqlFilePath = sqlFile.FullPath;
 
-            var allSqlCommands = File.ReadAllText(sqlFile);
+            context.Log.Information($"Executing sql file {sqlFilePath}");
+
+            var allSqlCommands = File.ReadAllText(sqlFilePath);
 
             context.ExecuteSqlCommand(connectionString, allSqlCommands);
 
-            context.Log.Information($"Finished executing SQL from {sqlFile}");
+            context.Log.Information($"Finished executing SQL from {sqlFilePath}");
         }
 
 
