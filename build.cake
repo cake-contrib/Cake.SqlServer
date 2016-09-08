@@ -1,5 +1,5 @@
 // this script is inspired by https://github.com/SharpeRAD/Cake.SqlServer/blob/master/build.cake
-#tool "xunit.runner.console"
+#tool nuget:?package=NUnit.ConsoleRunner
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -7,10 +7,7 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
-
 var appName = "Cake.SqlServer";
-
-
 
 
 
@@ -22,14 +19,18 @@ var appName = "Cake.SqlServer";
 var local = BuildSystem.IsLocalBuild;
 var isRunningOnAppVeyor = AppVeyor.IsRunningOnAppVeyor;
 var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
+var isMasterBranch = StringComparer.OrdinalIgnoreCase.Equals("master", AppVeyor.Environment.Repository.Branch);
 
 // Parse release notes.
 var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");
 
+//TODO use GitVersion
 // Get version.
 var buildNumber = AppVeyor.Environment.Build.Number;
-var version = releaseNotes.Version.ToString();
-var semVersion = local ? version : (version + string.Concat("-build-", buildNumber));
+var appVeyorVersion = AppVeyor.Environment.Build.Version;
+var version = local ? "1.0.1" : appVeyorVersion;
+var semVersion = local ? version : appVeyorVersion;
+
 
 // Define directories.
 var buildDir = "./src/Cake.SqlServer/bin/" + configuration;
@@ -43,11 +44,7 @@ var binDir = buildResultDir + "/bin";
 var solutions  = GetFiles("./src/*.sln");
 
 // Package
-var zipPackage = buildResultDir + "/Cake-SqlServer-v" + semVersion + ".zip";
-
-
-
-
+var nugetPackage = nugetRoot + "/Cake.SqlServer." + version + ".nupkg";
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -58,6 +55,7 @@ Setup(context =>
     //Executed BEFORE the first task.
     Information("Building version {0} of {1}.", semVersion, appName);
     Information("Tools dir: {0}.", EnvironmentVariable("CAKE_PATHS_TOOLS"));
+    Information("Building from branch: " + AppVeyor.Environment.Repository.Branch);
 });
 
 Teardown(context =>
@@ -90,6 +88,8 @@ Task("Clean")
     });
 });
 
+
+
 Task("Restore-Nuget-Packages")
     .IsDependentOn("Clean")
     .Does(() =>
@@ -112,7 +112,6 @@ Task("Restore-Nuget-Packages")
 ///////////////////////////////////////////////////////////////////////////////
 
 Task("Patch-Assembly-Info")
-    .IsDependentOn("Restore-Nuget-Packages")
     .Does(() =>
 {
     var file = "./src/Cake.SqlServer/Properties/AssemblyInfo.cs";
@@ -127,7 +126,9 @@ Task("Patch-Assembly-Info")
     });
 });
 
+
 Task("Build")
+    .IsDependentOn("Restore-Nuget-Packages")
     .IsDependentOn("Patch-Assembly-Info")
     .Does(() =>
 {
@@ -143,6 +144,32 @@ Task("Build")
     }
 });
 
+Task("Start-LocalDB")
+    .Description(@"Starts LocalDB - executes the following: C:\Program Files\Microsoft SQL Server\120\Tools\Binn\SqlLocalDB.exe create v12.0 12.0 -s")
+    .Does(() => 
+    {
+        // var sqlLocalDbPath = @"c:\Program Files\Microsoft SQL Server\130\Tools\Binn\SqlLocalDB.exe";
+        var sqlLocalDbPath = @"C:\Program Files\Microsoft SQL Server\120\Tools\Binn\SqlLocalDB.exe";
+        if(!FileExists(sqlLocalDbPath))
+        {
+            Information("Unable to start LocalDB");
+            throw new Exception("LocalDB v12 is not installed. Can't complete tests");
+        }
+
+        StartProcess(sqlLocalDbPath, new ProcessSettings(){ Arguments="create \"v12.0\" 12.0 -s" });
+    });
+
+
+Task("Run-Unit-Tests")
+    .IsDependentOn("Build")
+    .IsDependentOn("Start-LocalDB")
+    .Does(() =>
+{
+    var testsFile ="./src/**/bin/" + configuration + "/Tests.dll";
+    Information(testsFile);
+    NUnit3(testsFile);
+});
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -150,27 +177,19 @@ Task("Build")
 ///////////////////////////////////////////////////////////////////////////////
 
 Task("Copy-Files")
-    .IsDependentOn("Build")
+    .IsDependentOn("Run-Unit-Tests")
     .Does(() =>
 {
     // Addin
     CopyFileToDirectory(buildDir + "/Cake.SqlServer.dll", binDir);
     CopyFileToDirectory(buildDir + "/Cake.SqlServer.pdb", binDir);
-
     CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, binDir);
-});
-
-Task("Zip-Files")
-    .IsDependentOn("Copy-Files")
-    .Does(() =>
-{
-    Zip(binDir, zipPackage);
 });
 
 
 
 Task("Create-NuGet-Packages")
-    .IsDependentOn("Zip-Files")
+    .IsDependentOn("Copy-Files")
     .Does(() =>
 {
     NuGetPack("./src/Cake.SqlServer/Cake.SqlServer.nuspec", new NuGetPackSettings
@@ -184,10 +203,13 @@ Task("Create-NuGet-Packages")
     });
 });
 
+
+
 Task("Publish-Nuget")
     .IsDependentOn("Create-NuGet-Packages")
     .WithCriteria(() => isRunningOnAppVeyor)
     .WithCriteria(() => !isPullRequest)
+    .WithCriteria(() => isMasterBranch)
     .Does(() =>
 {
     // Resolve the API key.
@@ -198,12 +220,8 @@ Task("Publish-Nuget")
         throw new InvalidOperationException("Could not resolve MyGet API key.");
     }
 
-
-
     // Push the package.
-    var package = nugetRoot + "/Cake.SqlServer." + version + ".nupkg";
-
-    NuGetPush(package, new NuGetPushSettings
+    NuGetPush(nugetPackage, new NuGetPushSettings
     {
         ApiKey = apiKey,
         Source = "https://www.nuget.org/api/v2/package"
@@ -218,19 +236,12 @@ Task("Publish-Nuget")
 // APPVEYOR
 ///////////////////////////////////////////////////////////////////////////////
 
-Task("Update-AppVeyor-Build-Number")
-    .WithCriteria(() => isRunningOnAppVeyor)
-    .Does(() =>
-{
-    AppVeyor.UpdateBuildVersion(semVersion);
-});
-
 Task("Upload-AppVeyor-Artifacts")
-    .IsDependentOn("Zip-Files")
+    .IsDependentOn("Create-NuGet-Packages")
     .WithCriteria(() => isRunningOnAppVeyor)
     .Does(() =>
 {
-    AppVeyor.UploadArtifact(zipPackage);
+    AppVeyor.UploadArtifact(nugetPackage);
 });
 
 
@@ -243,7 +254,6 @@ Task("Upload-AppVeyor-Artifacts")
 //////////////////////////////////////////////////////////////////////
 
 Task("Package")
-    .IsDependentOn("Zip-Files")
     .IsDependentOn("Create-NuGet-Packages");
 
 Task("Publish")
@@ -251,7 +261,6 @@ Task("Publish")
 
 Task("AppVeyor")
     .IsDependentOn("Publish")
-    .IsDependentOn("Update-AppVeyor-Build-Number")
     .IsDependentOn("Upload-AppVeyor-Artifacts");
 
 

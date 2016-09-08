@@ -3,25 +3,15 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Text.RegularExpressions;
 using Cake.Core;
-using Cake.Core.Annotations;
 using Cake.Core.Diagnostics;
 using Cake.Core.IO;
 
 
 namespace Cake.SqlServer
 {
-    public static class DatabaseExtension
+    internal static class SqlServerAliasesFacade
     {
-        /// <summary>
-        /// Drops database. Before dropping the DB, database is set to be offline, then online again.
-        /// This is to be sure that there are no live connections, otherwise the script will fail.
-        /// Also if the database does not exist - it will not do anything.
-        /// </summary>
-        /// <param name="context">The Cake context.</param>
-        /// <param name="connectionString">Connection string where to connect to. For this operation it is preferrable to connect to master database</param>
-        /// <param name="databaseName">Database name to be dropped</param>
-        [CakeMethodAlias]
-        public static void DropDatabase(this ICakeContext context, String connectionString, String databaseName)
+        internal static void DropDatabase(ICakeContext context, String connectionString, String databaseName)
         {
             var dropDatabaseSql =
                 $@"if (select DB_ID('{databaseName}')) is not null
@@ -54,14 +44,8 @@ namespace Cake.SqlServer
         }
 
 
-        /// <summary>
-        /// Creates an empty database if another database with the same does not already exist.
-        /// </summary>
-        /// <param name="context">The Cake context</param>
-        /// <param name="connectionString">Connection string where to connect to. For this operation it is preferrable to connect to master database</param>
-        /// <param name="databaseName">Database name to be created</param>
-        [CakeMethodAlias]
-        public static void CreateDatabaseIfNotExists(this ICakeContext context, String connectionString, String databaseName)
+
+        internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName)
         {
             var createDbSql = $"if (select DB_ID('{databaseName}')) is null create database [{databaseName}]";
 
@@ -78,28 +62,15 @@ namespace Cake.SqlServer
         }
 
 
-        /// <summary>
-        /// First drops, then recreates the database
-        /// </summary>
-        /// <param name="context">The Cake context.</param>
-        /// <param name="connectionString">Connection string where to connect to. For this operation it is preferrable to connect to master database</param>
-        /// <param name="databaseName">Database to be dropped and re-created</param>
-        [CakeMethodAlias]
-        public static void DropAndCreateDatabase(this ICakeContext context, String connectionString, String databaseName)
+
+        internal static void DropAndCreateDatabase(ICakeContext context, String connectionString, String databaseName)
         {
-            context.DropDatabase(connectionString, databaseName);
-            context.CreateDatabaseIfNotExists(connectionString, databaseName);
+            DropDatabase(context, connectionString, databaseName);
+            CreateDatabaseIfNotExists(context, connectionString, databaseName);
         }
 
 
-        /// <summary>
-        /// Execute any SQL command.
-        /// </summary>
-        /// <param name="context">The Cake context.</param>
-        /// <param name="connectionString">Connection string where to connect to. Connection script must specify what database to connect to</param>
-        /// <param name="sqlCommands">SQL to be executed</param>
-        [CakeMethodAlias]
-        public static void ExecuteSqlCommand(this ICakeContext context, String connectionString, string sqlCommands)
+        internal static void ExecuteSqlCommand(ICakeContext context, String connectionString, string sqlCommands)
         {
             var commandStrings = Regex.Split(sqlCommands, @"^\s*GO\s*$",
                 RegexOptions.Multiline | RegexOptions.IgnoreCase);
@@ -127,14 +98,7 @@ namespace Cake.SqlServer
         }
 
 
-        /// <summary>
-        /// Reads sql commands from file and executes them.
-        /// </summary>
-        /// <param name="context">The Cake context.</param>
-        /// <param name="connectionString">Connection string where to connect to. Connection script must specify what database to connect to</param>
-        /// <param name="sqlFile">Path to a file with sql commands</param>
-        [CakeMethodAlias]
-        public static void ExecuteSqlFile(this ICakeContext context, String connectionString, FilePath sqlFile)
+        internal static void ExecuteSqlFile(ICakeContext context, String connectionString, FilePath sqlFile)
         {
             var sqlFilePath = sqlFile.FullPath;
 
@@ -159,7 +123,7 @@ namespace Cake.SqlServer
             }
             catch (SqlException exception)
             {
-                if (exception.Message.StartsWith("A network-related or instance-specific error", StringComparison.InvariantCultureIgnoreCase) 
+                if (exception.Message.StartsWith("A network-related or instance-specific error", StringComparison.InvariantCultureIgnoreCase)
                         && connectionString.ToLower().Contains("localdb"))
                 {
                     context.Log.Warning("Looks like you are trying to connect to LocalDb. Have you correctly escaped your connection string with '@'. It should look like 'var connString = @\"(localDb)\\v12.0\"'");
