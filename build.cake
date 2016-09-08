@@ -26,10 +26,15 @@ var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
 // Parse release notes.
 var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");
 
+//TODO use GitVersion
 // Get version.
 var buildNumber = AppVeyor.Environment.Build.Number;
-var version = releaseNotes.Version.ToString();
-var semVersion = local ? version : (version + string.Concat("-build-", buildNumber));
+// var version = releaseNotes.Version.ToString();
+var appVeyorVersion = AppVeyor.Environment.Build.Version;
+var version = local ? "1.0.1" : appVeyorVersion;
+// var semVersion = local ? version : (version + string.Concat("-build-", buildNumber));
+var semVersion = local ? version : appVeyorVersion;
+
 
 // Define directories.
 var buildDir = "./src/Cake.SqlServer/bin/" + configuration;
