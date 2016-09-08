@@ -9,7 +9,7 @@ using Cake.Core.IO;
 
 namespace Cake.SqlServer
 {
-    internal static class DatabaseExtensionsFacade
+    internal static class SqlServerAliasesFacade
     {
         internal static void DropDatabase(ICakeContext context, String connectionString, String databaseName)
         {

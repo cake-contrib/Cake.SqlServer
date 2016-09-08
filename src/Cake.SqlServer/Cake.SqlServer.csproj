@@ -47,8 +47,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DatabaseExtension.cs" />
-    <Compile Include="DatabaseExtensionsFacade.cs" />
+    <Compile Include="SqlServerAliases.cs" />
+    <Compile Include="SqlServerAliasesFacade.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

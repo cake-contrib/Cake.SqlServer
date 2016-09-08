@@ -6,18 +6,18 @@ using Cake.Core.IO;
 
 namespace Cake.SqlServer
 {
-    ///////////// <summary>
-    ///////////// <para>Contains functionality related to <see href="https://dev.twitter.com/rest/public">Twitter REST API</see>.</para>
-    ///////////// <para>
-    ///////////// In order to use the commands for this addin, include the following in your build.cake file to download and
-    ///////////// reference from NuGet.org:
-    ///////////// <code>
-    ///////////// #addin Cake.Twitter
-    ///////////// </code>
-    ///////////// </para>
-    ///////////// </summary>
+    /// <summary>
+    /// <para>Contains functionality to deal with SQL Server: DropDatabase, CreateDatabase, execute SQL, execute SQL from files, etc. </para>
+    /// <para>
+    /// In order to use the commands for this addin, include the following in your build.cake file to download and
+    /// reference from NuGet.org:
+    /// <code>
+    /// #addin Cake.SqlServer
+    /// </code>
+    /// </para>
+    /// </summary>
     [CakeAliasCategory("SqlServer")]
-    public static class DatabaseExtension
+    public static class SqlServerAliases
     {
         /// <summary>
         /// Drops database. Before dropping the DB, database is set to be offline, then online again.
@@ -27,16 +27,13 @@ namespace Cake.SqlServer
         /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">Connection string where to connect to. For this operation it is preferrable to connect to master database</param>
         /// <param name="databaseName">Database name to be dropped</param>
-        ///////////// <example>
-        ///////////// <code>
-        /////////////     var oAuthConsumerKey        = EnvironmentVariable("TWITTER_CONSUMER_KEY");
-        /////////////     var oAuthConsumerSecret = EnvironmentVariable("TWITTER_CONSUMER_SECRET");
-        /////////////     var accessToken = EnvironmentVariable("TWITTER_ACCESS_TOKEN");
-        /////////////     var accessTokenSecret = EnvironmentVariable("TWITTER_ACCESS_TOKEN_SECRET");
-        /////////////
-        /////////////     TwitterSendTweet(oAuthConsumerKey, oAuthConsumerSecret, accessToken, accessTokenSecret, "Testing, 1, 2, 3");
-        ///////////// </code>
-        ///////////// </example>
+        /// <example>
+        /// <code>
+        ///     var connectionString = @"(LocalDb)\v12.0";
+        ///     var dbName = "CakeTest";
+        ///     DropDatabase(connectionString, dbName);
+        /// </code>
+        /// </example>
         [CakeMethodAlias]
         public static void DropDatabase(this ICakeContext context, String connectionString, String databaseName)
         {
@@ -55,7 +52,7 @@ namespace Cake.SqlServer
                 throw new ArgumentNullException(nameof(databaseName));
             }
 
-            DatabaseExtensionsFacade.DropDatabase(context, connectionString, databaseName);
+            SqlServerAliasesFacade.DropDatabase(context, connectionString, databaseName);
         }
 
 
@@ -66,6 +63,13 @@ namespace Cake.SqlServer
         /// <param name="context">The Cake context</param>
         /// <param name="connectionString">Connection string where to connect to. For this operation it is preferrable to connect to master database</param>
         /// <param name="databaseName">Database name to be created</param>
+        /// <example>
+        /// <code>
+        ///     var connectionString = @"(LocalDb)\v12.0";
+        ///     var dbName = "CakeTest";
+        ///     CreateDatabaseIfNotExists(connectionString, dbName);
+        /// </code>
+        /// </example>
         [CakeMethodAlias]
         public static void CreateDatabaseIfNotExists(this ICakeContext context, String connectionString, String databaseName)
         {
@@ -84,7 +88,7 @@ namespace Cake.SqlServer
                 throw new ArgumentNullException(nameof(databaseName));
             }
 
-            DatabaseExtensionsFacade.CreateDatabaseIfNotExists(context, connectionString, databaseName);
+            SqlServerAliasesFacade.CreateDatabaseIfNotExists(context, connectionString, databaseName);
         }
 
 
@@ -94,6 +98,13 @@ namespace Cake.SqlServer
         /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">Connection string where to connect to. For this operation it is preferrable to connect to master database</param>
         /// <param name="databaseName">Database to be dropped and re-created</param>
+        /// <example>
+        /// <code>
+        ///     var connectionString = @"(LocalDb)\v12.0";
+        ///     var dbName = "CakeTest";
+        ///     DropAndCreateDatabase(connectionString, dbName);
+        /// </code>
+        /// </example>
         [CakeMethodAlias]
         public static void DropAndCreateDatabase(this ICakeContext context, String connectionString, String databaseName)
         {
@@ -112,7 +123,7 @@ namespace Cake.SqlServer
                 throw new ArgumentNullException(nameof(databaseName));
             }
 
-            DatabaseExtensionsFacade.DropAndCreateDatabase(context, connectionString, databaseName);
+            SqlServerAliasesFacade.DropAndCreateDatabase(context, connectionString, databaseName);
         }
 
 
@@ -122,6 +133,13 @@ namespace Cake.SqlServer
         /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">Connection string where to connect to. Connection script must specify what database to connect to</param>
         /// <param name="sqlCommands">SQL to be executed</param>
+        /// <example>
+        /// <code>
+        ///     var connectionString = @"(LocalDb)\v12.0";
+        ///     var sqlCommand = "Create table [CakeTest].dbo.[CakeTestTable] (id int null)";
+        ///     ExecuteSqlCommand(connectionString, sqlCommand);
+        /// </code>
+        /// </example>
         [CakeMethodAlias]
         public static void ExecuteSqlCommand(this ICakeContext context, String connectionString, string sqlCommands)
         {
@@ -140,7 +158,7 @@ namespace Cake.SqlServer
                 throw new ArgumentNullException(nameof(sqlCommands));
             }
 
-            DatabaseExtensionsFacade.ExecuteSqlCommand(context, connectionString, sqlCommands);
+            SqlServerAliasesFacade.ExecuteSqlCommand(context, connectionString, sqlCommands);
         }
 
 
@@ -150,6 +168,13 @@ namespace Cake.SqlServer
         /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">Connection string where to connect to. Connection script must specify what database to connect to</param>
         /// <param name="sqlFile">Path to a file with sql commands</param>
+        /// <example>
+        /// <code>
+        ///     var connectionString = @"(LocalDb)\v12.0";
+        ///     var sqlFile = "./somePath/MyScript.sql";
+        ///     ExecuteSqlCommand(connectionString, sqlFile);
+        /// </code>
+        /// </example>
         [CakeMethodAlias]
         public static void ExecuteSqlFile(this ICakeContext context, String connectionString, FilePath sqlFile)
         {
@@ -168,7 +193,7 @@ namespace Cake.SqlServer
                 throw new ArgumentNullException(nameof(sqlFile));
             }
 
-            DatabaseExtensionsFacade.ExecuteSqlFile(context, connectionString, sqlFile);
+            SqlServerAliasesFacade.ExecuteSqlFile(context, connectionString, sqlFile);
         }
     }
 }

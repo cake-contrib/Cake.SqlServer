@@ -12,12 +12,12 @@ using NUnit.Framework;
 // ReSharper disable InvokeAsExtensionMethod
 namespace Tests
 {
-    public class DatabaseExtensionTests
+    public class SqlServerAliasesTests
     {
         private const String ConnectionString = @"data source=(LocalDb)\v12.0";
         private readonly ICakeContext context;
 
-        public DatabaseExtensionTests()
+        public SqlServerAliasesTests()
         {
             context = NSubstitute.Substitute.For<ICakeContext>();
         }
@@ -26,7 +26,7 @@ namespace Tests
         [Test]
         public void DropDatabase_DoesNotExist_DoesNotThrow()
         {
-            Action act = () => DatabaseExtension.DropDatabase(context, ConnectionString, "DoesNotExist");
+            Action act = () => SqlServerAliases.DropDatabase(context, ConnectionString, "DoesNotExist");
 
             act.ShouldNotThrow();
         }
@@ -40,7 +40,7 @@ namespace Tests
             ExecuteSql($"Create database {dbName}");
 
             // Act
-            DatabaseExtension.DropDatabase(context, ConnectionString, dbName);
+            SqlServerAliases.DropDatabase(context, ConnectionString, dbName);
 
             // Assert
             DbExists(dbName).Should().BeFalse();
@@ -52,7 +52,7 @@ namespace Tests
         {
             // Act
             var dbName = "CakeTest";
-            DatabaseExtension.CreateDatabaseIfNotExists(context, ConnectionString, dbName);
+            SqlServerAliases.CreateDatabaseIfNotExists(context, ConnectionString, dbName);
 
             // Assert
             DbExists(dbName).Should().BeTrue();
@@ -74,7 +74,7 @@ namespace Tests
             TableExists(dbName, tableName).Should().BeTrue();
 
             // Act
-            DatabaseExtension.DropAndCreateDatabase(context, ConnectionString, dbName);
+            SqlServerAliases.DropAndCreateDatabase(context, ConnectionString, dbName);
 
             // Assert
             TableExists(dbName, tableName).Should().BeFalse();
@@ -99,7 +99,7 @@ namespace Tests
             ";
 
             // Act
-            DatabaseExtension.ExecuteSqlCommand(context, ConnectionString, sql);
+            SqlServerAliases.ExecuteSqlCommand(context, ConnectionString, sql);
 
             // Assert
             TableExists(dbName, tableName1).Should().BeTrue();
@@ -122,7 +122,7 @@ namespace Tests
 
 
             // Act
-            DatabaseExtension.ExecuteSqlFile(context, ConnectionString, sqlFilePath);
+            SqlServerAliases.ExecuteSqlFile(context, ConnectionString, sqlFilePath);
 
             // Assert
             TableExists(dbName, tableName1).Should().BeTrue();
