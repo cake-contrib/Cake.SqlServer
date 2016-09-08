@@ -1,15 +1,22 @@
 ﻿using System;
-using System.Data.SqlClient;
-using System.IO;
-using System.Text.RegularExpressions;
 using Cake.Core;
 using Cake.Core.Annotations;
-using Cake.Core.Diagnostics;
 using Cake.Core.IO;
 
 
 namespace Cake.SqlServer
 {
+    ///////////// <summary>
+    ///////////// <para>Contains functionality related to <see href="https://dev.twitter.com/rest/public">Twitter REST API</see>.</para>
+    ///////////// <para>
+    ///////////// In order to use the commands for this addin, include the following in your build.cake file to download and
+    ///////////// reference from NuGet.org:
+    ///////////// <code>
+    ///////////// #addin Cake.Twitter
+    ///////////// </code>
+    ///////////// </para>
+    ///////////// </summary>
+    [CakeAliasCategory("SqlServer")]
     public static class DatabaseExtension
     {
         /// <summary>
@@ -20,38 +27,37 @@ namespace Cake.SqlServer
         /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">Connection string where to connect to. For this operation it is preferrable to connect to master database</param>
         /// <param name="databaseName">Database name to be dropped</param>
+        ///////////// <example>
+        ///////////// <code>
+        /////////////     var oAuthConsumerKey        = EnvironmentVariable("TWITTER_CONSUMER_KEY");
+        /////////////     var oAuthConsumerSecret = EnvironmentVariable("TWITTER_CONSUMER_SECRET");
+        /////////////     var accessToken = EnvironmentVariable("TWITTER_ACCESS_TOKEN");
+        /////////////     var accessTokenSecret = EnvironmentVariable("TWITTER_ACCESS_TOKEN_SECRET");
+        /////////////
+        /////////////     TwitterSendTweet(oAuthConsumerKey, oAuthConsumerSecret, accessToken, accessTokenSecret, "Testing, 1, 2, 3");
+        ///////////// </code>
+        ///////////// </example>
         [CakeMethodAlias]
         public static void DropDatabase(this ICakeContext context, String connectionString, String databaseName)
         {
-            var dropDatabaseSql =
-                $@"if (select DB_ID('{databaseName}')) is not null
-               begin
-                    alter database[{databaseName}] set offline with rollback immediate;
-                    alter database[{databaseName}] set online;
-                    drop database[{databaseName}];
-                end";
-
-            try
+            if (context == null)
             {
-                using (var connection = CreateOpenConnection(connectionString, context))
-                {
-                    var command = new SqlCommand(dropDatabaseSql, connection);
+                throw new ArgumentNullException(nameof(context));
+            }
 
-                    context.Log.Information($"About to drop database {databaseName}");
-                    command.ExecuteNonQuery();
-                    context.Log.Information($"Database {databaseName} is dropped");
-                }
-            }
-            catch (SqlException sqlException)
+            if (String.IsNullOrWhiteSpace(connectionString))
             {
-                if (sqlException.Message.StartsWith("Cannot open database"))
-                {
-                    context.Log.Error($"Database {databaseName} does not exits");
-                    return;
-                }
-                throw;
+                throw new ArgumentNullException(nameof(connectionString));
             }
+
+            if (String.IsNullOrWhiteSpace(databaseName))
+            {
+                throw new ArgumentNullException(nameof(databaseName));
+            }
+
+            DatabaseExtensionsFacade.DropDatabase(context, connectionString, databaseName);
         }
+
 
 
         /// <summary>
@@ -63,18 +69,22 @@ namespace Cake.SqlServer
         [CakeMethodAlias]
         public static void CreateDatabaseIfNotExists(this ICakeContext context, String connectionString, String databaseName)
         {
-            var createDbSql = $"if (select DB_ID('{databaseName}')) is null create database [{databaseName}]";
-
-            using (var connection = CreateOpenConnection(connectionString, context))
+            if (context == null)
             {
-                var sqlToExecute = String.Format(createDbSql, connection.Database);
-                context.Log.Debug($"Executing SQL : {sqlToExecute}");
-
-                var command = new SqlCommand(sqlToExecute, connection);
-
-                command.ExecuteNonQuery();
-                context.Log.Information($"Database {databaseName} is created if it was not there");
+                throw new ArgumentNullException(nameof(context));
             }
+
+            if (String.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+
+            if (String.IsNullOrWhiteSpace(databaseName))
+            {
+                throw new ArgumentNullException(nameof(databaseName));
+            }
+
+            DatabaseExtensionsFacade.CreateDatabaseIfNotExists(context, connectionString, databaseName);
         }
 
 
@@ -87,8 +97,22 @@ namespace Cake.SqlServer
         [CakeMethodAlias]
         public static void DropAndCreateDatabase(this ICakeContext context, String connectionString, String databaseName)
         {
-            context.DropDatabase(connectionString, databaseName);
-            context.CreateDatabaseIfNotExists(connectionString, databaseName);
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (String.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+
+            if (String.IsNullOrWhiteSpace(databaseName))
+            {
+                throw new ArgumentNullException(nameof(databaseName));
+            }
+
+            DatabaseExtensionsFacade.DropAndCreateDatabase(context, connectionString, databaseName);
         }
 
 
@@ -101,29 +125,22 @@ namespace Cake.SqlServer
         [CakeMethodAlias]
         public static void ExecuteSqlCommand(this ICakeContext context, String connectionString, string sqlCommands)
         {
-            var commandStrings = Regex.Split(sqlCommands, @"^\s*GO\s*$",
-                RegexOptions.Multiline | RegexOptions.IgnoreCase);
-
-            using (var connection = CreateOpenConnection(connectionString, context))
+            if (context == null)
             {
-                foreach (var sqlCommand in commandStrings)
-                {
-                    if (sqlCommand.Trim() != "")
-                    {
-                        context.Log.Debug($"Executing SQL : {sqlCommand}");
-                        try
-                        {
-                            var command = new SqlCommand(sqlCommand, connection);
-                            command.ExecuteNonQuery();
-                        }
-                        catch (Exception)
-                        {
-                            context.Log.Warning($"Exception happened while executing this command: {sqlCommand}");
-                            throw;
-                        }
-                    }
-                }
+                throw new ArgumentNullException(nameof(context));
             }
+
+            if (String.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+
+            if (String.IsNullOrWhiteSpace(sqlCommands))
+            {
+                throw new ArgumentNullException(nameof(sqlCommands));
+            }
+
+            DatabaseExtensionsFacade.ExecuteSqlCommand(context, connectionString, sqlCommands);
         }
 
 
@@ -136,36 +153,22 @@ namespace Cake.SqlServer
         [CakeMethodAlias]
         public static void ExecuteSqlFile(this ICakeContext context, String connectionString, FilePath sqlFile)
         {
-            var sqlFilePath = sqlFile.FullPath;
-
-            context.Log.Information($"Executing sql file {sqlFilePath}");
-
-            var allSqlCommands = File.ReadAllText(sqlFilePath);
-
-            context.ExecuteSqlCommand(connectionString, allSqlCommands);
-
-            context.Log.Information($"Finished executing SQL from {sqlFilePath}");
-        }
-
-
-        private static SqlConnection CreateOpenConnection(String connectionString, ICakeContext context)
-        {
-            try
+            if (context == null)
             {
-                var connection = new SqlConnection(connectionString);
-                context.Log.Debug($"About to open connection with this connection string: {connectionString}");
-                connection.Open();
-                return connection;
+                throw new ArgumentNullException(nameof(context));
             }
-            catch (SqlException exception)
+
+            if (String.IsNullOrWhiteSpace(connectionString))
             {
-                if (exception.Message.StartsWith("A network-related or instance-specific error", StringComparison.InvariantCultureIgnoreCase) 
-                        && connectionString.ToLower().Contains("localdb"))
-                {
-                    context.Log.Warning("Looks like you are trying to connect to LocalDb. Have you correctly escaped your connection string with '@'. It should look like 'var connString = @\"(localDb)\\v12.0\"'");
-                }
-                throw;
+                throw new ArgumentNullException(nameof(connectionString));
             }
+
+            if (sqlFile == null)
+            {
+                throw new ArgumentNullException(nameof(sqlFile));
+            }
+
+            DatabaseExtensionsFacade.ExecuteSqlFile(context, connectionString, sqlFile);
         }
     }
 }

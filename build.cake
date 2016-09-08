@@ -1,5 +1,5 @@
 // this script is inspired by https://github.com/SharpeRAD/Cake.SqlServer/blob/master/build.cake
-#tool "xunit.runner.console"
+#tool nuget:?package=NUnit.ConsoleRunner
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -144,6 +144,31 @@ Task("Build")
     }
 });
 
+Task("Start-LocalDB")
+    .Description(@"Starts LocalDB - executes the following: C:\Program Files\Microsoft SQL Server\120\Tools\Binn\SqlLocalDB.exe create v12.0 12.0 -s")
+    .Does(() => 
+    {
+        // var sqlLocalDbPath = @"c:\Program Files\Microsoft SQL Server\130\Tools\Binn\SqlLocalDB.exe";
+        var sqlLocalDbPath = @"C:\Program Files\Microsoft SQL Server\120\Tools\Binn\SqlLocalDB.exe";
+        if(!FileExists(sqlLocalDbPath))
+        {
+            Information("Unable to start LocalDB");
+            throw new Exception("LocalDB v12 is not installed. Can't complete tests");
+        }
+
+        StartProcess(sqlLocalDbPath, new ProcessSettings(){ Arguments="create \"v12.0\" 12.0 -s" });
+    });
+
+
+Task("Run-Unit-Tests")
+    .IsDependentOn("Build")
+    .Does(() =>
+{
+    var testsFile ="./src/**/bin/" + configuration + "/Tests.dll";
+    Information(testsFile);
+    NUnit3(testsFile);
+});
+
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -151,7 +176,7 @@ Task("Build")
 ///////////////////////////////////////////////////////////////////////////////
 
 Task("Copy-Files")
-    .IsDependentOn("Build")
+    .IsDependentOn("Run-Unit-Tests")
     .Does(() =>
 {
     // Addin
