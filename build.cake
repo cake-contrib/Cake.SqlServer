@@ -19,7 +19,7 @@ var appName = "Cake.SqlServer";
 var local = BuildSystem.IsLocalBuild;
 var isRunningOnAppVeyor = AppVeyor.IsRunningOnAppVeyor;
 var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
-var isMasterBranch = StringComparer.OrdinalIgnoreCase.Equals("master", AppVeyor.Environment.Repository.Branch),
+var isMasterBranch = StringComparer.OrdinalIgnoreCase.Equals("master", AppVeyor.Environment.Repository.Branch);
 
 // Parse release notes.
 var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");
@@ -46,8 +46,6 @@ var solutions  = GetFiles("./src/*.sln");
 // Package
 var nugetPackage = nugetRoot + "/Cake.SqlServer." + version + ".nupkg";
 
-
-
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
 ///////////////////////////////////////////////////////////////////////////////
@@ -57,6 +55,7 @@ Setup(context =>
     //Executed BEFORE the first task.
     Information("Building version {0} of {1}.", semVersion, appName);
     Information("Tools dir: {0}.", EnvironmentVariable("CAKE_PATHS_TOOLS"));
+    Information("Building from branch: " + AppVeyor.Environment.Repository.Branch);
 });
 
 Teardown(context =>
