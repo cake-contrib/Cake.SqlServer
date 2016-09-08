@@ -3,7 +3,7 @@
     <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
         <id>Cake.SqlServer</id>
         <version>0.0.0</version>
-        <authors>trailmax</authors>
+        <authors>Max Vasilyev</authors>
         <owners>trailmax, cake-contrib</owners>
         <title>Cake.SqlServer</title>
         <description>Cake Build addon for executing some operations in MS Sql Server.</description>
