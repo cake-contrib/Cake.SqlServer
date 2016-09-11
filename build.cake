@@ -1,5 +1,6 @@
 // this script is inspired by https://github.com/SharpeRAD/Cake.SqlServer/blob/master/build.cake
 #tool nuget:?package=NUnit.ConsoleRunner
+#addin "Cake.Figlet"
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -62,6 +63,7 @@ Teardown(context =>
 {
     // Executed AFTER the last task.
     Information("Finished building version {0} of {1}.", semVersion, appName);
+    Information(Figlet("All Your Cake Belong To.. NOM-NOM"));
 });
 
 
@@ -183,6 +185,7 @@ Task("Copy-Files")
     // Addin
     CopyFileToDirectory(buildDir + "/Cake.SqlServer.dll", binDir);
     CopyFileToDirectory(buildDir + "/Cake.SqlServer.pdb", binDir);
+    CopyFileToDirectory(buildDir + "/Cake.SqlServer.xml", binDir);
     CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, binDir);
 });
 
@@ -243,7 +246,6 @@ Task("Upload-AppVeyor-Artifacts")
 {
     AppVeyor.UploadArtifact(nugetPackage);
 });
-
 
 
 

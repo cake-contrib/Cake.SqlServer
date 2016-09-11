@@ -12,7 +12,7 @@ namespace Cake.SqlServer
     /// In order to use the commands for this addin, include the following in your build.cake file to download and
     /// reference from NuGet.org:
     /// <code>
-    /// #addin Cake.SqlServer
+    ///     #addin "nuget:?package=Cake.SqlServer"
     /// </code>
     /// </para>
     /// </summary>
@@ -29,9 +29,15 @@ namespace Cake.SqlServer
         /// <param name="databaseName">Database name to be dropped</param>
         /// <example>
         /// <code>
-        ///     var connectionString = @"(LocalDb)\v12.0";
-        ///     var dbName = "CakeTest";
-        ///     DropDatabase(connectionString, dbName);
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        /// 
+        ///     Task("Drop-Database")
+        ///          .Does(() =>
+        ///          {
+        ///             var connectionString = @"(LocalDb)\v12.0";
+        ///             var dbName = "CakeTest";
+        ///             DropDatabase(connectionString, dbName);
+        ///         });
         /// </code>
         /// </example>
         [CakeMethodAlias]
@@ -65,9 +71,15 @@ namespace Cake.SqlServer
         /// <param name="databaseName">Database name to be created</param>
         /// <example>
         /// <code>
-        ///     var connectionString = @"(LocalDb)\v12.0";
-        ///     var dbName = "CakeTest";
-        ///     CreateDatabaseIfNotExists(connectionString, dbName);
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        /// 
+        ///     Task("Create-Database")
+        ///          .Does(() =>
+        ///          {
+        ///             var connectionString = @"(LocalDb)\v12.0";
+        ///             var dbName = "CakeTest";
+        ///             CreateDatabaseIfNotExists(connectionString, dbName);
+        ///         });
         /// </code>
         /// </example>
         [CakeMethodAlias]
@@ -100,9 +112,15 @@ namespace Cake.SqlServer
         /// <param name="databaseName">Database to be dropped and re-created</param>
         /// <example>
         /// <code>
-        ///     var connectionString = @"(LocalDb)\v12.0";
-        ///     var dbName = "CakeTest";
-        ///     DropAndCreateDatabase(connectionString, dbName);
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        ///
+        ///     Task("ReCreate-Database")
+        ///          .Does(() =>
+        ///          {
+        ///             var connectionString = @"(LocalDb)\v12.0";
+        ///             var dbName = "CakeTest";
+        ///             DropAndCreateDatabase(connectionString, dbName);
+        ///         });
         /// </code>
         /// </example>
         [CakeMethodAlias]
@@ -135,9 +153,15 @@ namespace Cake.SqlServer
         /// <param name="sqlCommands">SQL to be executed</param>
         /// <example>
         /// <code>
-        ///     var connectionString = @"(LocalDb)\v12.0";
-        ///     var sqlCommand = "Create table [CakeTest].dbo.[CakeTestTable] (id int null)";
-        ///     ExecuteSqlCommand(connectionString, sqlCommand);
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        /// 
+        ///     Task("Database-Operations")
+        ///          .Does(() =>
+        ///          {
+        ///             var connectionString = @"(LocalDb)\v12.0";
+        ///             var sqlCommand = "Create table [CakeTest].dbo.[CakeTestTable] (id int null)";
+        ///             ExecuteSqlCommand(connectionString, sqlCommand);
+        ///         });
         /// </code>
         /// </example>
         [CakeMethodAlias]
@@ -170,9 +194,15 @@ namespace Cake.SqlServer
         /// <param name="sqlFile">Path to a file with sql commands</param>
         /// <example>
         /// <code>
-        ///     var connectionString = @"(LocalDb)\v12.0";
-        ///     var sqlFile = "./somePath/MyScript.sql";
-        ///     ExecuteSqlCommand(connectionString, sqlFile);
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        ///
+        ///     Task("ReCreate-Database")
+        ///          .Does(() =>
+        ///          {
+        ///             var connectionString = @"(LocalDb)\v12.0";
+        ///             var sqlFile = "./somePath/MyScript.sql";
+        ///             ExecuteSqlCommand(connectionString, sqlFile);
+        ///         });
         /// </code>
         /// </example>
         [CakeMethodAlias]
