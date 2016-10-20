@@ -4,6 +4,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 [assembly: AssemblyProduct("Cake.SqlServer")]
 [assembly: AssemblyVersion("1.0.1")]
@@ -11,3 +12,4 @@ using System.Reflection;
 [assembly: AssemblyInformationalVersion("1.0.1")]
 [assembly: AssemblyCopyright("Copyright (c) 2016 - 2016 AMV Software")]
 
+[assembly: InternalsVisibleTo("Tests")]

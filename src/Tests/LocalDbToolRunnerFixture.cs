@@ -4,7 +4,7 @@ using Cake.Testing.Fixtures;
 
 namespace Tests
 {
-    public class LocalDbToolRunnerFixture : ToolFixture<LocalDbSettings>
+    internal class LocalDbToolRunnerFixture : ToolFixture<LocalDbSettings>
     {
         internal String InstanceName { get; set; }
         internal LocalDbVersion Version { get; set; }

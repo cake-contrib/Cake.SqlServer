@@ -7,7 +7,7 @@ using Cake.Core.Tooling;
 
 namespace Cake.SqlServer
 {
-    public class LocalDbToolRunner : Tool<LocalDbSettings>
+    internal class LocalDbToolRunner : Tool<LocalDbSettings>
     {
         private readonly IFileSystem fileSystem;
         private readonly ICakeEnvironment environment;
@@ -42,14 +42,13 @@ namespace Cake.SqlServer
 
             return new List<FilePath>()
             {
-                @"c:\Program Files\Microsoft SQL Server\140\Tools\Binn\",
                 @"c:\Program Files\Microsoft SQL Server\130\Tools\Binn\",
                 @"c:\Program Files\Microsoft SQL Server\120\Tools\Binn\",
                 @"c:\Program Files\Microsoft SQL Server\110\Tools\Binn\",
             };
         }
 
-        public void Run(LocalDbSettings settings)
+        internal void Run(LocalDbSettings settings)
         {
             if (String.IsNullOrEmpty(settings.InstanceName))
             {
