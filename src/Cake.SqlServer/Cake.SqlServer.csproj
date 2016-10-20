@@ -49,6 +49,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LocalDb\LocalDbAliases.cs" />
+    <Compile Include="LocalDb\LocalDbSettings.cs" />
+    <Compile Include="LocalDb\LocalDbToolRunner.cs" />
     <Compile Include="SqlServerAliases.cs" />
     <Compile Include="SqlServerAliasesFacade.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
