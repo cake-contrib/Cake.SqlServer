@@ -70,6 +70,37 @@ Reads sql file and executes commands from it. Executes parts of scripts separate
 			ExecuteSqlCommand(connectionString, "./src/install.sql");
 	    });
 
+#Working with LocalDB 
+
+This package includes a wrapper for working with `SqlLocalDb.exe` - that is for LocalDB. This is lightweight SQL Server version that is great for running tests against. This package includes commands to create, start, stop and delete instances of LocalDB. To be used like this:
+
+    #addin "nuget:?package=Cake.SqlServer"
+
+    Task("Create-LocalDB")
+         .Does(() =>
+         {
+			// creates and starts instance
+			// you don't need to start the instance separately
+            LocalDbCreateInstance("Cake-Test");
+         });
+
+    Task("Start-LocalDB")
+         .Does(() =>
+         {
+            LocalDbStartInstance("Cake-Test");
+        });
+
+    Task("Stop-LocalDB")
+         .Does(() =>
+         {
+            LocalDbStopInstance("Cake-Test");
+        });
+
+    Task("Delete-LocalDB")
+         .Does(() =>
+         {
+            LocalDbDeleteInstance("Cake-Test");
+        });
 
 #Reason to Develop
 There is already a project that does similar things: [Cake.SqlTools](https://github.com/SharpeRAD/Cake.SqlTools). I have tried it and it was not enough for my purposes. I did look into extending functionality, but the way the project is structured - it won't let me do what I would like to do. The great idea in that project - be able to switch between MySql and SqlServer with a change of a single parameter.
