@@ -1,9 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
 using Cake.Core;
 using Cake.Core.Annotations;
+using Cake.Core.Diagnostics;
 
 [assembly: InternalsVisibleTo("Tests")]
-namespace Cake.SqlServer.LocalDb
+namespace Cake.SqlServer
 {
     /// <summary>
     /// Contains functionality to deal with LocalDB. A wrapper for SQLLocalDb.exe. Allows to create, start, stop and delete instances in LocalDB.
@@ -38,7 +39,7 @@ namespace Cake.SqlServer.LocalDb
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static void LocalDbCreateInstance(this ICakeContext context, string instanceName, LocalDbVersion version = LocalDbVersion.V11)
+        public static void LocalDbCreateInstance(this ICakeContext context, string instanceName, LocalDbVersion version)
         {
             var settings = new LocalDbSettings()
             {
@@ -136,6 +137,7 @@ namespace Cake.SqlServer.LocalDb
 
         private static void ExecuteRunner(this ICakeContext context, LocalDbSettings settings)
         {
+            context.Log.Information(Verbosity.Diagnostic, "Executing sqllocaldb.exe with action {0} on instance {1}", settings.Action, settings.InstanceName);
             var localDbRunner = new LocalDbToolRunner(context.FileSystem, context.Environment, context.ProcessRunner, context.Tools);
             localDbRunner.Run(settings);
         }

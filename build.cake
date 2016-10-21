@@ -1,5 +1,4 @@
-// this script is inspired by https://github.com/SharpeRAD/Cake.SqlServer/blob/master/build.cake
-#tool nuget:?package=NUnit.ConsoleRunner
+#tool "nuget:?package=NUnit.ConsoleRunner"
 #tool "nuget:?package=GitVersion.CommandLine"
 #addin "Cake.Figlet"
 #load "./parameters.cake"
@@ -45,6 +44,7 @@ Task("Clean")
         Directory("./src/Tests/obj/"),
         Directory(BuildParameters.ProjectDir + "bin"),
         Directory(BuildParameters.ProjectDir + "obj"),
+        Directory(BuildParameters.IntegrationTestsFolder),
     });
 });
 
@@ -110,11 +110,15 @@ Task("Copy-Files")
     .Does(() =>
 {
     EnsureDirectoryExists(parameters.ResultBinDir);
+    EnsureDirectoryExists(BuildParameters.IntegrationTestsFolder);
 
     CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.dll", parameters.ResultBinDir);
     CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.pdb", parameters.ResultBinDir);
     CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.xml", parameters.ResultBinDir);
     CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, parameters.ResultBinDir);
+
+
+    CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.dll", BuildParameters.IntegrationTestsFolder);
 });
 
 
@@ -195,10 +199,6 @@ Task("Publish-MyGet")
 });
 
 
-
-
-
-
 Task("Upload-AppVeyor-Artifacts")
     .IsDependentOn("Create-NuGet-Packages")
     .WithCriteria(() => parameters.IsRunningOnAppVeyor)
@@ -206,7 +206,6 @@ Task("Upload-AppVeyor-Artifacts")
 {
     AppVeyor.UploadArtifact(parameters.ResultNugetPath);
 });
-
 
 
 Task("Package")
