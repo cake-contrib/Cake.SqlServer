@@ -1,6 +1,8 @@
-﻿using Cake.Core;
+﻿using System.Runtime.CompilerServices;
+using Cake.Core;
 using Cake.Core.Annotations;
 
+[assembly: InternalsVisibleTo("Tests")]
 namespace Cake.SqlServer.LocalDb
 {
     /// <summary>

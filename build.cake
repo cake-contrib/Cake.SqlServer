@@ -1,78 +1,35 @@
 // this script is inspired by https://github.com/SharpeRAD/Cake.SqlServer/blob/master/build.cake
 #tool nuget:?package=NUnit.ConsoleRunner
+#tool "nuget:?package=GitVersion.CommandLine"
 #addin "Cake.Figlet"
+#load "./parameters.cake"
 
-//////////////////////////////////////////////////////////////////////
-// ARGUMENTS
-//////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
-var appName = "Cake.SqlServer";
+bool publishingError = false;
 
-
-
-//////////////////////////////////////////////////////////////////////
-// VARIABLES
-//////////////////////////////////////////////////////////////////////
-
-// Get whether or not this is a local build.
-var local = BuildSystem.IsLocalBuild;
-var isRunningOnAppVeyor = AppVeyor.IsRunningOnAppVeyor;
-var isPullRequest = AppVeyor.Environment.PullRequest.IsPullRequest;
-var isMasterBranch = StringComparer.OrdinalIgnoreCase.Equals("master", AppVeyor.Environment.Repository.Branch);
-
-// Parse release notes.
-var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");
-
-//TODO use GitVersion
-// Get version.
-var buildNumber = AppVeyor.Environment.Build.Number;
-var appVeyorVersion = AppVeyor.Environment.Build.Version;
-var version = local ? "1.0.1" : appVeyorVersion;
-var semVersion = local ? version : appVeyorVersion;
-
-
-// Define directories.
-var buildDir = "./src/Cake.SqlServer/bin/" + configuration;
-var buildTestDir = "./src/Tests/bin/" + configuration;
-
-var buildResultDir = "./build-results/v" + semVersion;
-var nugetRoot = buildResultDir + "/nuget";
-var binDir = buildResultDir + "/bin";
-
-//Get Solutions
-var solutions  = GetFiles("./src/*.sln");
-
-// Package
-var nugetPackage = nugetRoot + "/Cake.SqlServer." + version + ".nupkg";
-
-///////////////////////////////////////////////////////////////////////////////
-// SETUP / TEARDOWN
-///////////////////////////////////////////////////////////////////////////////
+BuildParameters parameters = BuildParameters.GetParameters(Context);
 
 Setup(context =>
 {
-    //Executed BEFORE the first task.
-    Information("Building version {0} of {1}.", semVersion, appName);
-    Information("Tools dir: {0}.", EnvironmentVariable("CAKE_PATHS_TOOLS"));
+    parameters.Initialize(context);
+
+    Information("SemVersion: {0}", parameters.SemVersion);
+    Information("Version: {0}", parameters.Version);
     Information("Building from branch: " + AppVeyor.Environment.Repository.Branch);
 });
 
 Teardown(context =>
 {
-    // Executed AFTER the last task.
-    Information("Finished building version {0} of {1}.", semVersion, appName);
-    Information(Figlet("All Your Cake Belong To.. NOM-NOM"));
+    Information(Figlet("Cake.. NOM-NOM"));
 });
 
 
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// PREPARE
-///////////////////////////////////////////////////////////////////////////////
+Task("debug")
+    .Does(() => {
+        Information("debug");
+    });
 
 Task("Clean")
     .Does(() =>
@@ -80,13 +37,14 @@ Task("Clean")
     // Clean solution directories.
     Information("Cleaning old files");
 
-    CleanDirectories(new DirectoryPath[]
-    {
-        buildDir,
-        buildTestDir,
-        buildResultDir,
-        binDir, 
-        nugetRoot
+
+    CleanDirectories(new DirectoryPath[]{
+        parameters.BuildDir,
+        parameters.BuildResultDir,
+        Directory("./src/Tests/bin/"),
+        Directory("./src/Tests/obj/"),
+        Directory(BuildParameters.ProjectDir + "bin"),
+        Directory(BuildParameters.ProjectDir + "obj"),
     });
 });
 
@@ -96,54 +54,25 @@ Task("Restore-Nuget-Packages")
     .IsDependentOn("Clean")
     .Does(() =>
 {
-    // Restore all NuGet packages.
-    foreach(var solution in solutions)
-    {
-        Information("Restoring {0}", solution);
+    Information("Restoring packages in {0}", BuildParameters.Solution);
 
-        NuGetRestore(solution);
-    }
+    NuGetRestore(BuildParameters.Solution);
 });
 
 
 
-
-
-///////////////////////////////////////////////////////////////////////////////
-// BUILD
-///////////////////////////////////////////////////////////////////////////////
-
-Task("Patch-Assembly-Info")
-    .Does(() =>
-{
-    var file = "./src/Cake.SqlServer/Properties/AssemblyInfo.cs";
-
-    CreateAssemblyInfo(file, new AssemblyInfoSettings
-    {
-        Product = appName,
-        Version = version,
-        FileVersion = version,
-        InformationalVersion = semVersion,
-        Copyright = "Copyright (c) 2016 - " + DateTime.Now.Year.ToString() + " AMV Software"
-    });
-});
 
 
 Task("Build")
     .IsDependentOn("Restore-Nuget-Packages")
-    .IsDependentOn("Patch-Assembly-Info")
     .Does(() =>
 {
-    // Build all solutions.
-    foreach(var solution in solutions)
-    {
-        Information("Building {0}", solution);
+    Information("Building {0}", BuildParameters.Solution);
 
-        MSBuild(solution, settings =>
-            settings.SetPlatformTarget(PlatformTarget.MSIL)
-                    .WithTarget("Build")
-                    .SetConfiguration(configuration));
-    }
+    MSBuild(BuildParameters.Solution, settings =>
+        settings.SetPlatformTarget(PlatformTarget.MSIL)
+                .WithTarget("Build")
+                .SetConfiguration(configuration));
 });
 
 Task("Start-LocalDB")
@@ -169,24 +98,23 @@ Task("Run-Unit-Tests")
 {
     var testsFile ="./src/**/bin/" + configuration + "/Tests.dll";
     Information(testsFile);
-    NUnit3(testsFile);
+    NUnit3(testsFile, new NUnit3Settings {
+        NoResults = true
+    });
 });
 
 
-
-///////////////////////////////////////////////////////////////////////////////
-// PACKAGE
-///////////////////////////////////////////////////////////////////////////////
 
 Task("Copy-Files")
     .IsDependentOn("Run-Unit-Tests")
     .Does(() =>
 {
-    // Addin
-    CopyFileToDirectory(buildDir + "/Cake.SqlServer.dll", binDir);
-    CopyFileToDirectory(buildDir + "/Cake.SqlServer.pdb", binDir);
-    CopyFileToDirectory(buildDir + "/Cake.SqlServer.xml", binDir);
-    CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, binDir);
+    EnsureDirectoryExists(parameters.ResultBinDir);
+
+    CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.dll", parameters.ResultBinDir);
+    CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.pdb", parameters.ResultBinDir);
+    CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.xml", parameters.ResultBinDir);
+    CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, parameters.ResultBinDir);
 });
 
 
@@ -195,12 +123,14 @@ Task("Create-NuGet-Packages")
     .IsDependentOn("Copy-Files")
     .Does(() =>
 {
+    var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");
+
     NuGetPack("./src/Cake.SqlServer/Cake.SqlServer.nuspec", new NuGetPackSettings
     {
-        Version = version,
+        Version = parameters.Version,
         ReleaseNotes = releaseNotes.Notes.ToArray(),
-        BasePath = binDir,
-        OutputDirectory = nugetRoot,
+        BasePath = parameters.ResultBinDir,
+        OutputDirectory = parameters.BuildResultDir,
         Symbols = false,
         NoPackageAnalysis = true
     });
@@ -210,9 +140,7 @@ Task("Create-NuGet-Packages")
 
 Task("Publish-Nuget")
     .IsDependentOn("Create-NuGet-Packages")
-    .WithCriteria(() => isRunningOnAppVeyor)
-    .WithCriteria(() => !isPullRequest)
-    .WithCriteria(() => isMasterBranch)
+    .WithCriteria(() => parameters.ShouldPublish)
     .Does(() =>
 {
     // Resolve the API key.
@@ -224,58 +152,79 @@ Task("Publish-Nuget")
     }
 
     // Push the package.
-    NuGetPush(nugetPackage, new NuGetPushSettings
+    NuGetPush(parameters.ResultNugetPath, new NuGetPushSettings
     {
         ApiKey = apiKey,
         Source = "https://www.nuget.org/api/v2/package"
     });
+})
+.OnError(exception =>
+{
+    Information("Publish-NuGet Task failed, but continuing with next Task...");
+    publishingError = true;
+});
+
+
+Task("Publish-MyGet")
+    .IsDependentOn("Package")
+    .WithCriteria(() => parameters.ShouldPublishToMyGet)
+    .Does(() =>
+{
+    // Resolve the API key.
+    var apiKey = EnvironmentVariable("MYGET_API_KEY");
+    if(string.IsNullOrEmpty(apiKey)) {
+        throw new InvalidOperationException("Could not resolve MyGet API key.");
+    }
+
+    // Resolve the API url.
+    var apiUrl = EnvironmentVariable("MYGET_API_URL");
+    if(string.IsNullOrEmpty(apiUrl)) {
+        throw new InvalidOperationException("Could not resolve MyGet API url.");
+    }
+
+    // Push the package.
+    NuGetPush(parameters.ResultNugetPath, new NuGetPushSettings {
+        Source = apiUrl,
+        ApiKey = apiKey
+    });
+})
+.OnError(exception =>
+{
+    Information("Publish-MyGet Task failed, but continuing with next Task...");
+    publishingError = true;
 });
 
 
 
 
 
-///////////////////////////////////////////////////////////////////////////////
-// APPVEYOR
-///////////////////////////////////////////////////////////////////////////////
 
 Task("Upload-AppVeyor-Artifacts")
     .IsDependentOn("Create-NuGet-Packages")
-    .WithCriteria(() => isRunningOnAppVeyor)
+    .WithCriteria(() => parameters.IsRunningOnAppVeyor)
     .Does(() =>
 {
-    AppVeyor.UploadArtifact(nugetPackage);
+    AppVeyor.UploadArtifact(parameters.ResultNugetPath);
 });
 
 
-
-
-
-//////////////////////////////////////////////////////////////////////
-// TASK TARGETS
-//////////////////////////////////////////////////////////////////////
 
 Task("Package")
     .IsDependentOn("Create-NuGet-Packages");
 
-Task("Publish")
-    .IsDependentOn("Publish-Nuget");
-
 Task("AppVeyor")
-    .IsDependentOn("Publish")
-    .IsDependentOn("Upload-AppVeyor-Artifacts");
-
-
+    .IsDependentOn("Publish-Nuget")
+    .IsDependentOn("Publish-MyGet")
+    .IsDependentOn("Upload-AppVeyor-Artifacts")
+    .Finally(() =>
+    {
+        if(publishingError)
+        {
+            throw new Exception("An error occurred during the publishing of Cake.  All publishing tasks have been attempted.");
+        }
+    });
 
 Task("Default")
     .IsDependentOn("Package");
-
-
-
-
-
-///////////////////////////////////////////////////////////////////////////////
-// EXECUTION
-///////////////////////////////////////////////////////////////////////////////
 
 RunTarget(target);
