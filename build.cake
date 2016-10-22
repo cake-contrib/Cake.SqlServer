@@ -95,12 +95,12 @@ Task("Run-Unit-Tests")
     .IsDependentOn("Build")
     .IsDependentOn("Start-LocalDB")
     .Does(() =>
-{
-    var testsFile ="./src/**/bin/" + configuration + "/Tests.dll";
-    Information(testsFile);
-    NUnit3(testsFile, new NUnit3Settings {
-        NoResults = true
-    });
+	{
+		var testsFile ="./src/**/bin/" + configuration + "/Tests.dll";
+		Information(testsFile);
+		NUnit3(testsFile, new NUnit3Settings {
+			NoResults = true
+		});
 });
 
 
@@ -108,104 +108,104 @@ Task("Run-Unit-Tests")
 Task("Copy-Files")
     .IsDependentOn("Run-Unit-Tests")
     .Does(() =>
-{
-    EnsureDirectoryExists(parameters.ResultBinDir);
-    EnsureDirectoryExists(BuildParameters.IntegrationTestsFolder);
+	{
+		EnsureDirectoryExists(parameters.ResultBinDir);
+		EnsureDirectoryExists(BuildParameters.IntegrationTestsFolder);
 
-    CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.dll", parameters.ResultBinDir);
-    CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.pdb", parameters.ResultBinDir);
-    CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.xml", parameters.ResultBinDir);
-    CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, parameters.ResultBinDir);
+		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.dll", parameters.ResultBinDir);
+		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.pdb", parameters.ResultBinDir);
+		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.xml", parameters.ResultBinDir);
+		CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, parameters.ResultBinDir);
 
 
-    CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.dll", BuildParameters.IntegrationTestsFolder);
-});
+		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.dll", BuildParameters.IntegrationTestsFolder);
+	});
 
 
 
 Task("Create-NuGet-Packages")
     .IsDependentOn("Copy-Files")
     .Does(() =>
-{
-    var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");
+	{
+		var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");
 
-    NuGetPack("./src/Cake.SqlServer/Cake.SqlServer.nuspec", new NuGetPackSettings
-    {
-        Version = parameters.Version,
-        ReleaseNotes = releaseNotes.Notes.ToArray(),
-        BasePath = parameters.ResultBinDir,
-        OutputDirectory = parameters.BuildResultDir,
-        Symbols = false,
-        NoPackageAnalysis = true
-    });
-});
+		NuGetPack("./src/Cake.SqlServer/Cake.SqlServer.nuspec", new NuGetPackSettings
+		{
+			Version = parameters.Version,
+			ReleaseNotes = releaseNotes.Notes.ToArray(),
+			BasePath = parameters.ResultBinDir,
+			OutputDirectory = parameters.BuildResultDir,
+			Symbols = false,
+			NoPackageAnalysis = true
+		});
+	});
 
 
 
 Task("Publish-Nuget")
     .IsDependentOn("Create-NuGet-Packages")
-    .WithCriteria(() => parameters.ShouldPublish)
+    .WithCriteria(() => parameters.ShouldPublishToNugetOrg)
     .Does(() =>
-{
-    // Resolve the API key.
-    var apiKey = EnvironmentVariable("NUGET_API_KEY");
+	{
+		// Resolve the API key.
+		var apiKey = EnvironmentVariable("NUGET_API_KEY");
 
-    if(string.IsNullOrEmpty(apiKey))
-    {
-        throw new InvalidOperationException("Could not resolve MyGet API key.");
-    }
+		if(string.IsNullOrEmpty(apiKey))
+		{
+			throw new InvalidOperationException("Could not resolve MyGet API key.");
+		}
 
-    // Push the package.
-    NuGetPush(parameters.ResultNugetPath, new NuGetPushSettings
-    {
-        ApiKey = apiKey,
-        Source = "https://www.nuget.org/api/v2/package"
-    });
-})
-.OnError(exception =>
-{
-    Information("Publish-NuGet Task failed, but continuing with next Task...");
-    publishingError = true;
-});
+		// Push the package.
+		NuGetPush(parameters.ResultNugetPath, new NuGetPushSettings
+		{
+			ApiKey = apiKey,
+			Source = "https://www.nuget.org/api/v2/package"
+		});
+	})
+	.OnError(exception =>
+	{
+		Information("Publish-NuGet Task failed, but continuing with next Task...");
+		publishingError = true;
+	});
 
 
 Task("Publish-MyGet")
     .IsDependentOn("Package")
     .WithCriteria(() => parameters.ShouldPublishToMyGet)
     .Does(() =>
-{
-    // Resolve the API key.
-    var apiKey = EnvironmentVariable("MYGET_API_KEY");
-    if(string.IsNullOrEmpty(apiKey)) {
-        throw new InvalidOperationException("Could not resolve MyGet API key.");
-    }
+	{
+		// Resolve the API key.
+		var apiKey = EnvironmentVariable("MYGET_API_KEY");
+		if(string.IsNullOrEmpty(apiKey)) {
+			throw new InvalidOperationException("Could not resolve MyGet API key.");
+		}
 
-    // Resolve the API url.
-    var apiUrl = EnvironmentVariable("MYGET_API_URL");
-    if(string.IsNullOrEmpty(apiUrl)) {
-        throw new InvalidOperationException("Could not resolve MyGet API url.");
-    }
+		// Resolve the API url.
+		var apiUrl = EnvironmentVariable("MYGET_API_URL");
+		if(string.IsNullOrEmpty(apiUrl)) {
+			throw new InvalidOperationException("Could not resolve MyGet API url.");
+		}
 
-    // Push the package.
-    NuGetPush(parameters.ResultNugetPath, new NuGetPushSettings {
-        Source = apiUrl,
-        ApiKey = apiKey
-    });
-})
-.OnError(exception =>
-{
-    Information("Publish-MyGet Task failed, but continuing with next Task...");
-    publishingError = true;
-});
+		// Push the package.
+		NuGetPush(parameters.ResultNugetPath, new NuGetPushSettings {
+			Source = apiUrl,
+			ApiKey = apiKey
+		});
+	})
+	.OnError(exception =>
+	{
+		Information("Publish-MyGet Task failed, but continuing with next Task...");
+		publishingError = true;
+	});
 
 
 Task("Upload-AppVeyor-Artifacts")
     .IsDependentOn("Create-NuGet-Packages")
     .WithCriteria(() => parameters.IsRunningOnAppVeyor)
     .Does(() =>
-{
-    AppVeyor.UploadArtifact(parameters.ResultNugetPath);
-});
+	{
+		AppVeyor.UploadArtifact(parameters.ResultNugetPath);
+	});
 
 
 Task("Package")

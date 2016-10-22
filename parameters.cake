@@ -27,10 +27,15 @@ public class BuildParameters
         var result = context.GitVersion(new GitVersionSettings{
             UpdateAssemblyInfoFilePath = ProjectDir + "properties/AssemblyInfo.cs",
             UpdateAssemblyInfo = true,
-            //OutputType = GitVersionOutput.BuildServer
         });
         Version = result.MajorMinorPatch ?? "0.0.1";
         SemVersion = result.LegacySemVerPadded ?? "0.0.1";
+
+		// print gitversion
+        context.GitVersion(new GitVersionSettings{
+            UpdateAssemblyInfo = false,
+            OutputType = GitVersionOutput.BuildServer
+        });
     }
 
     public static BuildParameters GetParameters(ICakeContext context)
@@ -44,6 +49,8 @@ public class BuildParameters
         var configuration = context.Argument("configuration", "Release");
         var buildSystem = context.BuildSystem();
 
+		context.Information("IsTagged: {0}", IsBuildTagged(buildSystem));
+
         return new BuildParameters {
             Target = target,
             Configuration = configuration,
@@ -54,6 +61,7 @@ public class BuildParameters
             IsRunningOnAppVeyor = buildSystem.AppVeyor.IsRunningOnAppVeyor,
             IsPullRequest = buildSystem.AppVeyor.Environment.PullRequest.IsPullRequest,
             IsTagged = IsBuildTagged(buildSystem),
+
 
             IsMasterBranch = StringComparer.OrdinalIgnoreCase.Equals("master", buildSystem.AppVeyor.Environment.Repository.Branch),
             ReleaseNotes = context.ParseReleaseNotes("./ReleaseNotes.md"),
@@ -92,7 +100,7 @@ public class BuildParameters
         }
     }
 
-    public bool ShouldPublish
+    public bool ShouldPublishToNugetOrg
     {
         get
         {
