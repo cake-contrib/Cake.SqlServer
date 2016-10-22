@@ -22,7 +22,7 @@ namespace Tests
             var result = fixture.Run();
 
             // Assert
-            result.Args.Should().Be("create Cake-Test v12.0 -s");
+            result.Args.Should().Be(@"create ""Cake-Test"" 12.0 -s");
         }
 
         [Test]
@@ -40,7 +40,7 @@ namespace Tests
             var result = fixture.Run();
 
             // Assert
-            result.Args.Should().Be("create Cake-Test v11.0 -s");
+            result.Args.Should().Be(@"create ""Cake-Test"" 11.0 -s");
         }
 
         [Test]
@@ -58,7 +58,7 @@ namespace Tests
             var result = fixture.Run();
 
             // Assert
-            result.Args.Should().Be("delete Cake-Test");
+            result.Args.Should().Be(@"delete ""Cake-Test""");
         }
 
         [Test]
@@ -76,7 +76,7 @@ namespace Tests
             var result = fixture.Run();
 
             // Assert
-            result.Args.Should().Be("start Cake-Test");
+            result.Args.Should().Be(@"start ""Cake-Test""");
         }
 
 
@@ -95,7 +95,7 @@ namespace Tests
             var result = fixture.Run();
 
             // Assert
-            result.Args.Should().Be("stop Cake-Test");
+            result.Args.Should().Be(@"stop ""Cake-Test""");
         }
     }
 }

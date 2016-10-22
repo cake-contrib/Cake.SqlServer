@@ -8,12 +8,11 @@ namespace Cake.SqlServer
         public LocalDbSettings()
         {
             Action = LocalDbAction.Create;
-            InstanceVersion = LocalDbVersion.V11;
         }
 
         public LocalDbAction Action { get; set; }
         public String InstanceName { get; set; }
-        public LocalDbVersion InstanceVersion { get; set; }
+        public LocalDbVersion? InstanceVersion { get; set; }
     }
 
 

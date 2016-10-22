@@ -1,4 +1,5 @@
 #r "build-results/IntergrationTests/Cake.SqlServer.dll"
+//#r "src/Cake.SqlServer/bin/debug/Cake.SqlServer.dll"
 
 var target = Argument("target", "Default");
 
@@ -20,7 +21,8 @@ Task("Create-LocalDB")
      {
         // creates and starts instance
         // you don't need to start the instance separately
-        LocalDbCreateInstance("Cake-Test", LocalDbVersion.V11);
+        //LocalDbCreateInstance("Cake-Test", LocalDbVersion.V12);
+         LocalDbCreateInstance("Cake-Test");
      });
 
 

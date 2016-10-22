@@ -20,13 +20,12 @@ namespace Cake.SqlServer
     [CakeAliasCategory("SqlServer")]
     public static class LocalDbAliases
     {
-
         /// <summary>
         /// Creates a server instance and starts the server. 
         /// </summary>
         /// <param name="context">Cake context</param>
         /// <param name="instanceName">Name of the instance to create</param>
-        /// <param name="version">Version number of LocalDB to use V11 or V12</param>
+        /// <param name="version">Version number of LocalDB to use V11 or V12.  The specified version must be installed on the computer. If not specified, the version number defaults to the version of the SqlLocalDB utility</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
@@ -34,7 +33,7 @@ namespace Cake.SqlServer
         ///     Task("Create-LocalDB")
         ///          .Does(() =>
         ///          {
-        ///             LocalDbCreateInstance("Cake-Test");
+        ///             LocalDbCreateInstance("Cake-Test", LocalDbVersion.V11);
         ///         });
         /// </code>
         /// </example>
@@ -50,6 +49,34 @@ namespace Cake.SqlServer
             ExecuteRunner(context, settings);
         }
 
+
+        /// <summary>
+        /// Creates a server instance and starts the server. 
+        /// The version number defaults to the version of the SqlLocalDB utility
+        /// </summary>
+        /// <param name="context">Cake context</param>
+        /// <param name="instanceName">Name of the instance to create</param>
+        /// <example>
+        /// <code>
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        /// 
+        ///     Task("Create-LocalDB")
+        ///          .Does(() =>
+        ///          {
+        ///             LocalDbCreateInstance("Cake-Test");
+        ///         });
+        /// </code>
+        /// </example>
+        [CakeMethodAlias]
+        public static void LocalDbCreateInstance(this ICakeContext context, string instanceName)
+        {
+            var settings = new LocalDbSettings()
+            {
+                Action = LocalDbAction.Create,
+                InstanceName = instanceName,
+            };
+            ExecuteRunner(context, settings);
+        }
 
         /// <summary>
         /// Deletes the LocalDB instance
@@ -137,8 +164,8 @@ namespace Cake.SqlServer
 
         private static void ExecuteRunner(this ICakeContext context, LocalDbSettings settings)
         {
-            context.Log.Information(Verbosity.Diagnostic, "Executing sqllocaldb.exe with action {0} on instance {1}", settings.Action, settings.InstanceName);
-            var localDbRunner = new LocalDbToolRunner(context.FileSystem, context.Environment, context.ProcessRunner, context.Tools);
+            context.Log.Information(Verbosity.Normal, "Executing SQLLocalDB.exe with action {0} on instance {1}", settings.Action, settings.InstanceName);
+            var localDbRunner = new LocalDbToolRunner(context.FileSystem, context.Environment, context.ProcessRunner, context.Tools, context.Log);
             localDbRunner.Run(settings);
         }
     }
