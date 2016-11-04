@@ -43,20 +43,9 @@ namespace Cake.SqlServer
         [CakeMethodAlias]
         public static void DropDatabase(this ICakeContext context, String connectionString, String databaseName)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            if (String.IsNullOrWhiteSpace(connectionString))
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-
-            if (String.IsNullOrWhiteSpace(databaseName))
-            {
-                throw new ArgumentNullException(nameof(databaseName));
-            }
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
+            Guard.ArgumentIsNotNull(databaseName, nameof(databaseName));
 
             SqlServerAliasesFacade.DropDatabase(context, connectionString, databaseName);
         }
@@ -86,20 +75,9 @@ namespace Cake.SqlServer
         [CakeMethodAlias]
         public static void CreateDatabase(this ICakeContext context, String connectionString, String databaseName)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            if (String.IsNullOrWhiteSpace(connectionString))
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-
-            if (String.IsNullOrWhiteSpace(databaseName))
-            {
-                throw new ArgumentNullException(nameof(databaseName));
-            }
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
+            Guard.ArgumentIsNotNull(databaseName, nameof(databaseName));
 
             SqlServerAliasesFacade.CreateDatabase(context, connectionString, databaseName);
         }
@@ -127,20 +105,9 @@ namespace Cake.SqlServer
         [CakeMethodAlias]
         public static void CreateDatabaseIfNotExists(this ICakeContext context, String connectionString, String databaseName)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            if (String.IsNullOrWhiteSpace(connectionString))
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-
-            if (String.IsNullOrWhiteSpace(databaseName))
-            {
-                throw new ArgumentNullException(nameof(databaseName));
-            }
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
+            Guard.ArgumentIsNotNull(databaseName, nameof(databaseName));
 
             SqlServerAliasesFacade.CreateDatabaseIfNotExists(context, connectionString, databaseName);
         }
@@ -168,20 +135,9 @@ namespace Cake.SqlServer
         [CakeMethodAlias]
         public static void DropAndCreateDatabase(this ICakeContext context, String connectionString, String databaseName)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            if (String.IsNullOrWhiteSpace(connectionString))
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-
-            if (String.IsNullOrWhiteSpace(databaseName))
-            {
-                throw new ArgumentNullException(nameof(databaseName));
-            }
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
+            Guard.ArgumentIsNotNull(databaseName, nameof(databaseName));
 
             SqlServerAliasesFacade.DropAndCreateDatabase(context, connectionString, databaseName);
         }
@@ -209,20 +165,9 @@ namespace Cake.SqlServer
         [CakeMethodAlias]
         public static void ExecuteSqlCommand(this ICakeContext context, String connectionString, string sqlCommands)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            if (String.IsNullOrWhiteSpace(connectionString))
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-
-            if (String.IsNullOrWhiteSpace(sqlCommands))
-            {
-                throw new ArgumentNullException(nameof(sqlCommands));
-            }
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
+            Guard.ArgumentIsNotNull(sqlCommands, nameof(sqlCommands));
 
             SqlServerAliasesFacade.ExecuteSqlCommand(context, connectionString, sqlCommands);
         }
@@ -250,20 +195,9 @@ namespace Cake.SqlServer
         [CakeMethodAlias]
         public static void ExecuteSqlFile(this ICakeContext context, String connectionString, FilePath sqlFile)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            if (String.IsNullOrWhiteSpace(connectionString))
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-
-            if (sqlFile == null)
-            {
-                throw new ArgumentNullException(nameof(sqlFile));
-            }
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
+            Guard.ArgumentIsNotNull(sqlFile, nameof(sqlFile));
 
             SqlServerAliasesFacade.ExecuteSqlFile(context, connectionString, sqlFile);
         }
