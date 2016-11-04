@@ -7,6 +7,7 @@ using Cake.SqlServer;
 using Dapper;
 using FluentAssertions;
 using NUnit.Framework;
+using NSubstitute;
 
 
 // ReSharper disable InvokeAsExtensionMethod
@@ -19,7 +20,7 @@ namespace Tests
 
         public SqlServerAliasesTests()
         {
-            context = NSubstitute.Substitute.For<ICakeContext>();
+            context = Substitute.For<ICakeContext>();
         }
 
 
@@ -128,6 +129,17 @@ namespace Tests
             TableExists(dbName, tableName1).Should().BeTrue();
             TableExists(dbName, tableName2).Should().BeTrue();
             ExecuteSql($"drop database {dbName}");
+        }
+
+        [Test]
+        public void Trying_To_Connect_WithBadConnString_ThowsMeaningful_Exception()
+        {
+            var connString = "data source=(LocalDb)\v12.0";
+            Action act = () => SqlServerAliases.CreateDatabaseIfNotExists(context, connString, "ShouldThrow");
+
+            act.ShouldThrow<Exception>()
+                .WithMessage(
+                    "Looks like you are trying to connect to LocalDb. Have you correctly escaped your connection string with '@'. It should look like 'var connString = @\"(localDb)\\v12.0\"'");
         }
 
         private void ExecuteSql(String sql)

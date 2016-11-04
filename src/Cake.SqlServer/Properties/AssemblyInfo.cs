@@ -7,9 +7,9 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 
 [assembly: AssemblyProduct("Cake.SqlServer")]
-[assembly: AssemblyVersion("1.1.3.0")]
-[assembly: AssemblyFileVersion("1.1.3.0")]
-[assembly: AssemblyInformationalVersion("1.1.3+1.Branch.master.Sha.962584da0b11710bfa08efb6f3c4a9ea813637e0")]
+[assembly: AssemblyVersion("1.1.4.0")]
+[assembly: AssemblyFileVersion("1.1.4.0")]
+[assembly: AssemblyInformationalVersion("1.1.4+1.Branch.master.Sha.ac441d71a00ef27b8cd1dbf62228b8eebd141adc")]
 [assembly: AssemblyCopyright("Copyright (c) 2016 - 2016 AMV Software")]
 
 [assembly: InternalsVisibleTo("Tests")]

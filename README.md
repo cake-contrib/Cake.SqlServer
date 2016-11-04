@@ -7,7 +7,7 @@ Remember to always add `@` before your connection strings. Some connection strin
 
 	var connString = @"(localDb)\v12.0";
 
-If you are in VisualStudio, it'll tell you that the "escape sequence is not valid", but Cake won't tell you that - it'll just transform your string into something you don't expect.
+`\v` is the C# escape sequence for vertical tab which is not what you want. Using the verbatim string syntax `@` prevents escape sequences from being interpreted and you get what you expect, verbatim `\` and `v` characters.
 
 
 #Functionality
