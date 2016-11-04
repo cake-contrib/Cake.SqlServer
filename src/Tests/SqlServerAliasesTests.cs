@@ -142,6 +142,37 @@ namespace Tests
                     "Looks like you are trying to connect to LocalDb. Have you correctly escaped your connection string with '@'. It should look like 'var connString = @\"(localDb)\\v12.0\"'");
         }
 
+
+        [Test]
+        public void CreateDatabase_DbAlreadyExists_Throws()
+        {
+            // Act
+            var dbName = "Unknown";
+            ExecuteSql($"create database {dbName}");
+
+            // Assert
+            Action act = () => SqlServerAliases.CreateDatabase(context, ConnectionString, dbName);
+            act.ShouldThrow<SqlException>();
+
+            // Cleanup
+            ExecuteSql($"drop database {dbName}");
+        }
+
+
+        [Test]
+        public void CreateDatabase_Creates_Correctly()
+        {
+            // Act
+            var dbName = "Unknown";
+            SqlServerAliases.CreateDatabase(context, ConnectionString, dbName);
+
+            // Assert
+            DbExists(dbName).Should().BeTrue();
+
+            // Cleanup
+            ExecuteSql($"drop database {dbName}");
+        }
+
         private void ExecuteSql(String sql)
         {
             using (var connection = new SqlConnection(ConnectionString))

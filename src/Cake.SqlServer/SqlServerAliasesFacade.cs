@@ -62,6 +62,22 @@ namespace Cake.SqlServer
         }
 
 
+        internal static void CreateDatabase(ICakeContext context, String connectionString, String databaseName)
+        {
+            var createDbSql = $"create database [{databaseName}]";
+
+            using (var connection = CreateOpenConnection(connectionString, context))
+            {
+                var sqlToExecute = String.Format(createDbSql, connection.Database);
+                context.Log.Debug($"Executing SQL : {sqlToExecute}");
+
+                var command = new SqlCommand(sqlToExecute, connection);
+
+                command.ExecuteNonQuery();
+                context.Log.Information($"Database {databaseName} is created");
+            }
+        }
+
 
         internal static void DropAndCreateDatabase(ICakeContext context, String connectionString, String databaseName)
         {

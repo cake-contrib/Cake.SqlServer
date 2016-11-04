@@ -34,7 +34,7 @@ namespace Cake.SqlServer
         ///     Task("Drop-Database")
         ///          .Does(() =>
         ///          {
-        ///             var connectionString = @"(LocalDb)\v12.0";
+        ///             var connectionString = @"Server=(LocalDb)\v12.0";
         ///             var dbName = "CakeTest";
         ///             DropDatabase(connectionString, dbName);
         ///         });
@@ -64,7 +64,8 @@ namespace Cake.SqlServer
 
 
         /// <summary>
-        /// Creates an empty database if another database with the same does not already exist.
+        /// Creates an empty database. If database with this name already exists, throws a SqlException.
+        /// <see cref="CreateDatabaseIfNotExists"/> if you would like to check if database already exists.
         /// </summary>
         /// <param name="context">The Cake context</param>
         /// <param name="connectionString">Connection string where to connect to. For this operation it is preferrable to connect to master database</param>
@@ -76,7 +77,48 @@ namespace Cake.SqlServer
         ///     Task("Create-Database")
         ///          .Does(() =>
         ///          {
-        ///             var connectionString = @"(LocalDb)\v12.0";
+        ///             var connectionString = @"Server=(LocalDb)\v12.0";
+        ///             var dbName = "CakeTest";
+        ///             CreateDatabase(connectionString, dbName);
+        ///         });
+        /// </code>
+        /// </example>
+        [CakeMethodAlias]
+        public static void CreateDatabase(this ICakeContext context, String connectionString, String databaseName)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (String.IsNullOrWhiteSpace(connectionString))
+            {
+                throw new ArgumentNullException(nameof(connectionString));
+            }
+
+            if (String.IsNullOrWhiteSpace(databaseName))
+            {
+                throw new ArgumentNullException(nameof(databaseName));
+            }
+
+            SqlServerAliasesFacade.CreateDatabase(context, connectionString, databaseName);
+        }
+
+
+        /// <summary>
+        /// Creates an empty database if another database with the same does not already exist.
+        /// </summary>
+        /// <param name="context">The Cake context</param>
+        /// <param name="connectionString">Connection string where to connect to. For this operation it is preferrable to connect to master database</param>
+        /// <param name="databaseName">Database name to be created</param>
+        /// <example>
+        /// <code>
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        /// 
+        ///     Task("Create-Database-If-Not-Exists")
+        ///          .Does(() =>
+        ///          {
+        ///             var connectionString = @"Server=(LocalDb)\v12.0";
         ///             var dbName = "CakeTest";
         ///             CreateDatabaseIfNotExists(connectionString, dbName);
         ///         });
@@ -117,7 +159,7 @@ namespace Cake.SqlServer
         ///     Task("ReCreate-Database")
         ///          .Does(() =>
         ///          {
-        ///             var connectionString = @"(LocalDb)\v12.0";
+        ///             var connectionString = @"Server=(LocalDb)\v12.0";
         ///             var dbName = "CakeTest";
         ///             DropAndCreateDatabase(connectionString, dbName);
         ///         });
@@ -158,7 +200,7 @@ namespace Cake.SqlServer
         ///     Task("Database-Operations")
         ///          .Does(() =>
         ///          {
-        ///             var connectionString = @"(LocalDb)\v12.0";
+        ///             var connectionString = @"Server=(LocalDb)\v12.0";
         ///             var sqlCommand = "Create table [CakeTest].dbo.[CakeTestTable] (id int null)";
         ///             ExecuteSqlCommand(connectionString, sqlCommand);
         ///         });
@@ -199,7 +241,7 @@ namespace Cake.SqlServer
         ///     Task("ReCreate-Database")
         ///          .Does(() =>
         ///          {
-        ///             var connectionString = @"(LocalDb)\v12.0";
+        ///             var connectionString = @"Server=(LocalDb)\v12.0";
         ///             var sqlFile = "./somePath/MyScript.sql";
         ///             ExecuteSqlCommand(connectionString, sqlFile);
         ///         });
