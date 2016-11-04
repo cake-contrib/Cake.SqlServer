@@ -114,7 +114,7 @@ This package includes a wrapper for working with `SqlLocalDb.exe` - that is for 
 
 #Creating Temp Database and Clean Up
 
-This script is curtsey of [Joseph Musser](https://github.com/jnm2)
+This script is curtesy of [Joseph Musser](https://github.com/jnm2)
 
 If you need to create and delete the database inside of your build script you can use this nice trick.
 
