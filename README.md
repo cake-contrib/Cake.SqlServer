@@ -12,22 +12,22 @@ Remember to always add `@` before your connection strings. Some connection strin
 
 #Functionality
 
-## Drop Database
-`DropDatabase(string connectionString, string databaseName)`
+## Create Database
+`CreateDatabase(string connectionString, string databaseName)`
 
-Basically executes `Drop Database databasename` with some fail-safes. Actually it sets the database into offline mode - to cut off all existing connections. Then sets the database back online and then drops it. 
-Reason for this dance - you can't drop a database if there are existing connections to the database.  
+Creates database. If database with this name exists - SqlException is thrown. 
 
 ## Create Database If Not Exist
 `CreateDatabaseIfNotExists(string connectionString, string databaseName)`
 
 Here we check if the database exists first, if it does not exists - create it. Does not do anything if database with this name already exists.
 
-## Create Database
-`CreateDatabase(string connectionString, string databaseName)`
 
-Creates database. If database with this name exists - SqlException is thrown. 
+## Drop Database
+`DropDatabase(string connectionString, string databaseName)`
 
+Basically executes `Drop Database databasename` with some fail-safes. Actually it sets the database into offline mode - to cut off all existing connections. Then sets the database back online and then drops it. 
+Reason for this dance - you can't drop a database if there are existing connections to the database.  
 
 ## Drop and Create Database
 `DropAndCreateDatabase(String connectionString, String databaseName)`
@@ -118,7 +118,7 @@ This script is curtesy of [Joseph Musser](https://github.com/jnm2)
 
 If you need to create and delete the database inside of your build script you can use this nice trick.
 
-Somewhere in `lib.cake` put this class:
+Somewhere your cake script (usually I put it in `lib.cake` and reference it from the main script via `#load "./lib.cake"` put this class:
 
 	public static class On
 	{
