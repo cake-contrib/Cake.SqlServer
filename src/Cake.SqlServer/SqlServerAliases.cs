@@ -14,7 +14,7 @@ namespace Cake.SqlServer
     ///    Samples here show work with "LocalDb\v12.0". This used to be default name for LocalDB instance when installed with SQL Server 2012. 
     ///    Since Sql Server 2014 the default name for LocalDB instance is "MSSQLLocalDB", making the default instance name for LocalDB looking like this:
     ///    "(LocalDB)\MSSQLLocalDB". So before using "v12.0" double check what instance you have installed and go from there. 
-    ///    Also plesase don't be alarmed that all the examples are using LocalDB. The plugin is capable of working with any SQL Server installation.
+    ///    Also please don't be alarmed that all the examples are using LocalDB. The plugin is capable of working with any SQL Server installation.
     /// </para>
     /// <para>
     ///     If you have complex connection strings, please consider using <see href="https://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlconnectionstringbuilder">SqlConnectionStringBuilder</see>

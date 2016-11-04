@@ -170,6 +170,8 @@ and
 	    // ...
 	}
 
+This technique will make sure your temp database will be dropped after the payload/integration tests are executed.  
+
 #Reason to Develop
 There is already a project that does similar things: [Cake.SqlTools](https://github.com/SharpeRAD/Cake.SqlTools). I have tried it and it was not enough for my purposes. I did look into extending functionality, but the way the project is structured - it won't let me do what I would like to do. The great idea in that project - be able to switch between MySql and SqlServer with a change of a single parameter.
 
