@@ -15,15 +15,19 @@ Remember to always add `@` before your connection strings. Some connection strin
 ## Drop Database
 `DropDatabase(string connectionString, string databaseName)`
 
-Basically executes `Drop Database databasename` with some fail-safes. Actually it sets the database into offline mode - to cut off all existing connections. Then sets the database back online and then drops it.
- 
+Basically executes `Drop Database databasename` with some fail-safes. Actually it sets the database into offline mode - to cut off all existing connections. Then sets the database back online and then drops it. 
 Reason for this dance - you can't drop a database if there are existing connections to the database.  
 
-
-## Create Database
+## Create Database If Not Exist
 `CreateDatabaseIfNotExists(string connectionString, string databaseName)`
 
 Here we check if the database exists first, if it does not exists - create it. Does not do anything if database with this name already exists.
+
+## Create Database
+`CreateDatabase(string connectionString, string databaseName)`
+
+Creates database. If database with this name exists - SqlException is thrown. 
+
 
 ## Drop and Create Database
 `DropAndCreateDatabase(String connectionString, String databaseName)`
@@ -47,28 +51,34 @@ Reads sql file and executes commands from it. Executes parts of scripts separate
 	#addin "nuget:?package=Cake.SqlServer"
 	
 	Task("Database-Operations")
-	    .Does(() => 
-	    {
-	        var masterConnectionString = @"data source=(LocalDb)\v12.0;";
-	        var connectionString = @"data source=(LocalDb)\v12.0;Database=CakeTest";
-
+		.Does(() => 
+		{
+		    var masterConnectionString = @"data source=(LocalDb)\v12.0;";
+		    var connectionString = @"data source=(LocalDb)\v12.0;Database=CakeTest";
+	
 			var dbName = "CakeTest";
-			
-			// first create database
-			CreateDatabaseIfNotExists(masterConnectionString, dbName);
-			
-			// then drop the database
+	
+			// drop the db to be sure
 			DropDatabase(masterConnectionString, dbName);
-			
+				
+			// first create database
+			CreateDatabase(masterConnectionString, dbName);
+	
+			// try the database again
+			CreateDatabaseIfNotExists(masterConnectionString, dbName);
+				
 			// and recreate the db again
 			DropAndCreateDatabase(masterConnectionString, dbName);
-
+	
 			// and create some tables
 			ExecuteSqlCommand(connectionString, "create table dbo.Products(id int null)");
-			
+				
 			// and execute sql from a file 
-			ExecuteSqlCommand(connectionString, "./src/install.sql");
-	    });
+			ExecuteSqlFile(connectionString, "install.sql");
+	
+			// then drop the database
+			DropDatabase(masterConnectionString, dbName);
+		});
 
 #Working with LocalDB 
 
@@ -101,6 +111,7 @@ This package includes a wrapper for working with `SqlLocalDb.exe` - that is for 
          {
             LocalDbDeleteInstance("Cake-Test");
         });
+
 
 #Reason to Develop
 There is already a project that does similar things: [Cake.SqlTools](https://github.com/SharpeRAD/Cake.SqlTools). I have tried it and it was not enough for my purposes. I did look into extending functionality, but the way the project is structured - it won't let me do what I would like to do. The great idea in that project - be able to switch between MySql and SqlServer with a change of a single parameter.
