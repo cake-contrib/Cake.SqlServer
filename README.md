@@ -112,6 +112,63 @@ This package includes a wrapper for working with `SqlLocalDb.exe` - that is for 
             LocalDbDeleteInstance("Cake-Test");
         });
 
+#Creating Temp Database and Clean Up
+
+This script is curtsey of [Joseph Musser](https://github.com/jnm2)
+
+If you need to create and delete the database inside of your build script you can use this nice trick.
+
+Somewhere in `lib.cake` put this class:
+
+	public static class On
+	{
+	    public static IDisposable Dispose(Action action)
+	    {
+	        return new OnDisposeAction(action);
+	    }
+	
+	
+	    private sealed class OnDisposeAction : IDisposable
+	    {
+	        private Action action;
+	
+	        public OnDisposeAction(Action action)
+	        {
+	            this.action = action;
+	        }
+	
+	        public void Dispose()
+	        {
+	            var exchange = System.Threading.Interlocked.Exchange(ref action, null);
+	            if (exchange != null)
+	            {
+	                exchange.Invoke();
+	            }
+	        }
+	    }
+	}
+
+Then in your actual cake script you can do:
+
+	IDisposable TempDatabase(string connectionString, string databaseName)
+	{
+	    CreateDatabaseIfNotExists(connectionString, databaseName);
+	    return On.Dispose(() => DropDatabase(connectionString, databaseName));
+	}
+
+and
+ 
+	var databaseName = "IntegrationTests";
+    var masterConnectionString = new SqlConnectionStringBuilder { DataSource = @"(LocalDb)\MSSQLLocalDB" }.ToString(); 
+
+	using (TempDatabase(masterConnectionString, databaseName))
+	{
+	    var connectionString = new SqlConnectionStringBuilder { DataSource = @"(LocalDb)\MSSQLLocalDB", InitialCatalog = databaseName }.ToString();
+	    ExecuteSqlCommand(connectionString, "select * from products.......");
+		// execute your SQL operations
+		// or run tests
+	    // ...
+	}
 
 #Reason to Develop
 There is already a project that does similar things: [Cake.SqlTools](https://github.com/SharpeRAD/Cake.SqlTools). I have tried it and it was not enough for my purposes. I did look into extending functionality, but the way the project is structured - it won't let me do what I would like to do. The great idea in that project - be able to switch between MySql and SqlServer with a change of a single parameter.
