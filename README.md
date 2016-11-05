@@ -118,7 +118,7 @@ This script is curtesy of [Joseph Musser](https://github.com/jnm2)
 
 If you need to create and delete the database inside of your build script you can use this nice trick.
 
-Somewhere your cake script (usually I put it in `lib.cake` and reference it from the main script via `#load "./lib.cake"` put this class:
+Somewhere your cake script (usually I put it in `lib.cake` and reference it from the main script via `#load "./lib.cake"`) put this class:
 
 	public static class On
 	{
