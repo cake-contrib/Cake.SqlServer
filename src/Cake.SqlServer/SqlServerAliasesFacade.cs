@@ -14,11 +14,11 @@ namespace Cake.SqlServer
         internal static void DropDatabase(ICakeContext context, String connectionString, String databaseName)
         {
             var dropDatabaseSql =
-                $@"if (select DB_ID('{databaseName}')) is not null
+                $@"if (select DB_ID(@DatabaseName)) is not null
                begin
-                    alter database[{databaseName}] set offline with rollback immediate;
-                    alter database[{databaseName}] set online;
-                    drop database[{databaseName}];
+                    alter database {Sql.EscapeName(databaseName)} set offline with rollback immediate;
+                    alter database {Sql.EscapeName(databaseName)} set online;
+                    drop database {Sql.EscapeName(databaseName)};
                 end";
 
             try
@@ -26,6 +26,7 @@ namespace Cake.SqlServer
                 using (var connection = CreateOpenConnection(connectionString, context))
                 {
                     var command = new SqlCommand(dropDatabaseSql, connection);
+                    command.Parameters.AddWithValue("@DatabaseName", databaseName);
 
                     context.Log.Information($"About to drop database {databaseName}");
                     command.ExecuteNonQuery();
@@ -47,7 +48,7 @@ namespace Cake.SqlServer
 
         internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName)
         {
-            var createDbSql = $"if (select DB_ID('{databaseName}')) is null create database [{databaseName}]";
+            var createDbSql = $"if (select DB_ID('@DatabaseName')) is null create database {Sql.EscapeName(databaseName)}";
 
             using (var connection = CreateOpenConnection(connectionString, context))
             {
@@ -55,6 +56,7 @@ namespace Cake.SqlServer
                 context.Log.Debug($"Executing SQL : {sqlToExecute}");
 
                 var command = new SqlCommand(sqlToExecute, connection);
+                command.Parameters.AddWithValue("@DatabaseName", databaseName);
 
                 command.ExecuteNonQuery();
                 context.Log.Information($"Database {databaseName} is created if it was not there");
@@ -64,7 +66,7 @@ namespace Cake.SqlServer
 
         internal static void CreateDatabase(ICakeContext context, String connectionString, String databaseName)
         {
-            var createDbSql = $"create database [{databaseName}]";
+            var createDbSql = $"create database {Sql.EscapeName(databaseName)}";
 
             using (var connection = CreateOpenConnection(connectionString, context))
             {
@@ -78,27 +80,11 @@ namespace Cake.SqlServer
             }
         }
 
-
-        internal static void CreateDatabase(ICakeContext context, String connectionString, String databaseName, String filePath)
-        {
-            var createDbSql = $"create database [{databaseName}]";
-
-            using (var connection = CreateOpenConnection(connectionString, context))
-            {
-                var sqlToExecute = String.Format(createDbSql, connection.Database);
-                context.Log.Debug($"Executing SQL : {sqlToExecute}");
-
-                var command = new SqlCommand(sqlToExecute, connection);
-
-                command.ExecuteNonQuery();
-                context.Log.Information($"Database {databaseName} is created");
-            }
-        }
 
         internal static void DropAndCreateDatabase(ICakeContext context, String connectionString, String databaseName)
         {
             DropDatabase(context, connectionString, databaseName);
-            CreateDatabaseIfNotExists(context, connectionString, databaseName);
+            CreateDatabase(context, connectionString, databaseName);
         }
 
 

@@ -116,6 +116,7 @@
     <Compile Include="LocalDbToolTests.cs" />
     <Compile Include="SqlServerAliasesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

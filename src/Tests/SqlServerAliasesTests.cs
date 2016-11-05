@@ -11,9 +11,10 @@ using NSubstitute;
 
 
 // ReSharper disable InvokeAsExtensionMethod
+
 namespace Tests
 {
-    public class SqlServerAliasesTests
+    public class SqlServerAliasesTests : IDisposable
     {
         private const String ConnectionString = @"data source=(LocalDb)\v12.0";
         private readonly ICakeContext context;
@@ -111,7 +112,7 @@ namespace Tests
 
 
         [Test]
-        public void MethodName_StateUnderTests_ExpectedBehaviour()
+        public void ExecuteSqlFile_Executes_Successfuly()
         {
             //Arrange
             var dbName = "ForFileExecution";
@@ -120,7 +121,6 @@ namespace Tests
             ExecuteSql($"Create database {dbName}");
             var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             var sqlFilePath = Directory.GetFiles(baseDirectory, "Script.sql", SearchOption.AllDirectories).FirstOrDefault();
-
 
             // Act
             SqlServerAliases.ExecuteSqlFile(context, ConnectionString, sqlFilePath);
@@ -173,6 +173,67 @@ namespace Tests
             ExecuteSql($"drop database {dbName}");
         }
 
+
+        [Test]
+        public void CreateDatabase_SqlNameInjection_DoesNotInject()
+        {
+            // Act
+            SqlServerAliases.CreateDatabase(context, ConnectionString, "test] create database hack--");
+
+            // Assert
+            DbExists("test").Should().BeFalse();
+            DbExists("hack").Should().BeFalse();
+            DbExists("test] create database hack--").Should().BeTrue();
+
+            // Cleanup
+            ExecuteSql("if (select DB_ID('test')) is not null drop database [test]");
+            ExecuteSql("if (select DB_ID('hack')) is not null drop database [hack]");
+            ExecuteSql("if (select DB_ID('test] create database hack--')) is not null drop database [test]] create database hack--]");
+        }
+
+        [Test]
+        public void DropDatabase_LiteralInjection_DoesNotInject()
+        {
+            // Act
+            try
+            {
+                SqlServerAliases.DropDatabase(context, ConnectionString, "some')) is null create database hack--");
+            }
+            catch (Exception)
+            {
+                // do nothing
+            }
+
+            // Assert
+            DbExists("hack").Should().BeFalse();
+
+            // Cleanup
+            ExecuteSql("if (select DB_ID('hack')) is not null drop database [hack]");
+        }
+
+
+        [Test]
+        public void CreateDatabaseIfNotExists_LiteralInjection_DoesNotInject()
+        {
+            // Act
+            try
+            {
+                SqlServerAliases.CreateDatabaseIfNotExists(context, ConnectionString, "some')) is null create database hack--");
+            }
+            catch (Exception)
+            {
+                // do nothing
+            }
+
+            // Assert
+            DbExists("hack").Should().BeFalse();
+            DbExists("some'')) is null create database hack--").Should().BeTrue();
+
+            // Cleanup
+            ExecuteSql("if (select DB_ID('some'')) is null create database hack--')) is not null drop database [some')) is null create database hack--]");
+        }
+
+
         private void ExecuteSql(String sql)
         {
             using (var connection = new SqlConnection(ConnectionString))
@@ -207,9 +268,28 @@ namespace Tests
         }
 
 
+        private void DropDatabase(string databaseName)
+        {
+            ExecuteSql($"if (select DB_ID('{databaseName}')) is not null drop database [{databaseName}]");
+        }
+
         private class SqlObject
         {
             public int? Id { get; set; }
+        }
+
+        public void Dispose()
+        {
+            DropDatabase("ForFileExecution");
+            DropDatabase("WillBeDropped");
+            DropDatabase("CakeTest");
+            DropDatabase("ToBeRecreated");
+            DropDatabase("ForSqlExecution");
+            DropDatabase("Unknown");
+            DropDatabase("test");
+            DropDatabase("hack");
+            DropDatabase("test]] create database hack--");
+            ExecuteSql("if (select DB_ID('some'')) is null create database hack--')) is not null drop database [some')) is null create database hack--]");
         }
     }
 }
