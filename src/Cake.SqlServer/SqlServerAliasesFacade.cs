@@ -48,7 +48,7 @@ namespace Cake.SqlServer
 
         internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName)
         {
-            var createDbSql = $"if (select DB_ID('@DatabaseName')) is null create database {Sql.EscapeName(databaseName)}";
+            var createDbSql = $"if (select DB_ID(@DatabaseName)) is null create database {Sql.EscapeName(databaseName)}";
 
             using (var connection = CreateOpenConnection(connectionString, context))
             {

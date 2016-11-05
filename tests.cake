@@ -57,9 +57,9 @@ Task("Database-Operations")
 	.Does(() => 
 	{
 	    var masterConnectionString = @"data source=(LocalDb)\v12.0;";
-	    var connectionString = @"data source=(LocalDb)\v12.0;Database=CakeTest";
+	    var connectionString = @"data source=(LocalDb)\v12.0;Database=OpsCakeTest";
 
-		var dbName = "CakeTest";
+		var dbName = "OpsCakeTest";
 
 		// drop the db to be sure
 		DropDatabase(masterConnectionString, dbName);

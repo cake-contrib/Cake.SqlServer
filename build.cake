@@ -212,7 +212,7 @@ Task("Package")
     .IsDependentOn("Create-NuGet-Packages");
 
 Task("AppVeyor")
-    .IsDependentOn("Publish-Nuget")
+    //.IsDependentOn("Publish-Nuget")
     .IsDependentOn("Publish-MyGet")
     .IsDependentOn("Upload-AppVeyor-Artifacts")
     .Finally(() =>

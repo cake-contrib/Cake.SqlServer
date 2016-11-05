@@ -48,8 +48,10 @@ public class BuildParameters
         var target = context.Argument("target", "Default");
         var configuration = context.Argument("configuration", "Release");
         var buildSystem = context.BuildSystem();
+		var isMaster = StringComparer.OrdinalIgnoreCase.Equals("master", buildSystem.AppVeyor.Environment.Repository.Branch);
 
 		context.Information("IsTagged: {0}", IsBuildTagged(buildSystem));
+		context.Information("IsMasterBranch: {0}", isMaster);
 
         return new BuildParameters {
             Target = target,
@@ -63,7 +65,7 @@ public class BuildParameters
             IsTagged = IsBuildTagged(buildSystem),
 
 
-            IsMasterBranch = StringComparer.OrdinalIgnoreCase.Equals("master", buildSystem.AppVeyor.Environment.Repository.Branch),
+            IsMasterBranch = isMaster,
             ReleaseNotes = context.ParseReleaseNotes("./ReleaseNotes.md"),
             SkipGitVersion = StringComparer.OrdinalIgnoreCase.Equals("True", context.EnvironmentVariable("CAKE_SKIP_GITVERSION")),
         };

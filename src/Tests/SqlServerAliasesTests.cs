@@ -115,6 +115,7 @@ namespace Tests
         public void ExecuteSqlFile_Executes_Successfuly()
         {
             //Arrange
+            var connectionString = @"data source=(LocalDb)\v12.0;Database=ForFileExecution";
             var dbName = "ForFileExecution";
             var tableName1 = "WillExist1";
             var tableName2 = "WillExist2";
@@ -123,12 +124,12 @@ namespace Tests
             var sqlFilePath = Directory.GetFiles(baseDirectory, "Script.sql", SearchOption.AllDirectories).FirstOrDefault();
 
             // Act
-            SqlServerAliases.ExecuteSqlFile(context, ConnectionString, sqlFilePath);
+            SqlServerAliases.ExecuteSqlFile(context, connectionString, sqlFilePath);
 
             // Assert
             TableExists(dbName, tableName1).Should().BeTrue();
             TableExists(dbName, tableName2).Should().BeTrue();
-            ExecuteSql($"drop database {dbName}");
+            SqlServerAliases.DropDatabase(context, ConnectionString, dbName);
         }
 
         [Test]
@@ -138,8 +139,7 @@ namespace Tests
             Action act = () => SqlServerAliases.CreateDatabaseIfNotExists(context, connString, "ShouldThrow");
 
             act.ShouldThrow<Exception>()
-                .WithMessage(
-                    "Looks like you are trying to connect to LocalDb. Have you correctly escaped your connection string with '@'. It should look like 'var connString = @\"(localDb)\\v12.0\"'");
+               .WithMessage("Looks like you are trying to connect to LocalDb. Have you correctly escaped your connection string with '@'. It should look like 'var connString = @\"(localDb)\\v12.0\"'");
         }
 
 
@@ -165,6 +165,21 @@ namespace Tests
             // Act
             var dbName = "Unknown";
             SqlServerAliases.CreateDatabase(context, ConnectionString, dbName);
+
+            // Assert
+            DbExists(dbName).Should().BeTrue();
+
+            // Cleanup
+            ExecuteSql($"drop database {dbName}");
+        }
+
+        [Test]
+        public void CreateDatabaseIfNotExists_DbExists_DoesNotThrow()
+        {
+            // Act
+            var dbName = "ToBeRecreatedAgain";
+            SqlServerAliases.CreateDatabase(context, ConnectionString, dbName);
+            SqlServerAliases.CreateDatabaseIfNotExists(context, ConnectionString, dbName);
 
             // Assert
             DbExists(dbName).Should().BeTrue();
@@ -284,6 +299,7 @@ namespace Tests
             DropDatabase("WillBeDropped");
             DropDatabase("CakeTest");
             DropDatabase("ToBeRecreated");
+            DropDatabase("ToBeRecreatedAgain");
             DropDatabase("ForSqlExecution");
             DropDatabase("Unknown");
             DropDatabase("test");
