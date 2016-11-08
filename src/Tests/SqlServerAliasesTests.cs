@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -86,6 +87,50 @@ namespace Tests
 
 
         [Test]
+        public void OpenSqlConnection_returns_open_connection()
+        {
+            using (var connection = SqlServerAliases.OpenSqlConnection(context, ConnectionString))
+            {
+                connection.State.Should().Be(ConnectionState.Open);
+            }
+        }
+
+
+
+        [Test]
+        public void ExecuteSqlCommand_does_not_change_connection_state()
+        {
+            using (var connection = SqlServerAliases.OpenSqlConnection(context, ConnectionString))
+            {
+                connection.MonitorEvents();
+                SqlServerAliases.ExecuteSqlCommand(context, connection, "select * from sys.tables");
+                connection.ShouldNotRaise(nameof(connection.StateChange));
+            }
+        }
+
+        [Test]
+        public void ExecuteSqlFile_does_not_change_connection_state()
+        {
+            const string dbName = "ForFileExecution";
+            ExecuteSql($"Create database {dbName}");
+            try
+            {
+                using (var connection = SqlServerAliases.OpenSqlConnection(context, ConnectionString))
+                {
+                    connection.MonitorEvents();
+                    SqlServerAliases.ExecuteSqlFile(context, connection, GetSqlFilePath());
+                    connection.ShouldNotRaise(nameof(connection.StateChange));
+                }
+            }
+            finally
+            {
+                ExecuteSql($"Drop database {dbName}");
+            }
+        }
+
+
+
+        [Test]
         public void ExecuteSqlCommand_CreatesTables()
         {
             //Arrange
@@ -120,8 +165,7 @@ namespace Tests
             var tableName1 = "WillExist1";
             var tableName2 = "WillExist2";
             ExecuteSql($"Create database {dbName}");
-            var baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            var sqlFilePath = Directory.GetFiles(baseDirectory, "Script.sql", SearchOption.AllDirectories).FirstOrDefault();
+            var sqlFilePath = GetSqlFilePath();
 
             // Act
             SqlServerAliases.ExecuteSqlFile(context, connectionString, sqlFilePath);
@@ -130,6 +174,11 @@ namespace Tests
             TableExists(dbName, tableName1).Should().BeTrue();
             TableExists(dbName, tableName2).Should().BeTrue();
             SqlServerAliases.DropDatabase(context, ConnectionString, dbName);
+        }
+
+        private static string GetSqlFilePath()
+        {
+            return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "Script.sql", SearchOption.AllDirectories).FirstOrDefault();
         }
 
         [Test]
