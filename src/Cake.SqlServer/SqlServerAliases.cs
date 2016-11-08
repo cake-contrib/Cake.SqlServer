@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SqlClient;
 using Cake.Core;
 using Cake.Core.Annotations;
 using Cake.Core.IO;
@@ -40,7 +41,7 @@ namespace Cake.SqlServer
         /// Also if the database does not exist - it will not do anything.
         /// </summary>
         /// <param name="context">The Cake context.</param>
-        /// <param name="connectionString">Connection string where to connect to. For this operation it is preferrable to connect to master database</param>
+        /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
         /// <param name="databaseName">Database name to be dropped</param>
         /// <example>
         /// <code>
@@ -72,7 +73,7 @@ namespace Cake.SqlServer
         /// <see cref="CreateDatabaseIfNotExists"/> if you would like to check if database already exists.
         /// </summary>
         /// <param name="context">The Cake context</param>
-        /// <param name="connectionString">Connection string where to connect to. For this operation it is preferrable to connect to master database</param>
+        /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
         /// <param name="databaseName">Database name to be created</param>
         /// <example>
         /// <code>
@@ -102,7 +103,7 @@ namespace Cake.SqlServer
         /// Creates an empty database if another database with the same does not already exist.
         /// </summary>
         /// <param name="context">The Cake context</param>
-        /// <param name="connectionString">Connection string where to connect to. For this operation it is preferrable to connect to master database</param>
+        /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
         /// <param name="databaseName">Database name to be created</param>
         /// <example>
         /// <code>
@@ -132,7 +133,7 @@ namespace Cake.SqlServer
         /// First drops, then recreates the database
         /// </summary>
         /// <param name="context">The Cake context.</param>
-        /// <param name="connectionString">Connection string where to connect to. For this operation it is preferrable to connect to master database</param>
+        /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
         /// <param name="databaseName">Database to be dropped and re-created</param>
         /// <example>
         /// <code>
@@ -162,17 +163,17 @@ namespace Cake.SqlServer
         /// Execute any SQL command.
         /// </summary>
         /// <param name="context">The Cake context.</param>
-        /// <param name="connectionString">Connection string where to connect to. Connection script must specify what database to connect to</param>
+        /// <param name="connectionString">The connection string. You may want to specify Initial Catalog. If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
         /// <param name="sqlCommands">SQL to be executed</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
         /// 
-        ///     Task("Database-Operations")
-        ///          .Does(() =>
-        ///          {
-        ///             var connectionString = @"Server=(LocalDb)\v12.0";
-        ///             var sqlCommand = "Create table [CakeTest].dbo.[CakeTestTable] (id int null)";
+        ///     Task("Sql-Operations")
+        ///         .Does(() =>
+        ///         {
+        ///             var connectionString = @"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase";
+        ///             var sqlCommand = "create table [CakeTest].dbo.[CakeTestTable] (id int null)";
         ///             ExecuteSqlCommand(connectionString, sqlCommand);
         ///         });
         /// </code>
@@ -189,19 +190,51 @@ namespace Cake.SqlServer
 
 
         /// <summary>
-        /// Reads sql commands from file and executes them.
+        /// Execute any SQL command.
         /// </summary>
         /// <param name="context">The Cake context.</param>
-        /// <param name="connectionString">Connection string where to connect to. Connection script must specify what database to connect to</param>
-        /// <param name="sqlFile">Path to a file with sql commands</param>
+        /// <param name="connection">The connection to use. The connection must be open. See <see cref="OpenSqlConnection"/>.</param>
+        /// <param name="sqlCommands">SQL to be executed</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        ///
-        ///     Task("ReCreate-Database")
-        ///          .Does(() =>
-        ///          {
-        ///             var connectionString = @"Server=(LocalDb)\v12.0";
+        /// 
+        ///     Task("Sql-Operations")
+        ///         .Does(() =>
+        ///         {
+        ///             using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase"))
+        ///             {
+        ///                 ExecuteSqlCommand(connection, "create table [CakeTest].dbo.[CakeTestTable] (id int null)");
+        ///                 ExecuteSqlCommand(connection, "...");
+        ///             }
+        ///         });
+        /// </code>
+        /// </example>
+        [CakeMethodAlias]
+        public static void ExecuteSqlCommand(this ICakeContext context, SqlConnection connection, string sqlCommands)
+        {
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connection, nameof(connection));
+            Guard.ArgumentIsNotNull(sqlCommands, nameof(sqlCommands));
+
+            SqlServerAliasesFacade.ExecuteSqlCommand(context, connection, sqlCommands);
+        }
+
+
+        /// <summary>
+        /// Reads SQL commands from a file and executes them.
+        /// </summary>
+        /// <param name="context">The Cake context.</param>
+        /// <param name="connectionString">The connection string. You may want to specify Initial Catalog. If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
+        /// <param name="sqlFile">Path to a file with SQL commands.</param>
+        /// <example>
+        /// <code>
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        /// 
+        ///     Task("Sql-Operations")
+        ///         .Does(() =>
+        ///         {
+        ///             var connectionString = @"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase";
         ///             var sqlFile = "./somePath/MyScript.sql";
         ///             ExecuteSqlCommand(connectionString, sqlFile);
         ///         });
@@ -215,6 +248,68 @@ namespace Cake.SqlServer
             Guard.ArgumentIsNotNull(sqlFile, nameof(sqlFile));
 
             SqlServerAliasesFacade.ExecuteSqlFile(context, connectionString, sqlFile);
+        }
+
+
+        /// <summary>
+        /// Reads SQL commands from a file and executes them.
+        /// </summary>
+        /// <param name="context">The Cake context.</param>
+        /// <param name="connection">The connection to use. The connection must be open. See <see cref="OpenSqlConnection"/>.</param>
+        /// <param name="sqlFile">Path to a file with SQL commands.</param>
+        /// <example>
+        /// <code>
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        ///
+        ///     Task("Sql-Operations")
+        ///         .Does(() =>
+        ///         {
+        ///             using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase"))
+        ///             {
+        ///                 ExecuteSqlFile(connection, "./somePath/MyScript.sql");
+        ///                 ExecuteSqlFile(connection, "./somePath/MyOtherScript.sql");
+        ///             }
+        ///         });
+        /// </code>
+        /// </example>
+        [CakeMethodAlias]
+        public static void ExecuteSqlFile(this ICakeContext context, SqlConnection connection, FilePath sqlFile)
+        {
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connection, nameof(connection));
+            Guard.ArgumentIsNotNull(sqlFile, nameof(sqlFile));
+
+            SqlServerAliasesFacade.ExecuteSqlFile(context, connection, sqlFile);
+        }
+
+
+        /// <summary>
+        /// Opens a new <see cref="SqlConnection"/> with the given connection string.
+        /// </summary>
+        /// <param name="context">The Cake context.</param>
+        /// <param name="connectionString">The connection string. You may want to specify Initial Catalog. If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
+        /// <example>
+        /// <code>
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        ///
+        ///     Task("Sql-Operations")
+        ///         .Does(() =>
+        ///         {
+        ///             using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase"))
+        ///             {
+        ///                 ExecuteSqlCommand(connection, "...");
+        ///                 ExecuteSqlFile(connection, "./somePath/MyScript.sql");
+        ///             }
+        ///         });
+        /// </code>
+        /// </example>
+        [CakeMethodAlias]
+        public static SqlConnection OpenSqlConnection(this ICakeContext context, String connectionString)
+        {
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
+
+            return SqlServerAliasesFacade.OpenSqlConnection(context, connectionString);
         }
     }
 }
