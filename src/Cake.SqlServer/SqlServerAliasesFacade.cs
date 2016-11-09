@@ -23,7 +23,7 @@ namespace Cake.SqlServer
 
             try
             {
-                using (var connection = CreateOpenConnection(connectionString, context))
+                using (var connection = OpenSqlConnection(context, connectionString))
                 {
                     var command = new SqlCommand(dropDatabaseSql, connection);
                     command.Parameters.AddWithValue("@DatabaseName", databaseName);
@@ -50,7 +50,7 @@ namespace Cake.SqlServer
         {
             var createDbSql = $"if (select DB_ID(@DatabaseName)) is null create database {Sql.EscapeName(databaseName)}";
 
-            using (var connection = CreateOpenConnection(connectionString, context))
+            using (var connection = OpenSqlConnection(context, connectionString))
             {
                 var sqlToExecute = String.Format(createDbSql, connection.Database);
                 context.Log.Debug($"Executing SQL : {sqlToExecute}");
@@ -68,7 +68,7 @@ namespace Cake.SqlServer
         {
             var createDbSql = $"create database {Sql.EscapeName(databaseName)}";
 
-            using (var connection = CreateOpenConnection(connectionString, context))
+            using (var connection = OpenSqlConnection(context, connectionString))
             {
                 var sqlToExecute = String.Format(createDbSql, connection.Database);
                 context.Log.Debug($"Executing SQL : {sqlToExecute}");
@@ -90,26 +90,32 @@ namespace Cake.SqlServer
 
         internal static void ExecuteSqlCommand(ICakeContext context, String connectionString, string sqlCommands)
         {
+            using (var connection = OpenSqlConnection(context, connectionString))
+            {
+                ExecuteSqlCommand(context, connection, sqlCommands);
+            }
+        }
+
+
+        internal static void ExecuteSqlCommand(ICakeContext context, SqlConnection connection, string sqlCommands)
+        {
             var commandStrings = Regex.Split(sqlCommands, @"^\s*GO\s*$",
                 RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
-            using (var connection = CreateOpenConnection(connectionString, context))
+            foreach (var sqlCommand in commandStrings)
             {
-                foreach (var sqlCommand in commandStrings)
+                if (sqlCommand.Trim() != "")
                 {
-                    if (sqlCommand.Trim() != "")
+                    context.Log.Debug($"Executing SQL : {sqlCommand}");
+                    try
                     {
-                        context.Log.Debug($"Executing SQL : {sqlCommand}");
-                        try
-                        {
-                            var command = new SqlCommand(sqlCommand, connection);
-                            command.ExecuteNonQuery();
-                        }
-                        catch (Exception)
-                        {
-                            context.Log.Warning($"Exception happened while executing this command: {sqlCommand}");
-                            throw;
-                        }
+                        var command = new SqlCommand(sqlCommand, connection);
+                        command.ExecuteNonQuery();
+                    }
+                    catch (Exception)
+                    {
+                        context.Log.Warning($"Exception happened while executing this command: {sqlCommand}");
+                        throw;
                     }
                 }
             }
@@ -118,19 +124,28 @@ namespace Cake.SqlServer
 
         internal static void ExecuteSqlFile(ICakeContext context, String connectionString, FilePath sqlFile)
         {
+            using (var connection = OpenSqlConnection(context, connectionString))
+            {
+                ExecuteSqlFile(context, connection, sqlFile);
+            }
+        }
+
+
+        internal static void ExecuteSqlFile(ICakeContext context, SqlConnection connection, FilePath sqlFile)
+        {
             var sqlFilePath = sqlFile.FullPath;
 
             context.Log.Information($"Executing sql file {sqlFilePath}");
 
             var allSqlCommands = File.ReadAllText(sqlFilePath);
 
-            context.ExecuteSqlCommand(connectionString, allSqlCommands);
+            context.ExecuteSqlCommand(connection, allSqlCommands);
 
             context.Log.Information($"Finished executing SQL from {sqlFilePath}");
         }
 
 
-        private static SqlConnection CreateOpenConnection(String connectionString, ICakeContext context)
+        internal static SqlConnection OpenSqlConnection(ICakeContext context, String connectionString)
         {
             try
             {
