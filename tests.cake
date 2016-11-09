@@ -84,12 +84,32 @@ Task("Database-Operations")
 	});
 
 
+Task("SqlConnection")
+	.Does(() => {
+		var masterConnectionString = @"data source=(LocalDb)\v12.0;";
+	    var connectionString = @"data source=(LocalDb)\v12.0;Database=OpenConnection";
+
+		var dbName = "OpenConnection";
+
+		CreateDatabase(masterConnectionString, dbName);
+
+		using (var connection = OpenSqlConnection(connectionString))
+		{
+			ExecuteSqlCommand(connection, "create table dbo.Products(id int null)");
+			
+			ExecuteSqlFile(connection, "install.sql");		
+		}
+
+		DropDatabase(masterConnectionString, dbName);
+	});
+
 Task("Default")
     .IsDependentOn("Create-LocalDB")
     .IsDependentOn("Start-LocalDB")
     .IsDependentOn("Stop-LocalDB")
     .IsDependentOn("Delete-LocalDB")
     .IsDependentOn("Database-Operations")
+    .IsDependentOn("SqlConnection")
     ;    
 
 RunTarget(target);
