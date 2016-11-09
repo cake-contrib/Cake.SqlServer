@@ -36,15 +36,33 @@ Simply a short-hand for `DropDatabase(); CreateDatabase();`. I found these calls
 
 
 ## Execute Sql Command
-`ExecuteSqlCommand(String connectionString, string sqlCommands)` 
+`ExecuteSqlCommand(String connectionString, string sqlCommands)`  
+`ExecuteSqlCommand(SqlConnection connection, string sqlCommands)`  
 
 Does what it says on the tin: executes the sql query. But this method accommodates for `Go` within scripts. Usually executing long queries from .Net won't work when query has `GO` inside. This one does know what to do with it.
 
 ## Execute Command from SQL File
 
-`ExecuteSqlFile(String connectionString, string sqlFile)`
+`ExecuteSqlFile(String connectionString, string sqlFile)`  
+`ExecuteSqlFile(SqlConnection connection, string sqlFile)`  
 
 Reads sql file and executes commands from it. Executes parts of scripts separated by `GO` as a separate command executions. 
+
+## Open Connection for Use in Multiple Operations
+
+`OpenSqlConnection(String connectionString)`
+
+Allows you to use the same connection for multiple SQL commands. Close the connection (by disposing) once you're finished with it.  
+Example:
+
+```c#
+using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase"))
+{
+    ExecuteSqlCommand(connection, "...");
+    ExecuteSqlFile(connection, "./somePath/MyScript.sql");
+}
+```
+
 
 #Usage
 
