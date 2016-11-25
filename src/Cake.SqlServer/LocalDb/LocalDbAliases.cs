@@ -7,12 +7,13 @@ using Cake.Core.Diagnostics;
 namespace Cake.SqlServer
 {
     /// <summary>
+    /// <para>
     /// Contains functionality to deal with LocalDB. A wrapper for SQLLocalDb.exe. Allows to create, start, stop and delete instances in LocalDB.
-    /// 
     /// See <see href="https://msdn.microsoft.com/en-us/library/hh212961%28v=sql.120%29.aspx?f=255&MSPPError=-2147217396">MSDN documentation page</see> for more details about operations
-    /// 
-    /// In order to use the commands for this addin, include the following in your build.cake file to download and
-    /// reference from NuGet.org:
+    /// </para>
+    /// <para>
+    /// In order to use the commands for this addin, include the following in your build.cake file to download and reference from NuGet.org:
+    /// </para>
     /// <code>
     ///     #addin "nuget:?package=Cake.SqlServer"
     /// </code>

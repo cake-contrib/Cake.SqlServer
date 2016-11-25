@@ -9,20 +9,8 @@ namespace Cake.SqlServer
 {
     /// <summary>
     /// <para>
-    ///    Contains functionality to deal with SQL Server: DropDatabase, CreateDatabase, execute SQL, execute SQL from files, etc. 
-    /// </para>
-    /// <para>
-    ///    Samples here show work with "LocalDb\v12.0". This used to be default name for LocalDB instance when installed with SQL Server 2012. 
-    ///    Since Sql Server 2014 the default name for LocalDB instance is "MSSQLLocalDB", making the default instance name for LocalDB looking like this:
-    ///    "(LocalDB)\MSSQLLocalDB". So before using "v12.0" double check what instance you have installed and go from there. 
-    ///    Also please don't be alarmed that all the examples are using LocalDB. The plugin is capable of working with any SQL Server installation.
-    /// </para>
-    /// <para>
-    ///     If you have complex connection strings, please consider using <see href="https://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlconnectionstringbuilder">SqlConnectionStringBuilder</see>
-    ///     for creating your connection strings:
-    ///     <code>
-    ///      var connectionString = new SqlConnectionStringBuilder { DataSource = @"(LocalDb)\MSSQLLocalDB", InitialCatalog = databaseName }.ToString()
-    ///     </code>
+    /// Contains functionality to deal with SQL Server: DropDatabase, CreateDatabase, execute SQL, execute SQL from files, etc. 
+    /// Also provides functionality to manage LocalDb instances: Create, Start, Stop, Delete instances.
     /// </para>
     /// <para>
     /// In order to use the commands for this addin, include the following in your build.cake file to download and
@@ -63,7 +51,7 @@ namespace Cake.SqlServer
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
             Guard.ArgumentIsNotNull(databaseName, nameof(databaseName));
 
-            SqlServerAliasesFacade.DropDatabase(context, connectionString, databaseName);
+            SqlServerAliasesImpl.DropDatabase(context, connectionString, databaseName);
         }
 
 
@@ -95,7 +83,7 @@ namespace Cake.SqlServer
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
             Guard.ArgumentIsNotNull(databaseName, nameof(databaseName));
 
-            SqlServerAliasesFacade.CreateDatabase(context, connectionString, databaseName);
+            SqlServerAliasesImpl.CreateDatabase(context, connectionString, databaseName);
         }
 
 
@@ -125,7 +113,7 @@ namespace Cake.SqlServer
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
             Guard.ArgumentIsNotNull(databaseName, nameof(databaseName));
 
-            SqlServerAliasesFacade.CreateDatabaseIfNotExists(context, connectionString, databaseName);
+            SqlServerAliasesImpl.CreateDatabaseIfNotExists(context, connectionString, databaseName);
         }
 
 
@@ -155,7 +143,7 @@ namespace Cake.SqlServer
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
             Guard.ArgumentIsNotNull(databaseName, nameof(databaseName));
 
-            SqlServerAliasesFacade.DropAndCreateDatabase(context, connectionString, databaseName);
+            SqlServerAliasesImpl.DropAndCreateDatabase(context, connectionString, databaseName);
         }
 
 
@@ -185,7 +173,7 @@ namespace Cake.SqlServer
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
             Guard.ArgumentIsNotNull(sqlCommands, nameof(sqlCommands));
 
-            SqlServerAliasesFacade.ExecuteSqlCommand(context, connectionString, sqlCommands);
+            SqlServerAliasesImpl.ExecuteSqlCommand(context, connectionString, sqlCommands);
         }
 
 
@@ -217,7 +205,7 @@ namespace Cake.SqlServer
             Guard.ArgumentIsNotNull(connection, nameof(connection));
             Guard.ArgumentIsNotNull(sqlCommands, nameof(sqlCommands));
 
-            SqlServerAliasesFacade.ExecuteSqlCommand(context, connection, sqlCommands);
+            SqlServerAliasesImpl.ExecuteSqlCommand(context, connection, sqlCommands);
         }
 
 
@@ -247,7 +235,7 @@ namespace Cake.SqlServer
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
             Guard.ArgumentIsNotNull(sqlFile, nameof(sqlFile));
 
-            SqlServerAliasesFacade.ExecuteSqlFile(context, connectionString, sqlFile);
+            SqlServerAliasesImpl.ExecuteSqlFile(context, connectionString, sqlFile);
         }
 
 
@@ -279,7 +267,7 @@ namespace Cake.SqlServer
             Guard.ArgumentIsNotNull(connection, nameof(connection));
             Guard.ArgumentIsNotNull(sqlFile, nameof(sqlFile));
 
-            SqlServerAliasesFacade.ExecuteSqlFile(context, connection, sqlFile);
+            SqlServerAliasesImpl.ExecuteSqlFile(context, connection, sqlFile);
         }
 
 
@@ -309,7 +297,7 @@ namespace Cake.SqlServer
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
 
-            return SqlServerAliasesFacade.OpenSqlConnection(context, connectionString);
+            return SqlServerAliasesImpl.OpenSqlConnection(context, connectionString);
         }
     }
 }
