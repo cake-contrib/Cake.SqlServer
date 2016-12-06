@@ -40,13 +40,13 @@ namespace Tests
         {
             //Arrange
             var dbName = "WillBeDropped";
-            ExecuteSql($"Create database {dbName}");
+            SqlHelpers.ExecuteSql(ConnectionString, $"Create database {dbName}");
 
             // Act
             SqlServerAliases.DropDatabase(context, ConnectionString, dbName);
 
             // Assert
-            DbExists(dbName).Should().BeFalse();
+            SqlHelpers.DbExists(ConnectionString, dbName).Should().BeFalse();
         }
 
 
@@ -58,10 +58,10 @@ namespace Tests
             SqlServerAliases.CreateDatabaseIfNotExists(context, ConnectionString, dbName);
 
             // Assert
-            DbExists(dbName).Should().BeTrue();
+            SqlHelpers.DbExists(ConnectionString, dbName).Should().BeTrue();
 
             // Cleanup
-            ExecuteSql($"drop database {dbName}");
+            SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
         }
 
 
@@ -72,16 +72,16 @@ namespace Tests
             //Arrange
             var dbName = "ToBeRecreated";
             var tableName = "WillNotExist";
-            ExecuteSql($"Create database {dbName}");
-            ExecuteSql($"create table [{dbName}].dbo.{tableName} (id int null)");
-            TableExists(dbName, tableName).Should().BeTrue();
+            SqlHelpers.ExecuteSql(ConnectionString, $"Create database {dbName}");
+            SqlHelpers.ExecuteSql(ConnectionString, $"create table [{dbName}].dbo.{tableName} (id int null)");
+            SqlHelpers.TableExists(ConnectionString, dbName, tableName).Should().BeTrue();
 
             // Act
             SqlServerAliases.DropAndCreateDatabase(context, ConnectionString, dbName);
 
             // Assert
-            TableExists(dbName, tableName).Should().BeFalse();
-            ExecuteSql($"drop database {dbName}");
+            SqlHelpers.TableExists(ConnectionString, dbName, tableName).Should().BeFalse();
+            SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
         }
 
 
@@ -112,7 +112,7 @@ namespace Tests
         public void ExecuteSqlFile_does_not_change_connection_state()
         {
             const string dbName = "ForFileExecution";
-            ExecuteSql($"Create database {dbName}");
+            SqlHelpers.ExecuteSql(ConnectionString, $"Create database {dbName}");
             try
             {
                 using (var connection = SqlServerAliases.OpenSqlConnection(context, ConnectionString))
@@ -124,7 +124,7 @@ namespace Tests
             }
             finally
             {
-                ExecuteSql($"Drop database {dbName}");
+                SqlHelpers.ExecuteSql(ConnectionString, $"Drop database {dbName}");
             }
         }
 
@@ -137,7 +137,7 @@ namespace Tests
             var dbName = "ForSqlExecution";
             var tableName1 = "WillExist1";
             var tableName2 = "WillExist2";
-            ExecuteSql($"Create database {dbName}");
+            SqlHelpers.ExecuteSql(ConnectionString, $"Create database {dbName}");
             var sql = $@"
             create table [{dbName}].dbo.{tableName1} (id int null);
             Go
@@ -149,9 +149,9 @@ namespace Tests
             SqlServerAliases.ExecuteSqlCommand(context, ConnectionString, sql);
 
             // Assert
-            TableExists(dbName, tableName1).Should().BeTrue();
-            TableExists(dbName, tableName2).Should().BeTrue();
-            ExecuteSql($"drop database {dbName}");
+            SqlHelpers.TableExists(ConnectionString, dbName, tableName1).Should().BeTrue();
+            SqlHelpers.TableExists(ConnectionString, dbName, tableName2).Should().BeTrue();
+            SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
         }
 
 
@@ -164,15 +164,15 @@ namespace Tests
             var dbName = "ForFileExecution";
             var tableName1 = "WillExist1";
             var tableName2 = "WillExist2";
-            ExecuteSql($"Create database {dbName}");
+            SqlHelpers.ExecuteSql(ConnectionString, $"Create database {dbName}");
             var sqlFilePath = GetSqlFilePath();
 
             // Act
             SqlServerAliases.ExecuteSqlFile(context, connectionString, sqlFilePath);
 
             // Assert
-            TableExists(dbName, tableName1).Should().BeTrue();
-            TableExists(dbName, tableName2).Should().BeTrue();
+            SqlHelpers.TableExists(ConnectionString, dbName, tableName1).Should().BeTrue();
+            SqlHelpers.TableExists(ConnectionString, dbName, tableName2).Should().BeTrue();
             SqlServerAliases.DropDatabase(context, ConnectionString, dbName);
         }
 
@@ -197,14 +197,14 @@ namespace Tests
         {
             // Act
             var dbName = "Unknown";
-            ExecuteSql($"create database {dbName}");
+            SqlHelpers.ExecuteSql(ConnectionString, $"create database {dbName}");
 
             // Assert
             Action act = () => SqlServerAliases.CreateDatabase(context, ConnectionString, dbName);
             act.ShouldThrow<SqlException>();
 
             // Cleanup
-            ExecuteSql($"drop database {dbName}");
+            SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
         }
 
 
@@ -216,10 +216,10 @@ namespace Tests
             SqlServerAliases.CreateDatabase(context, ConnectionString, dbName);
 
             // Assert
-            DbExists(dbName).Should().BeTrue();
+            SqlHelpers.DbExists(ConnectionString, dbName).Should().BeTrue();
 
             // Cleanup
-            ExecuteSql($"drop database {dbName}");
+            SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
         }
 
         [Test]
@@ -231,10 +231,10 @@ namespace Tests
             SqlServerAliases.CreateDatabaseIfNotExists(context, ConnectionString, dbName);
 
             // Assert
-            DbExists(dbName).Should().BeTrue();
+            SqlHelpers.DbExists(ConnectionString, dbName).Should().BeTrue();
 
             // Cleanup
-            ExecuteSql($"drop database {dbName}");
+            SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
         }
 
 
@@ -245,14 +245,14 @@ namespace Tests
             SqlServerAliases.CreateDatabase(context, ConnectionString, "test] create database hack--");
 
             // Assert
-            DbExists("test").Should().BeFalse();
-            DbExists("hack").Should().BeFalse();
-            DbExists("test] create database hack--").Should().BeTrue();
+            SqlHelpers.DbExists(ConnectionString, "test").Should().BeFalse();
+            SqlHelpers.DbExists(ConnectionString, "hack").Should().BeFalse();
+            SqlHelpers.DbExists(ConnectionString, "test] create database hack--").Should().BeTrue();
 
             // Cleanup
-            ExecuteSql("if (select DB_ID('test')) is not null drop database [test]");
-            ExecuteSql("if (select DB_ID('hack')) is not null drop database [hack]");
-            ExecuteSql("if (select DB_ID('test] create database hack--')) is not null drop database [test]] create database hack--]");
+            SqlHelpers.ExecuteSql(ConnectionString, "if (select DB_ID('test')) is not null drop database [test]");
+            SqlHelpers.ExecuteSql(ConnectionString, "if (select DB_ID('hack')) is not null drop database [hack]");
+            SqlHelpers.ExecuteSql(ConnectionString, "if (select DB_ID('test] create database hack--')) is not null drop database [test]] create database hack--]");
         }
 
         [Test]
@@ -269,10 +269,10 @@ namespace Tests
             }
 
             // Assert
-            DbExists("hack").Should().BeFalse();
+            SqlHelpers.DbExists(ConnectionString, "hack").Should().BeFalse();
 
             // Cleanup
-            ExecuteSql("if (select DB_ID('hack')) is not null drop database [hack]");
+            SqlHelpers.ExecuteSql(ConnectionString, "if (select DB_ID('hack')) is not null drop database [hack]");
         }
 
 
@@ -290,71 +290,27 @@ namespace Tests
             }
 
             // Assert
-            DbExists("hack").Should().BeFalse();
-            DbExists("some'')) is null create database hack--").Should().BeTrue();
+            SqlHelpers.DbExists(ConnectionString, "hack").Should().BeFalse();
+            SqlHelpers.DbExists(ConnectionString, "some'')) is null create database hack--").Should().BeTrue();
 
             // Cleanup
-            ExecuteSql("if (select DB_ID('some'')) is null create database hack--')) is not null drop database [some')) is null create database hack--]");
+            SqlHelpers.ExecuteSql(ConnectionString, "if (select DB_ID('some'')) is null create database hack--')) is not null drop database [some')) is null create database hack--]");
         }
-
-
-        private void ExecuteSql(String sql)
-        {
-            using (var connection = new SqlConnection(ConnectionString))
-            {
-                connection.Open();
-                connection.Execute(sql);
-            }
-        }
-
-        private static bool DbExists(String dbName)
-        {
-            using (var connection = new SqlConnection(ConnectionString))
-            {
-                connection.Open();
-                var db = connection.QuerySingle<SqlObject>($"select DB_ID('{dbName}') as Id");
-
-                return db.Id.HasValue;
-            }
-        }
-
-
-
-        private static bool TableExists(string dbName, string tableName)
-        {
-            using (var connection = new SqlConnection(ConnectionString))
-            {
-                connection.Open();
-                var db = connection.QuerySingle<SqlObject>($"select OBJECT_ID('[{dbName}].dbo.{tableName}')  as Id");
-
-                return db.Id.HasValue;
-            }
-        }
-
-
-        private void DropDatabase(string databaseName)
-        {
-            ExecuteSql($"if (select DB_ID('{databaseName}')) is not null drop database [{databaseName}]");
-        }
-
-        private class SqlObject
-        {
-            public int? Id { get; set; }
-        }
+        
 
         public void Dispose()
         {
-            DropDatabase("ForFileExecution");
-            DropDatabase("WillBeDropped");
-            DropDatabase("CakeTest");
-            DropDatabase("ToBeRecreated");
-            DropDatabase("ToBeRecreatedAgain");
-            DropDatabase("ForSqlExecution");
-            DropDatabase("Unknown");
-            DropDatabase("test");
-            DropDatabase("hack");
-            DropDatabase("test]] create database hack--");
-            ExecuteSql("if (select DB_ID('some'')) is null create database hack--')) is not null drop database [some')) is null create database hack--]");
+            SqlHelpers.DropDatabase(ConnectionString, "ForFileExecution");
+            SqlHelpers.DropDatabase(ConnectionString, "WillBeDropped");
+            SqlHelpers.DropDatabase(ConnectionString, "CakeTest");
+            SqlHelpers.DropDatabase(ConnectionString, "ToBeRecreated");
+            SqlHelpers.DropDatabase(ConnectionString, "ToBeRecreatedAgain");
+            SqlHelpers.DropDatabase(ConnectionString, "ForSqlExecution");
+            SqlHelpers.DropDatabase(ConnectionString, "Unknown");
+            SqlHelpers.DropDatabase(ConnectionString, "test");
+            SqlHelpers.DropDatabase(ConnectionString, "hack");
+            SqlHelpers.DropDatabase(ConnectionString, "test]] create database hack--");
+            SqlHelpers.ExecuteSql(ConnectionString, "if (select DB_ID('some'')) is null create database hack--')) is not null drop database [some')) is null create database hack--]");
         }
     }
 }

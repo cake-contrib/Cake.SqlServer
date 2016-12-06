@@ -114,11 +114,16 @@
     <Compile Include="GuardTests.cs" />
     <Compile Include="LocalDbToolRunnerFixture.cs" />
     <Compile Include="LocalDbToolTests.cs" />
+    <Compile Include="RestoreDatabaseTests.cs" />
+    <Compile Include="SqlHelpers.cs" />
     <Compile Include="SqlServerAliasesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CakeRestoreTest.bak">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
