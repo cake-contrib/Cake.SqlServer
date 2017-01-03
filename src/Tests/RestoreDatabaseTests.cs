@@ -30,7 +30,7 @@ namespace Tests
                 var newDatabaseName = "NewCakeTest";
 
                 // Act
-                SqlServerAliasesImpl.RestoreDatabase(context, ConnectionString, newDatabaseName, new FilePath(path), new DirectoryPath(System.IO.Path.GetTempPath()));
+                RestoreDatabaseImpl.RestoreDatabase(context, ConnectionString, newDatabaseName, new FilePath(path), new DirectoryPath(System.IO.Path.GetTempPath()));
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, newDatabaseName);

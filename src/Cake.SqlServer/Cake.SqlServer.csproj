@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RestoreDatabaseImpl.cs" />
     <Compile Include="Sql.cs" />
     <Compile Include="Guard.cs" />
     <Compile Include="LocalDb\LocalDbAliases.cs" />
