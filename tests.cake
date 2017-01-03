@@ -103,6 +103,16 @@ Task("SqlConnection")
 		DropDatabase(masterConnectionString, dbName);
 	});
 
+Task("SqlTimeout")
+	.Does(() => {
+		SetSqlCommandTimeout(3);
+		using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;"))
+		{
+			ExecuteSqlCommand(connection, "WAITFOR DELAY '00:00:02'");
+		}
+	});
+
+
 Task("Default")
     .IsDependentOn("Create-LocalDB")
     .IsDependentOn("Start-LocalDB")
@@ -110,6 +120,7 @@ Task("Default")
     .IsDependentOn("Delete-LocalDB")
     .IsDependentOn("Database-Operations")
     .IsDependentOn("SqlConnection")
+    .IsDependentOn("SqlTimeout")
     ;    
 
 RunTarget(target);

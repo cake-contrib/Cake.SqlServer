@@ -299,5 +299,33 @@ namespace Cake.SqlServer
 
             return SqlServerAliasesImpl.OpenSqlConnection(context, connectionString);
         }
+
+
+        /// <summary>
+        /// Sets the CommandTimeout property for all SqlCommands used internally
+        /// </summary>
+        /// <param name="context">The Cake context.</param>
+        /// <param name="commandTimeout">The time in seconds to wait for the command to execute. Used to set CommandTimeout property to when creating <see cref="SqlCommand"/></param>
+        /// <example>
+        /// <code>
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        ///
+        ///     Task("Sql-Operations")
+        ///         .Does(() =>
+        ///         {
+        ///             SetCommandTimeout(60);
+        ///             using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase"))
+        ///             {
+        ///                 ExecuteSqlCommand(connection, "...");
+        ///                 ExecuteSqlFile(connection, "./somePath/MyScript.sql");
+        ///             }
+        ///         });
+        /// </code>
+        /// </example>
+        [CakeMethodAlias]
+        public static void SetSqlCommandTimeout(this ICakeContext context, int commandTimeout)
+        {
+            SqlServerAliasesImpl.SetSqlCommandTimeout(context, commandTimeout);
+        }
     }
 }

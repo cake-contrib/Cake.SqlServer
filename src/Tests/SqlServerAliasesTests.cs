@@ -295,6 +295,72 @@ namespace Tests
 
             // Cleanup
             SqlHelpers.ExecuteSql(ConnectionString, "if (select DB_ID('some'')) is null create database hack--')) is not null drop database [some')) is null create database hack--]");
+            ExecuteSql("if (select DB_ID('some'')) is null create database hack--')) is not null drop database [some')) is null create database hack--]");
+        }
+
+        [Test]
+        public void SetCommandTimeout_ShortTimeout_Throws()
+        {
+            SqlServerAliases.SetSqlCommandTimeout(context, 1);
+
+            Action act = () => SqlServerAliases.ExecuteSqlCommand(context, ConnectionString, "WAITFOR DELAY '00:00:02'");
+
+            act.ShouldThrow<Exception>();
+        }
+
+        [Test]
+        public void SetCommandTimeout_LongTimeout_DoesNotThrow()
+        {
+            SqlServerAliases.SetSqlCommandTimeout(context, 3);
+
+            Action act = () => SqlServerAliases.ExecuteSqlCommand(context, ConnectionString, "WAITFOR DELAY '00:00:02'");
+
+            act.ShouldNotThrow();
+        }
+
+
+        private void ExecuteSql(String sql)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+                connection.Execute(sql);
+            }
+        }
+
+        private static bool DbExists(String dbName)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+                var db = connection.QuerySingle<SqlObject>($"select DB_ID('{dbName}') as Id");
+
+                return db.Id.HasValue;
+            }
+        }
+
+
+
+        private static bool TableExists(string dbName, string tableName)
+        {
+            using (var connection = new SqlConnection(ConnectionString))
+            {
+                connection.Open();
+                var db = connection.QuerySingle<SqlObject>($"select OBJECT_ID('[{dbName}].dbo.{tableName}')  as Id");
+
+                return db.Id.HasValue;
+            }
+        }
+
+
+        private void DropDatabase(string databaseName)
+        {
+            ExecuteSql($"if (select DB_ID('{databaseName}')) is not null drop database [{databaseName}]");
+        }
+
+        private class SqlObject
+        {
+            public int? Id { get; set; }
         }
         
 
