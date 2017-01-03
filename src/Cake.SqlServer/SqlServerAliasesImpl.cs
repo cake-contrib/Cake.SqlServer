@@ -168,11 +168,13 @@ namespace Cake.SqlServer
             }
         }
 
-        internal static void SetCommandTimeout(ICakeContext context, int commandTimeout)
+
+        internal static void SetSqlCommandTimeout(ICakeContext context, int commandTimeout)
         {
-            context.Log.Debug($"Default SQL timeout have been changed to {commandTimeout}");
+            context.Log.Debug($"Default SQL timeout have been changed to {commandTimeout} seconds");
             CommandTimeout = commandTimeout;
         }
+
 
         private static SqlCommand CreateSqlCommand(string sql, SqlConnection connection)
         {

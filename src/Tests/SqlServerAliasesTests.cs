@@ -300,7 +300,7 @@ namespace Tests
         [Test]
         public void SetCommandTimeout_ShortTimeout_Throws()
         {
-            SqlServerAliases.SetCommandTimeout(context, 1);
+            SqlServerAliases.SetSqlCommandTimeout(context, 1);
 
             Action act = () => SqlServerAliases.ExecuteSqlCommand(context, ConnectionString, "WAITFOR DELAY '00:00:02'");
 
@@ -310,7 +310,7 @@ namespace Tests
         [Test]
         public void SetCommandTimeout_LongTimeout_DoesNotThrow()
         {
-            SqlServerAliases.SetCommandTimeout(context, 3);
+            SqlServerAliases.SetSqlCommandTimeout(context, 3);
 
             Action act = () => SqlServerAliases.ExecuteSqlCommand(context, ConnectionString, "WAITFOR DELAY '00:00:02'");
 

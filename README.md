@@ -65,13 +65,20 @@ using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial 
 }
 ```
 
-## Set Command Timeout
+## Set Default Execution Timeout
 ```c#
-SetCommandTimeout(int commandTimeout)
+SetSqlCommandTimeout(int commandTimeout)
 ```
 
 Allows you to specify the command timeout in seconds for all commands. This is used to set the `CommandTimeout` property on the underlying `SqlCommand`.
 
+```c#
+SetSqlCommandTimeout(60);
+using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase"))
+{
+    ExecuteSqlCommand(connection, "..."); // <- execute long-running command
+}
+```
 
 ## Usage
 Samples show here are using `LocalDb\v12.0`. This used to be default name for LocalDB instance when installed with SQL Server 2012. Since Sql Server 2014 the default name for LocalDB instance is `MSSQLLocalDB`, making the default instance name for LocalDB looking like this: `(LocalDB)\MSSQLLocalDB`. So before using `v12.0` double check what instance you have installed and go from there. 

@@ -1,3 +1,7 @@
+### New in 1.4.0
+* `SetSqlCommandTimeout` provides ability to set default timeout for all SQL operations
+
+
 ### New in 1.3.0 
 * `OpenSqlConnection` provides an open connection to the database - for re-using in multiple commands execution.
 * Overrides for `ExecuteSqlCommand` and `ExecuteSqlFile` to take `SqlConnection` object instaed of connection string.
@@ -10,3 +14,4 @@
 
 ### New in 1.0.1 (Released 2016/09/08)
 * Initial methods for `DropDatabase`, `CreateDatabaseIfNotExists`, `DropAndCreateDatabase`, `ExecuteSqlCommand`, `ExecuteSqlFile`.
+

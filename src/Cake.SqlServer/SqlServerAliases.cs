@@ -300,6 +300,7 @@ namespace Cake.SqlServer
             return SqlServerAliasesImpl.OpenSqlConnection(context, connectionString);
         }
 
+
         /// <summary>
         /// Sets the CommandTimeout property for all SqlCommands used internally
         /// </summary>
@@ -322,9 +323,9 @@ namespace Cake.SqlServer
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static void SetCommandTimeout(this ICakeContext context, int commandTimeout)
+        public static void SetSqlCommandTimeout(this ICakeContext context, int commandTimeout)
         {
-            SqlServerAliasesImpl.SetCommandTimeout(context, commandTimeout);
+            SqlServerAliasesImpl.SetSqlCommandTimeout(context, commandTimeout);
         }
     }
 }
