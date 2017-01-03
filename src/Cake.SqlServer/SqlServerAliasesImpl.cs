@@ -11,6 +11,8 @@ namespace Cake.SqlServer
 {
     internal static class SqlServerAliasesImpl
     {
+        internal static int? CommandTimeout;
+
         internal static void DropDatabase(ICakeContext context, String connectionString, String databaseName)
         {
             var dropDatabaseSql =
@@ -25,7 +27,7 @@ namespace Cake.SqlServer
             {
                 using (var connection = OpenSqlConnection(context, connectionString))
                 {
-                    var command = new SqlCommand(dropDatabaseSql, connection);
+                    var command = CreateSqlCommand(dropDatabaseSql, connection);
                     command.Parameters.AddWithValue("@DatabaseName", databaseName);
 
                     context.Log.Information($"About to drop database {databaseName}");
@@ -44,8 +46,6 @@ namespace Cake.SqlServer
             }
         }
 
-
-
         internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName)
         {
             var createDbSql = $"if (select DB_ID(@DatabaseName)) is null create database {Sql.EscapeName(databaseName)}";
@@ -55,7 +55,7 @@ namespace Cake.SqlServer
                 var sqlToExecute = String.Format(createDbSql, connection.Database);
                 context.Log.Debug($"Executing SQL : {sqlToExecute}");
 
-                var command = new SqlCommand(sqlToExecute, connection);
+                var command = CreateSqlCommand(sqlToExecute, connection);
                 command.Parameters.AddWithValue("@DatabaseName", databaseName);
 
                 command.ExecuteNonQuery();
@@ -73,7 +73,7 @@ namespace Cake.SqlServer
                 var sqlToExecute = String.Format(createDbSql, connection.Database);
                 context.Log.Debug($"Executing SQL : {sqlToExecute}");
 
-                var command = new SqlCommand(sqlToExecute, connection);
+                var command = CreateSqlCommand(sqlToExecute, connection);
 
                 command.ExecuteNonQuery();
                 context.Log.Information($"Database {databaseName} is created");
@@ -109,7 +109,7 @@ namespace Cake.SqlServer
                     context.Log.Debug($"Executing SQL : {sqlCommand}");
                     try
                     {
-                        var command = new SqlCommand(sqlCommand, connection);
+                        var command = CreateSqlCommand(sqlCommand, connection);
                         command.ExecuteNonQuery();
                     }
                     catch (Exception)
@@ -166,6 +166,24 @@ namespace Cake.SqlServer
                 }
                 throw;
             }
+        }
+
+        internal static void SetCommandTimeout(ICakeContext context, int commandTimeout)
+        {
+            context.Log.Debug($"Default SQL timeout have been changed to {commandTimeout}");
+            CommandTimeout = commandTimeout;
+        }
+
+        private static SqlCommand CreateSqlCommand(string sql, SqlConnection connection)
+        {
+            var command = new SqlCommand(sql, connection);
+
+            if (CommandTimeout.HasValue)
+            {
+                command.CommandTimeout = CommandTimeout.Value;
+            }
+
+            return command;
         }
     }
 }
