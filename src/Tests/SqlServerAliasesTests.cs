@@ -297,6 +297,26 @@ namespace Tests
             ExecuteSql("if (select DB_ID('some'')) is null create database hack--')) is not null drop database [some')) is null create database hack--]");
         }
 
+        [Test]
+        public void SetCommandTimeout_ShortTimeout_Throws()
+        {
+            SqlServerAliases.SetCommandTimeout(context, 1);
+
+            Action act = () => SqlServerAliases.ExecuteSqlCommand(context, ConnectionString, "WAITFOR DELAY '00:00:02'");
+
+            act.ShouldThrow<Exception>();
+        }
+
+        [Test]
+        public void SetCommandTimeout_LongTimeout_DoesNotThrow()
+        {
+            SqlServerAliases.SetCommandTimeout(context, 3);
+
+            Action act = () => SqlServerAliases.ExecuteSqlCommand(context, ConnectionString, "WAITFOR DELAY '00:00:02'");
+
+            act.ShouldNotThrow();
+        }
+
 
         private void ExecuteSql(String sql)
         {
