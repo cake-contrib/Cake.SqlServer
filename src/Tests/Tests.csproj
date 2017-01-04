@@ -121,9 +121,6 @@
     <Compile Include="SqlTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="CakeRestoreTest.bak">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="multiFileBackup.bak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

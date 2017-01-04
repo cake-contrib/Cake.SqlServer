@@ -39,40 +39,40 @@ namespace Tests
             finally
             {
                 // Cleanup
-                //SqlHelpers.DropDatabase(ConnectionString, originalDbName);
-            }
-        }
-
-        [Test]
-        public void RestoreDatabase_MultiLogDatabase_DoesNotThrow()
-        {
-            var originalDbName = "CakeRestoreTest";
-            try
-            {
-                //Arrange
-                var path = GetBackupFilePath("multiFileBackup.bak");
-
-                RestoreDatabaseImpl.RestoreDatabase(context, ConnectionString, new FilePath(path));
-
-                // Assert
-                SqlHelpers.DbExists(ConnectionString, originalDbName);
-            }
-            finally
-            {
-                // Cleanup
                 SqlHelpers.DropDatabase(ConnectionString, originalDbName);
             }
         }
 
-
         [Test]
-        public void Can_Restore_Database()
+        public void RestoreDatabase_DatabaseRename_DoesNotThrow()
         {
+            var databaseName = "NewRandomDatabase";
             try
             {
                 //Arrange
                 var path = GetBackupFilePath();
-                var newDatabaseName = "NewCakeTest";
+
+                RestoreDatabaseImpl.RestoreDatabase(context, ConnectionString, new FilePath(path), databaseName);
+
+                // Assert
+                SqlHelpers.DbExists(ConnectionString, databaseName);
+            }
+            finally
+            {
+                // Cleanup
+                SqlHelpers.DropDatabase(ConnectionString, databaseName);
+            }
+        }
+
+
+        [Test]
+        public void RestoreDatabase_MoveLocation_DoesNotThrow()
+        {
+            var newDatabaseName = "NewCakeTest";
+            try
+            {
+                //Arrange
+                var path = GetBackupFilePath();
 
                 // Act
                 RestoreDatabaseImpl.RestoreDatabase(context, ConnectionString, new FilePath(path), newDatabaseName, new DirectoryPath(System.IO.Path.GetTempPath()));
@@ -83,7 +83,7 @@ namespace Tests
             finally
             {
                 // Cleanup
-                SqlHelpers.DropDatabase(ConnectionString, "NewCakeTest");
+                SqlHelpers.DropDatabase(ConnectionString, newDatabaseName);
             }
         }
 
@@ -128,7 +128,7 @@ namespace Tests
                 var names = RestoreDatabaseImpl.GetLogicalNames(path, connection);
 
                 // Assert
-                names.Should().HaveCount(2);
+                names.Should().HaveCount(3);
             }
         }
 
@@ -148,7 +148,7 @@ namespace Tests
             }
         }
 
-        private static string GetBackupFilePath(String filename = "CakeRestoreTest.bak")
+        private static string GetBackupFilePath(String filename = "multiFileBackup.bak")
         {
             return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, filename, SearchOption.AllDirectories).FirstOrDefault();
         }
