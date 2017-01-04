@@ -177,7 +177,7 @@ namespace Cake.SqlServer
         }
 
 
-        private static SqlCommand CreateSqlCommand(string sql, SqlConnection connection)
+        internal static SqlCommand CreateSqlCommand(string sql, SqlConnection connection)
         {
             var command = new SqlCommand(sql, connection);
 

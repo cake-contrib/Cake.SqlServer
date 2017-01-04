@@ -6,6 +6,7 @@ using System.Linq;
 using Cake.Core;
 using Cake.Core.IO;
 using Cake.SqlServer;
+using FluentAssertions;
 using NSubstitute;
 
 namespace Tests
@@ -21,6 +22,50 @@ namespace Tests
         }
 
         [Test]
+        public void RestoreDatabase_MinimalInformation_DoesNotThrow()
+        {
+            var originalDbName = "CakeRestoreTest";
+            try
+            {
+                //Arrange
+                var path = GetBackupFilePath();
+
+                // Act
+                RestoreDatabaseImpl.RestoreDatabase(context, ConnectionString, new FilePath(path));
+
+                // Assert
+                SqlHelpers.DbExists(ConnectionString, originalDbName);
+            }
+            finally
+            {
+                // Cleanup
+                //SqlHelpers.DropDatabase(ConnectionString, originalDbName);
+            }
+        }
+
+        [Test]
+        public void RestoreDatabase_MultiLogDatabase_DoesNotThrow()
+        {
+            var originalDbName = "CakeRestoreTest";
+            try
+            {
+                //Arrange
+                var path = GetBackupFilePath("multiFileBackup.bak");
+
+                RestoreDatabaseImpl.RestoreDatabase(context, ConnectionString, new FilePath(path));
+
+                // Assert
+                SqlHelpers.DbExists(ConnectionString, originalDbName);
+            }
+            finally
+            {
+                // Cleanup
+                SqlHelpers.DropDatabase(ConnectionString, originalDbName);
+            }
+        }
+
+
+        [Test]
         public void Can_Restore_Database()
         {
             try
@@ -30,7 +75,7 @@ namespace Tests
                 var newDatabaseName = "NewCakeTest";
 
                 // Act
-                RestoreDatabaseImpl.RestoreDatabase(context, ConnectionString, newDatabaseName, new FilePath(path), new DirectoryPath(System.IO.Path.GetTempPath()));
+                RestoreDatabaseImpl.RestoreDatabase(context, ConnectionString, new FilePath(path), newDatabaseName, new DirectoryPath(System.IO.Path.GetTempPath()));
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, newDatabaseName);
@@ -42,9 +87,70 @@ namespace Tests
             }
         }
 
-        private static string GetBackupFilePath()
+        [Test]
+        public void Can_Read_DefaultLogPath()
         {
-            return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "CakeRestoreTest.bak", SearchOption.AllDirectories).FirstOrDefault();
+            using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, ConnectionString))
+            {
+                // Act
+                var path = RestoreDatabaseImpl.GetDefaultLogPath(connection);
+
+                // Assert
+                path.Should().NotBeNullOrEmpty();
+                Directory.Exists(path).Should().BeTrue();
+            }
+        }
+
+        [Test]
+        public void Can_Read_DefaultDataPath()
+        {
+            using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, ConnectionString))
+            {
+                // Act
+                var path = RestoreDatabaseImpl.GetDefaultDataPath(connection);
+
+                // Assert
+                path.Should().NotBeNullOrEmpty();
+                Directory.Exists(path).Should().BeTrue();
+            }
+        }
+
+
+        [Test]
+        public void Can_Read_LogicalNames()
+        {
+            using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, ConnectionString))
+            {
+                //Arrange
+                var path = GetBackupFilePath();
+
+                // Act
+                var names = RestoreDatabaseImpl.GetLogicalNames(path, connection);
+
+                // Assert
+                names.Should().HaveCount(2);
+            }
+        }
+
+        [Test]
+        public void GetDatabaseName_Should_ReturnName()
+        {
+            using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, ConnectionString))
+            {
+                //Arrange
+                var path = GetBackupFilePath();
+
+                // Act
+                var names = RestoreDatabaseImpl.GetDatabaseName(path, connection);
+
+                // Assert
+                names.Should().Be("CakeRestoreTest");
+            }
+        }
+
+        private static string GetBackupFilePath(String filename = "CakeRestoreTest.bak")
+        {
+            return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, filename, SearchOption.AllDirectories).FirstOrDefault();
         }
     }
 }
