@@ -361,7 +361,7 @@ namespace Cake.SqlServer
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
             Guard.ArgumentIsNotNull(backupFile, nameof(backupFile));
 
-            SqlBackupsImpl.RestoreSqlBackup(context, connectionString, backupFile, settings.NewDatabaseName, settings.NewStorageFolder);
+            SqlBackupsImpl.RestoreSqlBackup(context, connectionString, backupFile, settings);
         }
 
         /// <summary>

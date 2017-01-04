@@ -31,7 +31,7 @@ namespace Tests
                 var path = GetBackupFilePath();
 
                 // Act
-                SqlBackupsImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path));
+                SqlBackupsImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), new RestoreSqlBackupSettings());
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, originalDbName);
@@ -52,7 +52,7 @@ namespace Tests
                 //Arrange
                 var path = GetBackupFilePath();
 
-                SqlBackupsImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), databaseName);
+                SqlBackupsImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), new RestoreSqlBackupSettings() { NewDatabaseName = databaseName });
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, databaseName);
@@ -75,7 +75,7 @@ namespace Tests
                 var path = GetBackupFilePath();
 
                 // Act
-                SqlBackupsImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), newDatabaseName, new DirectoryPath(System.IO.Path.GetTempPath()));
+                SqlBackupsImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), new RestoreSqlBackupSettings() { NewDatabaseName = newDatabaseName, NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()) });
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, newDatabaseName);

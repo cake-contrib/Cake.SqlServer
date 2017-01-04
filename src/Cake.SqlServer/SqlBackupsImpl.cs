@@ -11,12 +11,12 @@ namespace Cake.SqlServer
     {
         // if database name is not provided, dbname from the backup is used.
         // if newStoragePath is not provided, system defaults are used
-        internal static void RestoreSqlBackup(ICakeContext context, String connectionString, FilePath backupFile, string newDatabaseName = null, DirectoryPath newStorageFolder = null)
+        internal static void RestoreSqlBackup(ICakeContext context, String connectionString, FilePath backupFile, RestoreSqlBackupSettings settings)
         {
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, connectionString))
             {
                 var oldDbName = GetDatabaseName(backupFile, connection);
-                newDatabaseName = newDatabaseName ?? oldDbName;
+                var newDatabaseName = settings.NewDatabaseName ?? oldDbName;
                 context.Log.Information($"Using database name '{newDatabaseName}' to be a name for the restored database");
 
                 var logicalNames = GetLogicalNames(backupFile, connection);
@@ -52,7 +52,7 @@ Restore database {Sql.EscapeName(newDatabaseName)} from disk = @backupFile with
                     context.Log.Debug($"Adding parameter '{lParameterName}' with value '{logicalNames[i].LogicalName}'");
                     command.Parameters.AddWithValue(lParameterName, logicalNames[i].LogicalName);
 
-                    var filePath = GetFilePath(connection, oldDbName, newDatabaseName, newStorageFolder, logicalNames[i]);
+                    var filePath = GetFilePath(connection, oldDbName, newDatabaseName, settings.NewStorageFolder, logicalNames[i]);
                     var pathParamName = "@LPath" + i;
                     context.Log.Debug($"Adding parameter '{pathParamName}' with value '{filePath}'");
                     command.Parameters.AddWithValue(pathParamName, filePath);
