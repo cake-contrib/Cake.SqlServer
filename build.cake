@@ -99,7 +99,7 @@ Task("Run-Unit-Tests")
 		var testsFile ="./src/**/bin/" + configuration + "/Tests.dll";
 		Information(testsFile);
 		NUnit3(testsFile, new NUnit3Settings {
-			NoResults = true
+			NoResults = false,
 		});
 });
 
