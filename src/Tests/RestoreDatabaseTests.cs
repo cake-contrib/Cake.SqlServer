@@ -88,6 +88,28 @@ namespace Tests
         }
 
         [Test]
+        public void RestoreDatabase_WithReplace_DoesNotThrow()
+        {
+            var originalDbName = "CakeRestoreTest";
+            try
+            {
+                //Arrange
+                var path = GetBackupFilePath();
+
+                // Act
+                SqlBackupsImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), new RestoreSqlBackupSettings() { WithReplace = true });
+
+                // Assert
+                SqlHelpers.DbExists(ConnectionString, originalDbName);
+            }
+            finally
+            {
+                // Cleanup
+                SqlHelpers.DropDatabase(ConnectionString, originalDbName);
+            }
+        }
+
+        [Test]
         public void Can_Read_DefaultLogPath()
         {
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, ConnectionString))

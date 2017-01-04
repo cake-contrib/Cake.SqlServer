@@ -39,6 +39,10 @@ Restore database {Sql.EscapeName(newDatabaseName)} from disk = @backupFile with
                         sql += ", \r\n"; // only need comma before penultimate list
                     }
                 }
+                if (settings.WithReplace)
+                {
+                    sql += ",\r\n replace ";
+                }
 
                 sql += $";\r\n alter database {Sql.EscapeName(newDatabaseName)} set multi_user;";
 

@@ -26,6 +26,12 @@ namespace Cake.SqlServer
         /// </value>
         public DirectoryPath NewStorageFolder { get; set; }
 
-        //TODO add with replace
+        /// <summary>
+        /// Sets the flag to execute restore command `WITH REPLACE` suffix. Allows you to write over an existing database when 
+        /// doing a restore without first backing up the tail of the transaction log.  
+        /// The WITH REPLACE basically tells SQL Server to just throw out any active contents 
+        /// in the transaction log and move forward with the restore.
+        /// </summary>
+        public bool WithReplace { get; set; }
     }
 }
