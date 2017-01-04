@@ -1,5 +1,5 @@
-#r "build-results/IntergrationTests/Cake.SqlServer.dll"
-//#r "src/Cake.SqlServer/bin/debug/Cake.SqlServer.dll"
+//#r "build-results/IntergrationTests/Cake.SqlServer.dll"
+#r "src/Cake.SqlServer/bin/debug/Cake.SqlServer.dll"
 
 var target = Argument("target", "Default");
 
@@ -110,6 +110,27 @@ Task("SqlTimeout")
 		{
 			ExecuteSqlCommand(connection, "WAITFOR DELAY '00:00:02'");
 		}
+	});
+
+Task("Restore-Database")
+	.Does(() => {
+		var connString = @"data source=(LocalDb)\v12.0";
+
+		var backupFilePath = new FilePath(@".\src\Tests\multiFileBackup.bak");
+		backupFilePath = backupFilePath.MakeAbsolute(Context.Environment);
+
+		RestoreSqlBackup(connString, backupFilePath); 
+	
+		RestoreSqlBackup(connString, backupFilePath, new RestoreSqlBackupSettings() 
+			{
+				NewDatabaseName = "RestoredFromTest.Cake",
+				NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()), // place files in special location
+			}); 
+
+
+		// cleanup
+		DropDatabase(masterConnectionString, "RestoredFromTest.Cake");
+		DropDatabase(masterConnectionString, "CakeRestoreTest");
 	});
 
 

@@ -7,11 +7,11 @@ using Cake.Core.Diagnostics;
 
 namespace Cake.SqlServer
 {
-    internal class RestoreDatabaseImpl
+    internal class SqlBackupsImpl
     {
         // if database name is not provided, dbname from the backup is used.
         // if newStoragePath is not provided, system defaults are used
-        internal static void RestoreDatabase(ICakeContext context, String connectionString, FilePath backupFile, string newDatabaseName = null, DirectoryPath newStorageFolder = null)
+        internal static void RestoreSqlBackup(ICakeContext context, String connectionString, FilePath backupFile, string newDatabaseName = null, DirectoryPath newStorageFolder = null)
         {
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, connectionString))
             {

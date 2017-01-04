@@ -327,5 +327,60 @@ namespace Cake.SqlServer
         {
             SqlServerAliasesImpl.SetSqlCommandTimeout(context, commandTimeout);
         }
+
+
+        ///  <summary>
+        ///  Restores a database from a backup file.
+        ///  </summary>
+        ///  <param name="context">The Cake context.</param>
+        ///  <param name="connectionString">The connection string. You may want to connect to master database for this operation.</param>
+        ///  <param name="backupFile">Absolute path to .bak file</param>
+        /// <param name="settings"></param>
+        /// <example>
+        ///  <code>
+        ///      #addin "nuget:?package=Cake.SqlServer"
+        /// 
+        ///      Task("Restore-Database")
+        ///          .Does(() =>
+        ///          {
+        ///              var connString = @"data source=(LocalDb)\v12.0";
+        ///              var backupFile = new FilePath("C:/tmp/myBackup.bak");
+        ///              RestoreSqlBackup(connString, backupFile); // use database name from the backup, store files in default location
+        ///  
+        ///              RestoreSqlBackup(connString, backupFile, "MyNewDbName"); // rename restored database
+        ///  
+        ///              var newLocation = new DirectoryPath("C:/myDatabases");
+        ///              RestoreSqlBackup(connString, backupFile, "MyNewDbName", newLocation); // place files in special location
+        ///          });
+        ///  </code>
+        ///  </example>
+        [CakeMethodAlias]
+        public static void RestoreSqlBackup(this ICakeContext context, String connectionString, FilePath backupFile, RestoreSqlBackupSettings settings)
+        {
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
+            Guard.ArgumentIsNotNull(backupFile, nameof(backupFile));
+
+            SqlBackupsImpl.RestoreSqlBackup(context, connectionString, backupFile, settings.NewDatabaseName, settings.NewStorageFolder);
+        }
+
+        [CakeMethodAlias]
+        public static void RestoreSqlBackup(this ICakeContext context, String connectionString, FilePath backupFile)
+        {
+            //context.Log.Write(Core.Diagnostics.Verbosity.Diagnostic, Core.Diagnostics.LogLevel.Debug, $"Backup file from {backupFile.MakeAbsolute(context.Environment)}");
+            RestoreSqlBackup(context, connectionString, backupFile, new RestoreSqlBackupSettings());
+        }
+
+
+    }
+    /// <summary>
+    /// Test
+    /// </summary>
+    public class RestoreSqlBackupSettings
+    {
+        //  Name of the database where to restore. If this is not specified, database name is taken from the backup file</param>
+        //  Path where data and log files should be stored.If this is not specified, server defaults will be used</param>
+        public String NewDatabaseName { get; set; }
+        public DirectoryPath NewStorageFolder { get; set; }
     }
 }

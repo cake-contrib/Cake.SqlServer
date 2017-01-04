@@ -31,7 +31,7 @@ namespace Tests
                 var path = GetBackupFilePath();
 
                 // Act
-                RestoreDatabaseImpl.RestoreDatabase(context, ConnectionString, new FilePath(path));
+                SqlBackupsImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path));
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, originalDbName);
@@ -52,7 +52,7 @@ namespace Tests
                 //Arrange
                 var path = GetBackupFilePath();
 
-                RestoreDatabaseImpl.RestoreDatabase(context, ConnectionString, new FilePath(path), databaseName);
+                SqlBackupsImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), databaseName);
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, databaseName);
@@ -75,7 +75,7 @@ namespace Tests
                 var path = GetBackupFilePath();
 
                 // Act
-                RestoreDatabaseImpl.RestoreDatabase(context, ConnectionString, new FilePath(path), newDatabaseName, new DirectoryPath(System.IO.Path.GetTempPath()));
+                SqlBackupsImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), newDatabaseName, new DirectoryPath(System.IO.Path.GetTempPath()));
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, newDatabaseName);
@@ -93,7 +93,7 @@ namespace Tests
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, ConnectionString))
             {
                 // Act
-                var path = RestoreDatabaseImpl.GetDefaultLogPath(connection);
+                var path = SqlBackupsImpl.GetDefaultLogPath(connection);
 
                 // Assert
                 path.Should().NotBeNullOrEmpty();
@@ -107,7 +107,7 @@ namespace Tests
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, ConnectionString))
             {
                 // Act
-                var path = RestoreDatabaseImpl.GetDefaultDataPath(connection);
+                var path = SqlBackupsImpl.GetDefaultDataPath(connection);
 
                 // Assert
                 path.Should().NotBeNullOrEmpty();
@@ -125,7 +125,7 @@ namespace Tests
                 var path = GetBackupFilePath();
 
                 // Act
-                var names = RestoreDatabaseImpl.GetLogicalNames(path, connection);
+                var names = SqlBackupsImpl.GetLogicalNames(path, connection);
 
                 // Assert
                 names.Should().HaveCount(3);
@@ -141,7 +141,7 @@ namespace Tests
                 var path = GetBackupFilePath();
 
                 // Act
-                var names = RestoreDatabaseImpl.GetDatabaseName(path, connection);
+                var names = SqlBackupsImpl.GetDatabaseName(path, connection);
 
                 // Assert
                 names.Should().Be("CakeRestoreTest");
