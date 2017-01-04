@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RestoreSqlBackupSettings.cs" />
     <Compile Include="SqlBackupsImpl.cs" />
     <Compile Include="Sql.cs" />
     <Compile Include="Guard.cs" />

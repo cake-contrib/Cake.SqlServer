@@ -1,5 +1,5 @@
-//#r "build-results/IntergrationTests/Cake.SqlServer.dll"
-#r "src/Cake.SqlServer/bin/debug/Cake.SqlServer.dll"
+#r "build-results/IntergrationTests/Cake.SqlServer.dll"
+//#r "src/Cake.SqlServer/bin/debug/Cake.SqlServer.dll"
 
 var target = Argument("target", "Default");
 
@@ -142,6 +142,7 @@ Task("Default")
     .IsDependentOn("Database-Operations")
     .IsDependentOn("SqlConnection")
     .IsDependentOn("SqlTimeout")
+    .IsDependentOn("Restore-Database")
     ;    
 
 RunTarget(target);

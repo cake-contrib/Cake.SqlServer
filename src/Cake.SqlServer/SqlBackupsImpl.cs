@@ -102,7 +102,7 @@ Restore database {Sql.EscapeName(newDatabaseName)} from disk = @backupFile with
         }
 
 
-        private static String GetFilePath(SqlConnection connection, string newDatabaseName, string oldDatabaseName, DirectoryPath newPath, LogicalNames logicalName)
+        private static String GetFilePath(SqlConnection connection, string oldDatabaseName, string newDatabaseName, DirectoryPath newPath, LogicalNames logicalName)
         {
             var fileName = System.IO.Path.GetFileName(logicalName.PhysicalName);
             fileName = fileName.Replace(oldDatabaseName, newDatabaseName);

@@ -68,7 +68,7 @@ namespace Tests
         [Test]
         public void RestoreDatabase_MoveLocation_DoesNotThrow()
         {
-            var newDatabaseName = "NewCakeTest";
+            var newDatabaseName = "RestoredFromTest.Cake";
             try
             {
                 //Arrange
