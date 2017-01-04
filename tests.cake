@@ -1,5 +1,5 @@
-#r "build-results/IntergrationTests/Cake.SqlServer.dll"
-//#r "src/Cake.SqlServer/bin/debug/Cake.SqlServer.dll"
+//#r "build-results/IntergrationTests/Cake.SqlServer.dll"
+#r "src/Cake.SqlServer/bin/debug/Cake.SqlServer.dll"
 
 var target = Argument("target", "Default");
 
@@ -129,8 +129,8 @@ Task("Restore-Database")
 
 
 		// cleanup
-		DropDatabase(masterConnectionString, "RestoredFromTest.Cake");
-		DropDatabase(masterConnectionString, "CakeRestoreTest");
+		DropDatabase(connString, "RestoredFromTest.Cake");
+		DropDatabase(connString, "CakeRestoreTest");
 	});
 
 
