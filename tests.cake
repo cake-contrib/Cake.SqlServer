@@ -1,5 +1,5 @@
-//#r "build-results/IntergrationTests/Cake.SqlServer.dll"
-#r "src/Cake.SqlServer/bin/debug/Cake.SqlServer.dll"
+#r "build-results/IntergrationTests/Cake.SqlServer.dll"
+//#r "src/Cake.SqlServer/bin/debug/Cake.SqlServer.dll"
 
 var target = Argument("target", "Default");
 
