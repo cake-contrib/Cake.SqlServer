@@ -1,3 +1,6 @@
+### New in 1.5.0
+* `RestoreSqlBackup` provides ability to restore database backups from `.bak` files
+
 ### New in 1.4.0
 * `SetSqlCommandTimeout` provides ability to set default timeout for all SQL operations
 
