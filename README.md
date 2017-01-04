@@ -80,6 +80,35 @@ using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial 
 }
 ```
 
+## Restore Database Backup File
+```c#
+RestoreSqlBackup(String connectionString, FilePath backupFile, RestoreSqlBackupSettings settings)
+RestoreSqlBackup(String connectionString, FilePath backupFile)
+```
+
+Restores the database from a `.bak` file. Options include to rename the target database, specify path where the data/log files are stored and ability to replace existing database. 
+
+If new database name is not provided, db-name is extracted from the backup file; if new storage location for data files is not provided, system default folder is used.
+
+Example:
+
+```c#
+Task("Restore-Database")
+	.Does(() => {
+		var connString = @"data source=(LocalDb)\v12.0";
+
+		var backupFilePath = new FilePath(@".\src\Tests\multiFileBackup.bak");
+		backupFilePath = backupFilePath.MakeAbsolute(Context.Environment);
+
+		RestoreSqlBackup(connString, backupFilePath, new RestoreSqlBackupSettings() 
+			{
+				NewDatabaseName = "RestoredFromTest.Cake",
+				NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()), // place files in special location
+			}); 
+	});
+```
+
+
 ## Usage
 Samples show here are using `LocalDb\v12.0`. This used to be default name for LocalDB instance when installed with SQL Server 2012. Since Sql Server 2014 the default name for LocalDB instance is `MSSQLLocalDB`, making the default instance name for LocalDB looking like this: `(LocalDB)\MSSQLLocalDB`. So before using `v12.0` double check what instance you have installed and go from there. 
 

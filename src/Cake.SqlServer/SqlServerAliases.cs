@@ -350,6 +350,7 @@ namespace Cake.SqlServer
 		///                {
 		///                      NewDatabaseName = "RestoredFromTest.Cake",
 		///                      NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()), // place files in Temp folder
+		///                      WithReplace = true, // tells sql server to discard non-backed up data when overwriting existing database
 		///                }); 
         ///         });
         /// </code>
