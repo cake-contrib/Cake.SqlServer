@@ -19,7 +19,6 @@ namespace Cake.SqlServer
                 var oldDbName = GetDatabaseName(backupFile, connection);
                 newDatabaseName = newDatabaseName ?? oldDbName;
                 var logicalNames = GetLogicalNames(backupFile, connection);
-                var storageFolders = new StorageFolders(connection, oldDbName, newDatabaseName, newStorageFolder);
 
                 var sql = $"Restore database {Sql.EscapeName(newDatabaseName)} from disk = @backupFile with \r\n";
 
@@ -28,7 +27,7 @@ namespace Cake.SqlServer
                     sql += $" move @LName{i} to @LPath{i}";
                     if (i < logicalNames.Count - 1)
                     {
-                        sql += ", \r\n"; // only need coma before penultimate list
+                        sql += ", \r\n"; // only need comma before penultimate list
                     }
                 }
 
@@ -37,7 +36,7 @@ namespace Cake.SqlServer
                 for (var i = 0; i < logicalNames.Count; i++)
                 {
                     command.Parameters.AddWithValue("@LName" + i, logicalNames[i].LogicalName);
-                    command.Parameters.AddWithValue("@LPath" + i, storageFolders.GetPath(logicalNames[i]));
+                    command.Parameters.AddWithValue("@LPath" + i, GetFilePath(connection, oldDbName, newDatabaseName, newStorageFolder, logicalNames[i]));
                 }
                 command.ExecuteNonQuery();
             }
@@ -83,6 +82,28 @@ namespace Cake.SqlServer
         }
 
 
+        private static String GetFilePath(SqlConnection connection, string newDatabaseName, string oldDatabaseName, DirectoryPath newPath, LogicalNames logicalName)
+        {
+            var fileName = System.IO.Path.GetFileName(logicalName.PhysicalName);
+            fileName = fileName.Replace(oldDatabaseName, newDatabaseName);
+
+            var folder = newPath;
+
+            if (logicalName.Type.Equals("L", StringComparison.OrdinalIgnoreCase))
+            {
+                folder = folder ?? GetDefaultLogPath(connection);
+            }
+            if (logicalName.Type.Equals("D", StringComparison.OrdinalIgnoreCase))
+            {
+                folder = folder ?? GetDefaultDataPath(connection);
+            }
+
+            var fullPath = folder + "\\" + fileName;
+
+            return fullPath.Replace("/", "\\");
+        }
+
+
         internal static String GetDefaultLogPath(SqlConnection connection)
         {
             var sql = "select serverproperty('instancedefaultlogpath') as defaultpath";
@@ -109,6 +130,7 @@ namespace Cake.SqlServer
             return ReadSingleString(command, columnName);
         }
 
+
         private static string ReadSingleString(SqlCommand sqlCommand, String columnName)
         {
             using (var reader = sqlCommand.ExecuteReader())
@@ -124,63 +146,12 @@ namespace Cake.SqlServer
         }
 
 
+
         internal class LogicalNames
         {
             public String LogicalName { get; set; }
             public String PhysicalName { get; set; }
             public String Type { get; set; }
-        }
-
-
-        internal class StorageFolders
-        {
-            private readonly DirectoryPath newPath;
-            private readonly String newDatabaseName;
-            private readonly String oldDatabaseName;
-            private readonly SqlConnection connection;
-
-            public StorageFolders(SqlConnection connection, string newDatabaseName, string oldDatabaseName, DirectoryPath newPath)
-            {
-                this.connection = connection;
-                this.newDatabaseName = newDatabaseName;
-                this.oldDatabaseName = oldDatabaseName;
-                this.newPath = newPath;
-            }
-
-            public String GetPath(LogicalNames logicalName)
-            {
-                var fileName = System.IO.Path.GetFileName(logicalName.PhysicalName);
-                fileName = fileName.Replace(oldDatabaseName, newDatabaseName);
-
-                var folder = newPath;
-
-                if (logicalName.Type.Equals("L", StringComparison.OrdinalIgnoreCase))
-                {
-                    folder = folder ?? GetDefaultLogPath(connection);
-                }
-                if (logicalName.Type.Equals("D", StringComparison.OrdinalIgnoreCase))
-                {
-                    folder = folder ?? GetDefaultDataPath(connection);
-                }
-
-                var fullPath = folder + "\\" + fileName;
-
-                return fullPath.Replace("/", "\\");
-            }
-
-            //private String GetLogPath()
-            //{
-            //    var folder = newPath ?? GetDefaultLogPath(connection);
-            //    var file = folder + "\\" + newDatabaseName + ".ldf";
-            //    return file.Replace("/", "\\");
-            //}
-
-            //private String GetDataPath()
-            //{
-            //    var folder = newPath ?? GetDefaultDataPath(connection);
-            //    var file = folder + "\\" + newDatabaseName + ".mdf";
-            //    return file.Replace("/", "\\");
-            //}
         }
     }
 }
