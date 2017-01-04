@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Cake.Core;
@@ -8,6 +7,7 @@ using Cake.Core.IO;
 using Cake.SqlServer;
 using FluentAssertions;
 using NSubstitute;
+
 
 namespace Tests
 {

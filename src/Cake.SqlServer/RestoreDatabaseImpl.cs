@@ -20,7 +20,15 @@ namespace Cake.SqlServer
                 newDatabaseName = newDatabaseName ?? oldDbName;
                 var logicalNames = GetLogicalNames(backupFile, connection);
 
-                var sql = $"Restore database {Sql.EscapeName(newDatabaseName)} from disk = @backupFile with \r\n";
+                var sql = $@"
+if db_id({Sql.EscapeNameQuotes(newDatabaseName)}) is not null 
+begin
+    use master;
+    alter database {Sql.EscapeName(newDatabaseName)} set single_user with rollback immediate;
+end
+
+Restore database {Sql.EscapeName(newDatabaseName)} from disk = @backupFile with 
+";
 
                 for (var i = 0; i < logicalNames.Count; i++)
                 {
@@ -30,6 +38,8 @@ namespace Cake.SqlServer
                         sql += ", \r\n"; // only need comma before penultimate list
                     }
                 }
+
+                sql += $";\r\n alter database {Sql.EscapeName(newDatabaseName)} set multi_user;";
 
                 var command = new SqlCommand(sql, connection);
                 command.Parameters.AddWithValue("@backupFile", backupFile.ToString());
@@ -41,6 +51,7 @@ namespace Cake.SqlServer
                 command.ExecuteNonQuery();
             }
         }
+
 
         internal static List<LogicalNames> GetLogicalNames(FilePath backupFile, SqlConnection connection)
         {

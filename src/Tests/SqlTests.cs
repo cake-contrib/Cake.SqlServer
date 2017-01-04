@@ -17,5 +17,18 @@ namespace Tests
 
             result.Should().Be(expected);
         }
+
+
+        [TestCase("hello", "'hello'")]
+        [TestCase("hello'", "'hello'''")]
+        [TestCase("'hello'", "'''hello'''")]
+        [TestCase("hell'o", "'hell''o'")]
+        [TestCase("hell''o", "'hell''''o'")]
+        public void EscapeNameQuotes_Doubles_Quotes(string incoming, string expected)
+        {
+            var result = Sql.EscapeNameQuotes(incoming);
+
+            result.Should().Be(expected);
+        }
     }
 }

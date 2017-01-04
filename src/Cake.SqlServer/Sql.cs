@@ -25,12 +25,25 @@ namespace Cake.SqlServer
             while (true)
             {
                 var nextQuote = name.IndexOf(']', lastQuote + 1);
-                if (nextQuote == -1) break;
+                if (nextQuote == -1)
+                {
+                    break;
+                }
                 sb.Append(name, lastQuote, nextQuote - lastQuote + 1);
                 lastQuote = nextQuote;
             }
 
             return sb.Append(name, lastQuote, name.Length - lastQuote).Append(']').ToString();
+        }
+
+
+
+        internal static String EscapeNameQuotes(string name)
+        {
+            var result = name.Replace("'", "''");
+
+            result = "'" + result + "'";
+            return result;
         }
     }
 }
