@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using Cake.Core;
 using Cake.Core.IO;
-
+using Cake.Core.Diagnostics;
 
 namespace Cake.SqlServer
 {
-    // todo logging
     internal class RestoreDatabaseImpl
     {
         // if database name is not provided, dbname from the backup is used.
@@ -18,6 +17,8 @@ namespace Cake.SqlServer
             {
                 var oldDbName = GetDatabaseName(backupFile, connection);
                 newDatabaseName = newDatabaseName ?? oldDbName;
+                context.Log.Information($"Using database name '{newDatabaseName}' to be a name for the restored database");
+
                 var logicalNames = GetLogicalNames(backupFile, connection);
 
                 var sql = $@"
@@ -41,12 +42,20 @@ Restore database {Sql.EscapeName(newDatabaseName)} from disk = @backupFile with
 
                 sql += $";\r\n alter database {Sql.EscapeName(newDatabaseName)} set multi_user;";
 
+                context.Log.Debug($"Executing SQL : {sql}");
+
                 var command = new SqlCommand(sql, connection);
                 command.Parameters.AddWithValue("@backupFile", backupFile.ToString());
                 for (var i = 0; i < logicalNames.Count; i++)
                 {
-                    command.Parameters.AddWithValue("@LName" + i, logicalNames[i].LogicalName);
-                    command.Parameters.AddWithValue("@LPath" + i, GetFilePath(connection, oldDbName, newDatabaseName, newStorageFolder, logicalNames[i]));
+                    var lParameterName = "@LName" + i;
+                    context.Log.Debug($"Adding parameter '{lParameterName}' with value '{logicalNames[i].LogicalName}'");
+                    command.Parameters.AddWithValue(lParameterName, logicalNames[i].LogicalName);
+
+                    var filePath = GetFilePath(connection, oldDbName, newDatabaseName, newStorageFolder, logicalNames[i]);
+                    var pathParamName = "@LPath" + i;
+                    context.Log.Debug($"Adding parameter '{pathParamName}' with value '{filePath}'");
+                    command.Parameters.AddWithValue(pathParamName, filePath);
                 }
                 command.ExecuteNonQuery();
             }
