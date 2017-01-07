@@ -107,10 +107,10 @@ Task("Run-Unit-Tests")
     {  
         if(FileExists(parameters.TestResultsFile) && parameters.IsRunningOnAppVeyor)
         {
-            // Upload results
+            Information("File {0} Exists!", parameters.TestResultsFile);
             AppVeyor.UploadTestResults(parameters.TestResultsFile, AppVeyorTestResultsType.NUnit3);
         }
-    });;
+    });
 
 
 

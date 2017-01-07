@@ -121,7 +121,7 @@ public class BuildParameters
     {
         get
         {
-            return ResultBinDir + "/TestsResults.xml";
+            return BuildResultDir + "/TestsResults.xml";
         }
     }    
 }
