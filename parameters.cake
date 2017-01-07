@@ -20,7 +20,6 @@ public class BuildParameters
     public string SemVersion { get; private set; }
 
 
-
     public void Initialize(ICakeContext context)
     {
         context.Information("Executing GitVersion");
@@ -115,6 +114,14 @@ public class BuildParameters
         get
         {
             return !IsLocalBuild && !IsPullRequest && !IsTagged || IsMasterBranch;
+        }
+    }    
+
+    public string TestResultsFile 
+    {
+        get
+        {
+            return ResultBinDir + "/TestsResults.xml";
         }
     }    
 }

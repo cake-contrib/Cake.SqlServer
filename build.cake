@@ -98,10 +98,19 @@ Task("Run-Unit-Tests")
 	{
 		var testsFile ="./src/**/bin/" + configuration + "/Tests.dll";
 		Information(testsFile);
+
 		NUnit3(testsFile, new NUnit3Settings {
-			NoResults = false,
+            Results = parameters.TestResultsFile,
 		});
-});
+    })
+    .Finally(() =>
+    {  
+        if(FileExists(parameters.TestResultsFile) && parameters.IsRunningOnAppVeyor)
+        {
+            // Upload results
+            AppVeyor.UploadTestResults(parameters.TestResultsFile, AppVeyorTestResultsType.NUnit3);
+        }
+    });;
 
 
 
