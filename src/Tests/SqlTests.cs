@@ -6,6 +6,12 @@ namespace Tests
 {
     public class SqlTests
     {
+        [Test]
+        public void BadTest()
+        {
+            true.Should().BeFalse();
+        }
+
         [TestCase("hello", "[hello]")]
         [TestCase("hello]", "[hello]]]")]
         [TestCase("[hello]", "[[hello]]]")]
