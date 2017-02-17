@@ -1,3 +1,6 @@
+### New in 1.6.0
+* Creating and restoring BACPAC files
+
 ### New in 1.5.0
 * `RestoreSqlBackup` provides ability to restore database backups from `.bak` files
 
