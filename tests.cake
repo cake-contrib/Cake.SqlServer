@@ -1,4 +1,4 @@
-#r "build-results/IntergrationTests/Cake.SqlServer.dll"
+#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer
 //#r "src/Cake.SqlServer/bin/debug/Cake.SqlServer.dll"
 
 var target = Argument("target", "Default");
@@ -100,8 +100,13 @@ Task("SqlConnection")
 			ExecuteSqlFile(connection, "install.sql");		
 		}
 
-		DropDatabase(masterConnectionString, dbName);
+	})
+	.Finally(() =>
+	{  
+		// Cleanup
+		DropDatabase(@"data source=(LocalDb)\v12.0;", "OpenConnection");
 	});
+
 
 Task("SqlTimeout")
 	.Does(() => {
@@ -111,6 +116,7 @@ Task("SqlTimeout")
 			ExecuteSqlCommand(connection, "WAITFOR DELAY '00:00:02'");
 		}
 	});
+
 
 Task("Restore-Database")
 	.Does(() => {
@@ -126,11 +132,49 @@ Task("Restore-Database")
 				NewDatabaseName = "RestoredFromTest.Cake",
 				NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()), // place files in special location
 			}); 
+	})
+	.Finally(() =>
+	{  
+		// Cleanup
+		DropDatabase(@"data source=(LocalDb)\v12.0", "RestoredFromTest.Cake");
+		DropDatabase(@"data source=(LocalDb)\v12.0", "CakeRestoreTest");
+	});
 
 
-		// cleanup
-		DropDatabase(connString, "RestoredFromTest.Cake");
-		DropDatabase(connString, "CakeRestoreTest");
+Task("Create-Bacpac")
+	.Does(() =>{
+		var connString = @"data source=(LocalDb)\v12.0";
+
+		var dbName = "ForBacpac";
+
+		CreateDatabase(connString, dbName);
+
+		CreateBacpacFile(connString, dbName, new FilePath(@".\ForBacpac.bacpac"));
+	})
+	.Finally(() =>
+	{  
+		// Cleanup
+		DropDatabase(@"data source=(LocalDb)\v12.0", "ForBacpac");
+		if(FileExists(@".\ForBacpac.bacpac"))
+		{
+			DeleteFile(@".\ForBacpac.bacpac");
+		}
+	});
+
+
+Task("Restore-From-Bacpac")
+	.Does(() =>{
+		var connString = @"data source=(LocalDb)\v12.0";
+
+		var dbName = "FromBacpac";
+
+		var file = new FilePath(@".\src\Tests\Nsaga.bacpac");
+		RestoreBacpac(connString, dbName, file);
+	})
+	.Finally(() =>
+	{  
+		// Cleanup
+		DropDatabase(@"data source=(LocalDb)\v12.0", "FromBacpac");
 	});
 
 
@@ -143,6 +187,8 @@ Task("Default")
     .IsDependentOn("SqlConnection")
     .IsDependentOn("SqlTimeout")
     .IsDependentOn("Restore-Database")
+    .IsDependentOn("Create-Bacpac")
+    .IsDependentOn("Restore-From-Bacpac")
     ;    
 
 RunTarget(target);

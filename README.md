@@ -150,6 +150,40 @@ Task("Database-Operations")
 	});
 ```
 
+# Working with BACPAC files
+This package also includes a wrapper to create bacpac files and restore them back into database. This is a thin wrapper around `Microsoft.SqlServer.DacFx` package. 
+
+To create a bacpac file from a database call 
+
+```c#
+Task("Create-Bacpac")
+	.Does(() =>{
+		var connString = @"data source=(LocalDb)\v12.0";
+
+		var dbName = "ForBacpac";
+
+       var resultingFile = new FilePath(@".\ForBacpac.bacpac")
+
+		CreateBacpacFile(connString, dbName, resultingFile);
+	});
+```
+
+To restore from bacpac file into a database use this:
+
+```c#
+Task("Restore-From-Bacpac")
+	.Does(() =>{
+		var connString = @"data source=(LocalDb)\v12.0";
+
+		var dbName = "FromBacpac";
+
+		var file = new FilePath(@".\path\to\my.bacpac");
+
+		RestoreBacpac(connString, dbName, file);
+	})
+```
+
+
 # Working with LocalDB 
 This package includes a wrapper for working with LocalDB. LocalDB is a lightweight SQL Server version that is great for running tests against. This package includes commands to `Create`, `Start`, `Stop` and `Delete` instances of LocalDB. To be used like this:
 

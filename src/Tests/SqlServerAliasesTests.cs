@@ -5,13 +5,11 @@ using System.IO;
 using System.Linq;
 using Cake.Core;
 using Cake.SqlServer;
-using Dapper;
 using FluentAssertions;
 using NUnit.Framework;
 using NSubstitute;
-
-
 // ReSharper disable InvokeAsExtensionMethod
+
 
 namespace Tests
 {
@@ -295,7 +293,6 @@ namespace Tests
 
             // Cleanup
             SqlHelpers.ExecuteSql(ConnectionString, "if (select DB_ID('some'')) is null create database hack--')) is not null drop database [some')) is null create database hack--]");
-            ExecuteSql("if (select DB_ID('some'')) is null create database hack--')) is not null drop database [some')) is null create database hack--]");
         }
 
         [Test]
@@ -319,44 +316,6 @@ namespace Tests
         }
 
 
-        private void ExecuteSql(String sql)
-        {
-            using (var connection = new SqlConnection(ConnectionString))
-            {
-                connection.Open();
-                connection.Execute(sql);
-            }
-        }
-
-        private static bool DbExists(String dbName)
-        {
-            using (var connection = new SqlConnection(ConnectionString))
-            {
-                connection.Open();
-                var db = connection.QuerySingle<SqlObject>($"select DB_ID('{dbName}') as Id");
-
-                return db.Id.HasValue;
-            }
-        }
-
-
-
-        private static bool TableExists(string dbName, string tableName)
-        {
-            using (var connection = new SqlConnection(ConnectionString))
-            {
-                connection.Open();
-                var db = connection.QuerySingle<SqlObject>($"select OBJECT_ID('[{dbName}].dbo.{tableName}')  as Id");
-
-                return db.Id.HasValue;
-            }
-        }
-
-
-        private void DropDatabase(string databaseName)
-        {
-            ExecuteSql($"if (select DB_ID('{databaseName}')) is not null drop database [{databaseName}]");
-        }
 
         private class SqlObject
         {

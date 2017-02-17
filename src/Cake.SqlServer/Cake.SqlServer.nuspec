@@ -16,11 +16,11 @@
     <releaseNotes>Initial Release</releaseNotes>
     <tags>Cake Script Build SQLServer </tags>
   </metadata>
-
   <files>
     <file src="Cake.SqlServer.dll" target="lib/net45" />
     <file src="Cake.SqlServer.pdb" target="lib/net45" />
     <file src="Cake.SqlServer.xml" target="lib/net45"/>
+    <file src="Microsoft.*.dll" target="lib/net45"/>
     <file src="LICENSE" />
   </files>
 </package>

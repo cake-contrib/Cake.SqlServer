@@ -2,7 +2,6 @@ public class BuildParameters
 {
     public static String ProjectDir = "./src/Cake.SqlServer/";
     public static String Solution = "./src/Cake.SqlServer.sln";
-    public static String IntegrationTestsFolder = "./build-results/IntergrationTests";
 
     public DirectoryPath BuildDir { get; private set; }
 

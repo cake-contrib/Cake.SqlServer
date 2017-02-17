@@ -44,7 +44,6 @@ Task("Clean")
         Directory("./src/Tests/obj/"),
         Directory(BuildParameters.ProjectDir + "bin"),
         Directory(BuildParameters.ProjectDir + "obj"),
-        Directory(BuildParameters.IntegrationTestsFolder),
     });
 });
 
@@ -119,15 +118,14 @@ Task("Copy-Files")
     .Does(() =>
 	{
 		EnsureDirectoryExists(parameters.ResultBinDir);
-		EnsureDirectoryExists(BuildParameters.IntegrationTestsFolder);
 
 		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.dll", parameters.ResultBinDir);
 		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.pdb", parameters.ResultBinDir);
 		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.xml", parameters.ResultBinDir);
+
+		CopyFiles(parameters.BuildDir + "/Microsoft.*.dll", parameters.ResultBinDir);
+
 		CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, parameters.ResultBinDir);
-
-
-		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.dll", BuildParameters.IntegrationTestsFolder);
 	});
 
 
