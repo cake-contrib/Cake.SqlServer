@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <id>Cake.SqlServer</id>
+    <version>0.0.0</version>
+    <authors>Max Vasilyev</authors>
+    <owners>trailmax, cake-contrib</owners>
+    <title>Cake.SqlServer</title>
+    <description>Cake Build addon for executing some operations in MS Sql Server.</description>
+    <summary>SqlServer tools addon for Cake Build.</summary>
+    <licenseUrl>https://github.com/AMVSoftware/Cake.SqlServer/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/AMVSoftware/Cake.SqlServer</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/cake-build/graphics/master/png/cake-medium.png</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <copyright>Copyright (c) AMV Software 2015</copyright>
+    <releaseNotes>Initial Release</releaseNotes>
+    <tags>Cake Script Build SQLServer </tags>
+  </metadata>
+  <files>
+    <file src="Cake.SqlServer.dll" target="lib/net45" />
+    <file src="Cake.SqlServer.pdb" target="lib/net45" />
+    <file src="Cake.SqlServer.xml" target="lib/net45"/>
+    <file src="Microsoft.*.dll" target="lib/net45"/>
+    <file src="LICENSE" />
+  </files>
+</package>

@@ -7,7 +7,7 @@ using Cake.Core.Diagnostics;
 
 namespace Cake.SqlServer
 {
-    internal class SqlBackupsImpl
+    public class SqlBackupsImpl
     {
         // if database name is not provided, dbname from the backup is used.
         // if newStoragePath is not provided, system defaults are used

@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0-*",
+
+  "dependencies": {
+    "Cake.Core": "0.18.0",
+    "System.Data.SqlClient": "4.3.0",
+    "NETStandard.Library": "1.6.0"
+  },
+
+  "frameworks": {
+    "net451": {
+      "dependencies": {
+        "Microsoft.SqlServer.Dac": "1.0.3"
+      }
+    },
+    "netstandard1.6": {
+      "imports": "dnxcore50",
+      "dependencies": {
+        }
+    }
+  }
+}

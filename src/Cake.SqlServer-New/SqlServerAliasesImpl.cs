@@ -156,7 +156,7 @@ namespace Cake.SqlServer
             }
             catch (SqlException exception)
             {
-                if (exception.Message.StartsWith("A network-related or instance-specific error", StringComparison.InvariantCultureIgnoreCase)
+                if (exception.Message.StartsWith("A network-related or instance-specific error", StringComparison.OrdinalIgnoreCase)
                         && (connectionString.ToLower().Contains("localdb") || connectionString.ToLower().Contains("\v")))
                 {
                     var errorMessage = "Looks like you are trying to connect to LocalDb. Have you correctly escaped your connection string with '@'? It should look like 'var connString = @\"(localDb)\\v12.0\"'";
