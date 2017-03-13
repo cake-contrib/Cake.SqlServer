@@ -20,13 +20,6 @@
   },
 
   "frameworks": {
-    "Net451": {
-
-    }
-    //"netcoreapp1.0": {
-    //  "dependencies": {
-    //    "Microsoft.NETCore.App": "1.0.1"
-    //  }
-    //}
+    "Net451": { }
   }
 }
