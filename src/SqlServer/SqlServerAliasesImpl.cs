@@ -9,11 +9,11 @@ using Cake.Core.IO;
 
 namespace Cake.SqlServer
 {
-    public static class SqlServerAliasesImpl
+    internal static class SqlServerAliasesImpl
     {
         private static int? commandTimeout;
 
-        public static void DropDatabase(ICakeContext context, String connectionString, String databaseName)
+        internal static void DropDatabase(ICakeContext context, String connectionString, String databaseName)
         {
             var dropDatabaseSql =
                 $@"if (select DB_ID(@DatabaseName)) is not null
@@ -46,7 +46,7 @@ namespace Cake.SqlServer
             }
         }
 
-        public static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName)
+        internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName)
         {
             var createDbSql = $"if (select DB_ID(@DatabaseName)) is null create database {Sql.EscapeName(databaseName)}";
 
@@ -64,7 +64,7 @@ namespace Cake.SqlServer
         }
 
 
-        public static void CreateDatabase(ICakeContext context, String connectionString, String databaseName)
+        internal static void CreateDatabase(ICakeContext context, String connectionString, String databaseName)
         {
             var createDbSql = $"create database {Sql.EscapeName(databaseName)}";
 
@@ -81,14 +81,14 @@ namespace Cake.SqlServer
         }
 
 
-        public static void DropAndCreateDatabase(ICakeContext context, String connectionString, String databaseName)
+        internal static void DropAndCreateDatabase(ICakeContext context, String connectionString, String databaseName)
         {
             DropDatabase(context, connectionString, databaseName);
             CreateDatabase(context, connectionString, databaseName);
         }
 
 
-        public static void ExecuteSqlCommand(ICakeContext context, String connectionString, string sqlCommands)
+        internal static void ExecuteSqlCommand(ICakeContext context, String connectionString, string sqlCommands)
         {
             using (var connection = OpenSqlConnection(context, connectionString))
             {
@@ -97,7 +97,7 @@ namespace Cake.SqlServer
         }
 
 
-        public static void ExecuteSqlCommand(ICakeContext context, SqlConnection connection, string sqlCommands)
+        internal static void ExecuteSqlCommand(ICakeContext context, SqlConnection connection, string sqlCommands)
         {
             var commandStrings = Regex.Split(sqlCommands, @"^\s*GO\s*$",
                 RegexOptions.Multiline | RegexOptions.IgnoreCase);
@@ -122,7 +122,7 @@ namespace Cake.SqlServer
         }
 
 
-        public static void ExecuteSqlFile(ICakeContext context, String connectionString, FilePath sqlFile)
+        internal static void ExecuteSqlFile(ICakeContext context, String connectionString, FilePath sqlFile)
         {
             using (var connection = OpenSqlConnection(context, connectionString))
             {
@@ -131,7 +131,7 @@ namespace Cake.SqlServer
         }
 
 
-        public static void ExecuteSqlFile(ICakeContext context, SqlConnection connection, FilePath sqlFile)
+        internal static void ExecuteSqlFile(ICakeContext context, SqlConnection connection, FilePath sqlFile)
         {
             var sqlFilePath = sqlFile.FullPath;
 
@@ -145,7 +145,7 @@ namespace Cake.SqlServer
         }
 
 
-        public static SqlConnection OpenSqlConnection(ICakeContext context, String connectionString)
+        internal static SqlConnection OpenSqlConnection(ICakeContext context, String connectionString)
         {
             try
             {
@@ -156,6 +156,16 @@ namespace Cake.SqlServer
             }
             catch (SqlException exception)
             {
+#if Net541
+                if (exception.Message.StartsWith("A network-related or instance-specific error", StringComparison.InvariantCultureIgnoreCase)
+                        && (connectionString.ToLower().Contains("localdb") || connectionString.ToLower().Contains("\v")))
+                {
+                    var errorMessage = "Looks like you are trying to connect to LocalDb. Have you correctly escaped your connection string with '@'? It should look like 'var connString = @\"(localDb)\\v12.0\"'";
+                    context.Log.Error(errorMessage);
+                    var newException = new Exception(errorMessage, exception);
+                    throw newException;
+                }
+#else
                 if (exception.Message.StartsWith("A network-related or instance-specific error", StringComparison.OrdinalIgnoreCase)
                         && (connectionString.ToLower().Contains("localdb") || connectionString.ToLower().Contains("\v")))
                 {
@@ -164,6 +174,7 @@ namespace Cake.SqlServer
                     var newException = new Exception(errorMessage, exception);
                     throw newException;
                 }
+#endif              
                 throw;
             }
         }

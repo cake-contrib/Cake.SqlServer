@@ -6,7 +6,6 @@ using Cake.Core;
 using Cake.Core.IO;
 using Cake.SqlServer;
 using FluentAssertions;
-using Microsoft.DotNet.InternalAbstractions;
 using NSubstitute;
 
 

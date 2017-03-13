@@ -5,10 +5,10 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Tests")]
 namespace Cake.SqlServer
 {
-    public static class Guard
+    internal static class Guard
     {
         [DebuggerHidden]
-        public static void ArgumentIsNotNull(object value, string argumentName)
+        internal static void ArgumentIsNotNull(object value, string argumentName)
         {
             if (value is String)
             {

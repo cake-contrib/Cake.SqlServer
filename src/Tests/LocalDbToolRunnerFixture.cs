@@ -4,7 +4,7 @@ using Cake.SqlServer;
 using Cake.Testing;
 using Cake.Testing.Fixtures;
 
-namespace Tests_New
+namespace Tests
 {
     internal class LocalDbToolRunnerFixture : ToolFixture<LocalDbSettings>
     {

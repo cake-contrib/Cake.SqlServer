@@ -3,7 +3,7 @@ using Cake.Core.Tooling;
 
 namespace Cake.SqlServer
 {
-    public class LocalDbSettings : ToolSettings
+    internal class LocalDbSettings : ToolSettings
     {
         public LocalDbSettings()
         {
@@ -32,7 +32,7 @@ namespace Cake.SqlServer
         V12,
     }
 
-    public enum LocalDbAction
+    internal enum LocalDbAction
     {
         Create,
         Delete,

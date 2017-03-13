@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -7,7 +6,6 @@ using System.Linq;
 using Cake.Core;
 using Cake.SqlServer;
 using FluentAssertions;
-using Microsoft.DotNet.InternalAbstractions;
 using NUnit.Framework;
 using NSubstitute;
 // ReSharper disable InvokeAsExtensionMethod

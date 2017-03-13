@@ -5,9 +5,7 @@ using Cake.Core;
 using NUnit.Framework;
 using Cake.SqlServer;
 using FluentAssertions;
-using Microsoft.DotNet.InternalAbstractions;
 using NSubstitute;
-using NUnit.Framework.Internal.Commands;
 
 
 namespace Tests
