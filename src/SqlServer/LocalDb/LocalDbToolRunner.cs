@@ -8,7 +8,7 @@ using Cake.Core.Tooling;
 
 namespace Cake.SqlServer
 {
-    internal class LocalDbToolRunner : Tool<LocalDbSettings>
+    public class LocalDbToolRunner : Tool<LocalDbSettings>
     {
         private readonly IFileSystem fileSystem;
         private readonly ICakeEnvironment environment;
@@ -51,7 +51,7 @@ namespace Cake.SqlServer
             };
         }
 
-        internal void Run(LocalDbSettings settings)
+        public void Run(LocalDbSettings settings)
         {
             if (String.IsNullOrEmpty(settings.InstanceName))
             {

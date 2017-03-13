@@ -4,12 +4,12 @@ using System.Text;
 namespace Cake.SqlServer
 {
     //Idea is taken from here: https://gist.github.com/jnm2/9664d7bb31b8ea1933b5412c0811858d
-    internal static class Sql
+    public static class Sql
     {
         /// <summary>
         /// Performance-optimized SQL-safe name.
         /// </summary>
-        internal static String EscapeName(string name)
+        public static String EscapeName(string name)
         {
             var sb = new StringBuilder();
             sb.Append('[');
@@ -38,7 +38,7 @@ namespace Cake.SqlServer
 
 
 
-        internal static String EscapeNameQuotes(string name)
+        public static String EscapeNameQuotes(string name)
         {
             var result = name.Replace("'", "''");
 

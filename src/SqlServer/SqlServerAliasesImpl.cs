@@ -9,11 +9,11 @@ using Cake.Core.IO;
 
 namespace Cake.SqlServer
 {
-    internal static class SqlServerAliasesImpl
+    public static class SqlServerAliasesImpl
     {
         private static int? commandTimeout;
 
-        internal static void DropDatabase(ICakeContext context, String connectionString, String databaseName)
+        public static void DropDatabase(ICakeContext context, String connectionString, String databaseName)
         {
             var dropDatabaseSql =
                 $@"if (select DB_ID(@DatabaseName)) is not null
@@ -46,7 +46,7 @@ namespace Cake.SqlServer
             }
         }
 
-        internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName)
+        public static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName)
         {
             var createDbSql = $"if (select DB_ID(@DatabaseName)) is null create database {Sql.EscapeName(databaseName)}";
 
@@ -64,7 +64,7 @@ namespace Cake.SqlServer
         }
 
 
-        internal static void CreateDatabase(ICakeContext context, String connectionString, String databaseName)
+        public static void CreateDatabase(ICakeContext context, String connectionString, String databaseName)
         {
             var createDbSql = $"create database {Sql.EscapeName(databaseName)}";
 
@@ -81,14 +81,14 @@ namespace Cake.SqlServer
         }
 
 
-        internal static void DropAndCreateDatabase(ICakeContext context, String connectionString, String databaseName)
+        public static void DropAndCreateDatabase(ICakeContext context, String connectionString, String databaseName)
         {
             DropDatabase(context, connectionString, databaseName);
             CreateDatabase(context, connectionString, databaseName);
         }
 
 
-        internal static void ExecuteSqlCommand(ICakeContext context, String connectionString, string sqlCommands)
+        public static void ExecuteSqlCommand(ICakeContext context, String connectionString, string sqlCommands)
         {
             using (var connection = OpenSqlConnection(context, connectionString))
             {
@@ -97,7 +97,7 @@ namespace Cake.SqlServer
         }
 
 
-        internal static void ExecuteSqlCommand(ICakeContext context, SqlConnection connection, string sqlCommands)
+        public static void ExecuteSqlCommand(ICakeContext context, SqlConnection connection, string sqlCommands)
         {
             var commandStrings = Regex.Split(sqlCommands, @"^\s*GO\s*$",
                 RegexOptions.Multiline | RegexOptions.IgnoreCase);
@@ -122,7 +122,7 @@ namespace Cake.SqlServer
         }
 
 
-        internal static void ExecuteSqlFile(ICakeContext context, String connectionString, FilePath sqlFile)
+        public static void ExecuteSqlFile(ICakeContext context, String connectionString, FilePath sqlFile)
         {
             using (var connection = OpenSqlConnection(context, connectionString))
             {
@@ -131,7 +131,7 @@ namespace Cake.SqlServer
         }
 
 
-        internal static void ExecuteSqlFile(ICakeContext context, SqlConnection connection, FilePath sqlFile)
+        public static void ExecuteSqlFile(ICakeContext context, SqlConnection connection, FilePath sqlFile)
         {
             var sqlFilePath = sqlFile.FullPath;
 
@@ -145,7 +145,7 @@ namespace Cake.SqlServer
         }
 
 
-        internal static SqlConnection OpenSqlConnection(ICakeContext context, String connectionString)
+        public static SqlConnection OpenSqlConnection(ICakeContext context, String connectionString)
         {
             try
             {

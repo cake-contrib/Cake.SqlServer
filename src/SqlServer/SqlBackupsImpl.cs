@@ -11,7 +11,7 @@ namespace Cake.SqlServer
     {
         // if database name is not provided, dbname from the backup is used.
         // if newStoragePath is not provided, system defaults are used
-        internal static void RestoreSqlBackup(ICakeContext context, String connectionString, FilePath backupFile, RestoreSqlBackupSettings settings)
+        public static void RestoreSqlBackup(ICakeContext context, String connectionString, FilePath backupFile, RestoreSqlBackupSettings settings)
         {
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, connectionString))
             {
@@ -66,7 +66,7 @@ Restore database {Sql.EscapeName(newDatabaseName)} from disk = @backupFile with
         }
 
 
-        internal static List<LogicalNames> GetLogicalNames(FilePath backupFile, SqlConnection connection)
+        public static List<LogicalNames> GetLogicalNames(FilePath backupFile, SqlConnection connection)
         {
             var fileListSql = @"RESTORE FILELISTONLY from Disk = @backupFile";
             var command = SqlServerAliasesImpl.CreateSqlCommand(fileListSql, connection);
@@ -94,7 +94,7 @@ Restore database {Sql.EscapeName(newDatabaseName)} from disk = @backupFile with
         }
 
 
-        internal static String GetDatabaseName(FilePath backupFile, SqlConnection connection)
+        public static String GetDatabaseName(FilePath backupFile, SqlConnection connection)
         {
             var sql = @"restore headeronly from disk = @backupFile";
             var command = SqlServerAliasesImpl.CreateSqlCommand(sql, connection);
@@ -128,7 +128,7 @@ Restore database {Sql.EscapeName(newDatabaseName)} from disk = @backupFile with
         }
 
 
-        internal static String GetDefaultLogPath(SqlConnection connection)
+        public static String GetDefaultLogPath(SqlConnection connection)
         {
             var sql = "select serverproperty('instancedefaultlogpath') as defaultpath";
 
@@ -138,7 +138,7 @@ Restore database {Sql.EscapeName(newDatabaseName)} from disk = @backupFile with
         }
 
 
-        internal static String GetDefaultDataPath(SqlConnection connection)
+        public static String GetDefaultDataPath(SqlConnection connection)
         {
             var sql = "select serverproperty('instancedefaultdatapath') as defaultpath";
 
@@ -171,7 +171,7 @@ Restore database {Sql.EscapeName(newDatabaseName)} from disk = @backupFile with
 
 
 
-        internal class LogicalNames
+        public class LogicalNames
         {
             public String LogicalName { get; set; }
             public String PhysicalName { get; set; }

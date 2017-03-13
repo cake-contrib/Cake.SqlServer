@@ -7,8 +7,8 @@
 
   <Import Project="$(VSToolsPath)\DotNet\Microsoft.DotNet.Props" Condition="'$(VSToolsPath)' != ''" />
   <PropertyGroup Label="Globals">
-    <ProjectGuid>6728db16-e8f6-4a77-bffb-fb81a59e8f5c</ProjectGuid>
-    <RootNamespace>Cake.SqlServer_New</RootNamespace>
+    <ProjectGuid>1d3cb9ff-73d3-4720-b40e-dd863cbc2363</ProjectGuid>
+    <RootNamespace>SqlServer</RootNamespace>
     <BaseIntermediateOutputPath Condition="'$(BaseIntermediateOutputPath)'=='' ">.\obj</BaseIntermediateOutputPath>
     <OutputPath Condition="'$(OutputPath)'=='' ">.\bin\</OutputPath>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>

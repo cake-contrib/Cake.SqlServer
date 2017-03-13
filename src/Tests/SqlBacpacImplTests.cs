@@ -5,7 +5,9 @@ using Cake.Core;
 using NUnit.Framework;
 using Cake.SqlServer;
 using FluentAssertions;
+using Microsoft.DotNet.InternalAbstractions;
 using NSubstitute;
+using NUnit.Framework.Internal.Commands;
 
 
 namespace Tests
@@ -72,7 +74,7 @@ namespace Tests
 
         private static string GetBacpacFilePath()
         {
-            return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "Nsaga.bacpac", SearchOption.AllDirectories).FirstOrDefault();
+            return Directory.GetFiles(Directory.GetCurrentDirectory(), "Nsaga.bacpac", SearchOption.AllDirectories).FirstOrDefault();
         }
     }
 }

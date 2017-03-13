@@ -6,6 +6,7 @@ using Cake.Core;
 using Cake.Core.IO;
 using Cake.SqlServer;
 using FluentAssertions;
+using Microsoft.DotNet.InternalAbstractions;
 using NSubstitute;
 
 
@@ -172,7 +173,7 @@ namespace Tests
 
         private static string GetBackupFilePath(String filename = "multiFileBackup.bak")
         {
-            return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, filename, SearchOption.AllDirectories).FirstOrDefault();
+            return Directory.GetFiles(Directory.GetCurrentDirectory(), filename, SearchOption.AllDirectories).FirstOrDefault();
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -6,6 +7,7 @@ using System.Linq;
 using Cake.Core;
 using Cake.SqlServer;
 using FluentAssertions;
+using Microsoft.DotNet.InternalAbstractions;
 using NUnit.Framework;
 using NSubstitute;
 // ReSharper disable InvokeAsExtensionMethod
@@ -115,9 +117,9 @@ namespace Tests
             {
                 using (var connection = SqlServerAliases.OpenSqlConnection(context, ConnectionString))
                 {
-                    connection.MonitorEvents();
-                    SqlServerAliases.ExecuteSqlFile(context, connection, GetSqlFilePath());
-                    connection.ShouldNotRaise(nameof(connection.StateChange));
+                  connection.MonitorEvents();
+                  SqlServerAliases.ExecuteSqlFile(context, connection, GetSqlFilePath());
+                  connection.ShouldNotRaise(nameof(connection.StateChange));
                 }
             }
             finally
@@ -176,7 +178,7 @@ namespace Tests
 
         private static string GetSqlFilePath()
         {
-            return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "Script.sql", SearchOption.AllDirectories).FirstOrDefault();
+            return Directory.GetFiles(Directory.GetCurrentDirectory(), "Script.sql", SearchOption.AllDirectories).FirstOrDefault();
         }
 
         [Test]
