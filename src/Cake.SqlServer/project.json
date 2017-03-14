@@ -10,7 +10,7 @@
   "frameworks": {
     "net451": {
       "dependencies": {
-        "Microsoft.SqlServer.Dac": "1.0.3"
+        "Microsoft.SqlServer.DacFx.x64" : "130.3485.1"
       }
     },
     "netstandard1.6": {

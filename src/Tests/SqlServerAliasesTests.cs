@@ -115,9 +115,9 @@ namespace Tests
             {
                 using (var connection = SqlServerAliases.OpenSqlConnection(context, ConnectionString))
                 {
-                  connection.MonitorEvents();
-                  SqlServerAliases.ExecuteSqlFile(context, connection, GetSqlFilePath());
-                  connection.ShouldNotRaise(nameof(connection.StateChange));
+                    connection.MonitorEvents();
+                    SqlServerAliases.ExecuteSqlFile(context, connection, GetSqlFilePath());
+                    connection.ShouldNotRaise(nameof(connection.StateChange));
                 }
             }
             finally
