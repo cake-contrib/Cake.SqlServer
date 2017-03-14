@@ -414,7 +414,7 @@ namespace Cake.SqlServer
         ///     });        
         /// </code>
         /// </example>
-#if net451
+#if NET451      
         [CakeMethodAlias]
         public static void CreateBacpacFile(this ICakeContext context, String connectionString, String databaseName, FilePath resultingFilePath)
         {
@@ -426,34 +426,34 @@ namespace Cake.SqlServer
         }
 #endif
 
-/// <summary>
-/// Restores a bacpac file into a database.
-/// <para>
-/// NB: there must be no database with the name you provide. Otherwise exception will be thrown.
-/// </para>
-/// </summary>
-/// <param name="context">The Cake context.</param>
-/// <param name="connectionString">The connection string. You may want to connect to master database for this operation.</param>
-/// <param name="databaseName">Name of a new database you are creating </param>
-/// <param name="bacpacFilePath">Full path to the bacpac file</param>
-/// <example>
-/// <code>
-///     #addin "nuget:?package=Cake.SqlServer"
-/// 
-///     Task("Create-Bacpac")
-///     	.Does(() =>{
-///     		var connString = @"data source=(LocalDb)\v12.0";
-///     
-///     		var dbName = "FromBacpac";
-///     
-///     		var file = new FilePath(@".\src\Tests\Nsaga.bacpac");
-///     
-///     		RestoreBacpac(connString, dbName, file);
-///     	});
-///     });        
-/// </code>
-/// </example>  
-#if net451
+        /// <summary>
+        /// Restores a bacpac file into a database.
+        /// <para>
+        /// NB: there must be no database with the name you provide. Otherwise exception will be thrown.
+        /// </para>
+        /// </summary>
+        /// <param name="context">The Cake context.</param>
+        /// <param name="connectionString">The connection string. You may want to connect to master database for this operation.</param>
+        /// <param name="databaseName">Name of a new database you are creating </param>
+        /// <param name="bacpacFilePath">Full path to the bacpac file</param>
+        /// <example>
+        /// <code>
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        /// 
+        ///     Task("Create-Bacpac")
+        ///     	.Does(() =>{
+        ///     		var connString = @"data source=(LocalDb)\v12.0";
+        ///     
+        ///     		var dbName = "FromBacpac";
+        ///     
+        ///     		var file = new FilePath(@".\src\Tests\Nsaga.bacpac");
+        ///     
+        ///     		RestoreBacpac(connString, dbName, file);
+        ///     	});
+        ///     });        
+        /// </code>
+        /// </example>  
+#if NET451      
         [CakeMethodAlias]
         public static void RestoreBacpac(this ICakeContext context, String connectionString, String databaseName, FilePath bacpacFilePath)
         {
