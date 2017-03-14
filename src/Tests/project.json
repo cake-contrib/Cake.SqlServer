@@ -15,7 +15,7 @@
     "Microsoft.SqlServer.TransactSql.ScriptDom": "13.0.1700.77",
     "NSubstitute": "2.0.2",
     "NUnit": "3.6.1",
-    "SqlServer": "1.0.0-*",
+    "Cake.SqlServer": "1.0.0-*",
     "System.Data.SqlClient": "4.3.0"
   },
 
