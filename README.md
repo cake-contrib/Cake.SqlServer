@@ -1,4 +1,5 @@
-﻿# Cake.SqlServer
+# Cake.SqlServer
+ 
 Cake Build addin for working with SqlServer and LocalDb.
 
 
