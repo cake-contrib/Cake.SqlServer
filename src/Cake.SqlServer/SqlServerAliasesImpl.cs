@@ -156,6 +156,7 @@ namespace Cake.SqlServer
             }
             catch (SqlException exception)
             {
+#if Net541
                 if (exception.Message.StartsWith("A network-related or instance-specific error", StringComparison.InvariantCultureIgnoreCase)
                         && (connectionString.ToLower().Contains("localdb") || connectionString.ToLower().Contains("\v")))
                 {
@@ -164,6 +165,16 @@ namespace Cake.SqlServer
                     var newException = new Exception(errorMessage, exception);
                     throw newException;
                 }
+#else
+                if (exception.Message.StartsWith("A network-related or instance-specific error", StringComparison.OrdinalIgnoreCase)
+                        && (connectionString.ToLower().Contains("localdb") || connectionString.ToLower().Contains("\v")))
+                {
+                    var errorMessage = "Looks like you are trying to connect to LocalDb. Have you correctly escaped your connection string with '@'? It should look like 'var connString = @\"(localDb)\\v12.0\"'";
+                    context.Log.Error(errorMessage);
+                    var newException = new Exception(errorMessage, exception);
+                    throw newException;
+                }
+#endif              
                 throw;
             }
         }

@@ -172,7 +172,7 @@ namespace Tests
 
         private static string GetBackupFilePath(String filename = "multiFileBackup.bak")
         {
-            return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, filename, SearchOption.AllDirectories).FirstOrDefault();
+            return Directory.GetFiles(Directory.GetCurrentDirectory(), filename, SearchOption.AllDirectories).FirstOrDefault();
         }
     }
 }

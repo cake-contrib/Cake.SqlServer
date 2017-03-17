@@ -1,9 +1,11 @@
-﻿using Cake.Core;
+﻿#if NET451
+using Cake.Core;
 using Cake.Core.Diagnostics;
 using Microsoft.SqlServer.Dac;
 
 namespace Cake.SqlServer
 {
+
     internal static class SqlBacpacImpl
     {
         public static void CreateBacpacFile(ICakeContext context, string connectionString, string databaseName, string resultingFilePath)
@@ -34,3 +36,4 @@ namespace Cake.SqlServer
         }
     }
 }
+#endif

@@ -72,7 +72,7 @@ namespace Tests
 
         private static string GetBacpacFilePath()
         {
-            return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "Nsaga.bacpac", SearchOption.AllDirectories).FirstOrDefault();
+            return Directory.GetFiles(Directory.GetCurrentDirectory(), "Nsaga.bacpac", SearchOption.AllDirectories).FirstOrDefault();
         }
     }
 }

@@ -176,7 +176,7 @@ namespace Tests
 
         private static string GetSqlFilePath()
         {
-            return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "Script.sql", SearchOption.AllDirectories).FirstOrDefault();
+            return Directory.GetFiles(Directory.GetCurrentDirectory(), "Script.sql", SearchOption.AllDirectories).FirstOrDefault();
         }
 
         [Test]

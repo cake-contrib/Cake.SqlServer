@@ -414,6 +414,7 @@ namespace Cake.SqlServer
         ///     });        
         /// </code>
         /// </example>
+#if NET451      
         [CakeMethodAlias]
         public static void CreateBacpacFile(this ICakeContext context, String connectionString, String databaseName, FilePath resultingFilePath)
         {
@@ -423,7 +424,7 @@ namespace Cake.SqlServer
 
             SqlBacpacImpl.CreateBacpacFile(context, connectionString, databaseName, resultingFilePath.FullPath);
         }
-
+#endif
 
         /// <summary>
         /// Restores a bacpac file into a database.
@@ -451,7 +452,8 @@ namespace Cake.SqlServer
         ///     	});
         ///     });        
         /// </code>
-        /// </example>        
+        /// </example>  
+#if NET451      
         [CakeMethodAlias]
         public static void RestoreBacpac(this ICakeContext context, String connectionString, String databaseName, FilePath bacpacFilePath)
         {
@@ -461,5 +463,6 @@ namespace Cake.SqlServer
 
             SqlBacpacImpl.RestoreBacpac(context, connectionString, databaseName, bacpacFilePath.FullPath);
         }
+#endif
     }
 }
