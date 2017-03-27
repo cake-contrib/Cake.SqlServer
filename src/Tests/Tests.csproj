@@ -87,6 +87,7 @@
     <Compile Include="LocalDbToolRunnerFixture.cs" />
     <Compile Include="LocalDbToolTests.cs" />
     <Compile Include="RestoreDatabaseTests.cs" />
+    <Compile Include="SqlDacpacImplTests.cs" />
     <Compile Include="SqlBacpacImplTests.cs" />
     <Compile Include="SqlHelpers.cs" />
     <Compile Include="SqlServerAliasesTests.cs" />
@@ -98,6 +99,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Nsaga.bacpac">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Nsaga.dacpac">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
