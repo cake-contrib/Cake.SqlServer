@@ -1,4 +1,5 @@
-﻿using Cake.Core;
+﻿using System;
+using Cake.Core;
 using Cake.Core.Diagnostics;
 using Microsoft.SqlServer.Dac;
 
@@ -31,8 +32,8 @@ namespace Cake.SqlServer
         /// <param name="connectionString">The connection string.</param>
         /// <param name="targetDatabaseName">The target database.</param>
         /// <param name="dacpacFilePath">Path to the dac file.</param>
-        /// <param name="settings">The settings.</param>
-        public static void PublishDacpacFile(ICakeContext context, string connectionString, string targetDatabaseName, string dacpacFilePath, PublishDacpacSettings settings = null)
+        /// <param name="config">Configure the sql deployment</param>
+        public static void PublishDacpacFile(ICakeContext context, string connectionString, string targetDatabaseName, string dacpacFilePath, Action<PublishOptions> config = null)
         {
             context.Log.Information($"About to restore bacpac from {dacpacFilePath} into database {targetDatabaseName}");
 
@@ -42,14 +43,8 @@ namespace Cake.SqlServer
 
             var service = new DacServices(connectionString);
 
-            var options = new PublishOptions();
-            if (settings != null)
-            {
-                options.GenerateDeploymentScript = settings.GenerateDeploymentScript;
-                options.GenerateDeploymentReport = settings.GenerateDeploymentReport;
-                options.DatabaseScriptPath = settings.DatabaseScriptPath;
-                options.MasterDbScriptPath = settings.MasterDbScriptPath;
-            }
+            var options = new PublishOptions {DeployOptions = new DacDeployOptions()};
+            config?.Invoke(options);
 
             service.Publish(dacPackage, targetDatabaseName, options);
 
