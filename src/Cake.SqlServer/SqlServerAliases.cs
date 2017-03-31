@@ -511,7 +511,7 @@ namespace Cake.SqlServer
         /// <param name="connectionString">The connection string. You may want to connect to master database for this operation.</param>
         /// <param name="targetDatabaseName">Name of a target database.</param>
         /// <param name="dacpacFilePath">Full path to the dacpac file.</param>
-        /// <param name="config">Configure the sql deployment</param>
+        /// <param name="settings">Configure the sql deployment</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
@@ -530,13 +530,13 @@ namespace Cake.SqlServer
         /// </code>
         /// </example>        
         [CakeMethodAlias]
-        public static void PublishDacpacFile(this ICakeContext context, String connectionString, String targetDatabaseName, FilePath dacpacFilePath, Action<PublishOptions> config = null)
+        public static void PublishDacpacFile(this ICakeContext context, String connectionString, String targetDatabaseName, FilePath dacpacFilePath, PublishDacpacSettings settings = null)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
             Guard.ArgumentIsNotNull(dacpacFilePath, nameof(dacpacFilePath));
 
-            SqlDacpacImpl.PublishDacpacFile(context, connectionString, targetDatabaseName, dacpacFilePath.FullPath, config);
+            SqlDacpacImpl.PublishDacpacFile(context, connectionString, targetDatabaseName, dacpacFilePath.FullPath, settings);
         }
     }
 }

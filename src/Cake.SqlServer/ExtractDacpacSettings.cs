@@ -9,8 +9,8 @@ namespace Cake.SqlServer
     /// </summary>
     public class ExtractDacpacSettings
     {
-        private readonly List<Tuple<string, string>> _tables = new List<Tuple<string, string>>();
-        private string _outputFile;
+        private readonly List<Tuple<string, string>> tables = new List<Tuple<string, string>>();
+        private string outputFile;
 
         /// <summary>
         /// String identifier for the DAC application.
@@ -32,8 +32,8 @@ namespace Cake.SqlServer
         /// </summary>
         public FilePath OutputFile
         {
-            get { return string.IsNullOrEmpty(_outputFile) ? $"{Name}.{Version}.dacpac" : _outputFile; }
-            set { _outputFile = value.FullPath; }
+            get { return string.IsNullOrEmpty(outputFile) ? $"{Name}.{Version}.dacpac" : outputFile; }
+            set { outputFile = value.FullPath; }
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace Cake.SqlServer
         /// If the value for this parameter is a null reference, no reference data will be stored.
         /// </para>
         /// </summary>
-        public IEnumerable<Tuple<string, string>> Tables => _tables;
+        public IEnumerable<Tuple<string, string>> Tables => tables;
 
         /// <summary>
         /// String identifier for the DAC application.
@@ -55,14 +55,8 @@ namespace Cake.SqlServer
         /// <exception cref="ArgumentNullException"></exception>
         public ExtractDacpacSettings(string appName, string version)
         {
-            if (string.IsNullOrEmpty(appName))
-            {
-                throw new ArgumentNullException(nameof(appName));
-            }
-            if (string.IsNullOrEmpty(version))
-            {
-                throw new ArgumentNullException(nameof(version));
-            }
+            Guard.ArgumentIsNotNull(appName, nameof(appName));
+            Guard.ArgumentIsNotNull(version, nameof(version));
 
             Name = appName;
             Version = new Version(version);
@@ -86,7 +80,7 @@ namespace Cake.SqlServer
                 throw new ArgumentNullException(nameof(schema));
             }
 
-            _tables.Add(new Tuple<string, string>(schema, table));
+            tables.Add(new Tuple<string, string>(schema, table));
             return this;
         }
     }

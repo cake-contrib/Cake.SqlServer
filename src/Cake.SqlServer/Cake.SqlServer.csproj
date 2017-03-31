@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExtractDacpacSettings.cs" />
+    <Compile Include="PublishDacpacSettings.cs" />
     <Compile Include="RestoreSqlBackupSettings.cs" />
     <Compile Include="SqlBackupsImpl.cs" />
     <Compile Include="Sql.cs" />
