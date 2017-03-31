@@ -73,6 +73,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ExtractDacpacSettings.cs" />
+    <Compile Include="PublishDacpacSettings.cs" />
     <Compile Include="RestoreSqlBackupSettings.cs" />
     <Compile Include="SqlBackupsImpl.cs" />
     <Compile Include="Sql.cs" />
@@ -81,6 +83,7 @@
     <Compile Include="LocalDb\LocalDbSettings.cs" />
     <Compile Include="LocalDb\LocalDbToolRunner.cs" />
     <Compile Include="SqlBacpacImpl.cs" />
+    <Compile Include="SqlDacpacImpl.cs" />
     <Compile Include="SqlServerAliases.cs" />
     <Compile Include="SqlServerAliasesImpl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
