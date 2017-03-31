@@ -524,7 +524,11 @@ namespace Cake.SqlServer
         ///     
         ///     		var file = new FilePath(@".\src\Tests\Nsaga.dacpac");
         ///     
-        ///     		PublishDacpacFile(connString, dbName, file);
+        ///     		var settings = new PublishDacpacSettings { 
+        ///     			GenerateDeploymentScript = true
+        /// 			};
+        /// 
+        ///     		PublishDacpacFile(connString, dbName, file, settings);
         ///     	});
         ///     });        
         /// </code>

@@ -184,6 +184,48 @@ Task("Restore-From-Bacpac")
 	})
 ```
 
+# Working with DACPAC files
+This package also includes a wrapper to extract dacpac files and publish them back into database. This is a thin wrapper around `Microsoft.SqlServer.DacFx` package. 
+
+To extract a dacpac file from a database call 
+
+```c#
+Task("Extract-Dacpac")
+	.Does(() =>{
+		var connString = @"data source=(LocalDb)\v12.0";
+     
+		var dbName = "ForDacpac";
+     
+		CreateDatabase(connString, dbName);
+ 
+		var settings = new ExtractDacpacSettings("MyAppName", "2.0.0.0") { 
+			OutputFile = new FilePath(@".\Nsaga.dacpac")
+		};
+     
+		ExtractDacpacFile(connString, dbName, settings);
+	});
+});
+```
+
+To publish from dacpac file into a database use this:
+
+```c#
+Task("Create-Bacpac")
+	.Does(() =>{
+		var connString = @"data source=(LocalDb)\v12.0";
+
+		var dbName = "ForDacpac";
+
+		var file = new FilePath(@".\src\Tests\Nsaga.dacpac");
+
+		var settings = new PublishDacpacSettings { 
+			GenerateDeploymentScript = true
+		};
+
+		PublishDacpacFile(connString, dbName, file, settings);
+	});
+});       
+```
 
 # Working with LocalDB 
 This package includes a wrapper for working with LocalDB. LocalDB is a lightweight SQL Server version that is great for running tests against. This package includes commands to `Create`, `Start`, `Stop` and `Delete` instances of LocalDB. To be used like this:
