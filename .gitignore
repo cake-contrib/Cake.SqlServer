@@ -208,7 +208,8 @@ Generated_Code/
 # to a newer Visual Studio version. Backup files are not needed,
 # because we have git ;-)
 _UpgradeReport_Files/
-Backup*/
+#yeah, fuck off. Backup folder is a legitimate folder for *.cs files
+#Backup*/
 UpgradeLog*.XML
 UpgradeLog*.htm
 
