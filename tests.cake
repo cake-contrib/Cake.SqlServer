@@ -1,5 +1,5 @@
-#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer
-//#r "src/Cake.SqlServer/bin/debug/Cake.SqlServer.dll"
+//#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer
+#r "src/Cake.SqlServer/bin/debug/Cake.SqlServer.dll"
 
 var target = Argument("target", "Default");
 
@@ -178,6 +178,53 @@ Task("Restore-From-Bacpac")
 	});
 
 
+Task("Dacpac-Publish")
+	.Does(() => 
+	{
+		var connectionString = @"data source=(LocalDb)\v12.0";
+		var dbName = "DacpacTestDb";
+		var dacpacFile = new FilePath(@".\src\Tests\Nsaga.dacpac");
+
+		CreateDatabase(connectionString, dbName);
+
+		PublishDacpacFile(connectionString, dbName, dacpacFile);
+	})
+	.Finally(() => 
+	{
+		// Cleanup
+		DropDatabase(@"data source=(LocalDb)\v12.0", "DacpacTestDb");
+	});
+
+
+Task("Dacpac-Extract")
+	.Does(() => 
+	{
+        var dbName = "DacpacTestDb";
+		var connectionString = @"data source=(LocalDb)\v12.0";
+        var resultingFilePath = "NsagaCreated.dacpac";
+        var settings = new ExtractDacpacSettings("TestApp", "1.0.0.0") { OutputFile = resultingFilePath };
+
+		CreateDatabase(connectionString, dbName);
+        var sql = $@"use {dbName}
+        GO
+        create table [{dbName}].[dbo].[Table1] (id int null, name nvarchar(max) null);
+        Go";
+
+		ExecuteSqlCommand(connectionString, sql);
+
+		ExtractDacpacFile(connectionString, dbName, settings);
+	})
+	.Finally(() => 
+	{
+		DropDatabase(@"data source=(LocalDb)\v12.0", "DacpacTestDb");
+		//if(FileExists(@".\NsagaCreated.dacpac"))
+		{
+			DeleteFile(@".\NsagaCreated.dacpac");
+		}
+	
+	});
+
+
 Task("Default")
     .IsDependentOn("Create-LocalDB")
     .IsDependentOn("Start-LocalDB")
@@ -189,6 +236,8 @@ Task("Default")
     .IsDependentOn("Restore-Database")
     .IsDependentOn("Create-Bacpac")
     .IsDependentOn("Restore-From-Bacpac")
+    .IsDependentOn("Dacpac-Extract")
+    .IsDependentOn("Dacpac-Publish")
     ;    
 
 RunTarget(target);

@@ -29,10 +29,10 @@ namespace Tests
             {
                 // Arrange 
                 SqlHelpers.ExecuteSql(ConnectionString, $"create database {dbName}");
-                
+
                 // Act
                 SqlDacpacImpl.PublishDacpacFile(context, ConnectionString, dbName, GetDacpacFilePath());
-                
+
                 // Assert
                 SqlHelpers.TableExists(ConnectionString, dbName, "Table1").Should().BeTrue();
             }
@@ -49,7 +49,7 @@ namespace Tests
         {
             var dbName = "DacpacTestDb";
             var resultingFilePath = "NsagaCreated.dacpac";
-            var settings = new ExtractDacpacSettings("TestApp", "1.0.0.0") {OutputFile = resultingFilePath};
+            var settings = new ExtractDacpacSettings("TestApp", "1.0.0.0") { OutputFile = resultingFilePath };
             try
             {
                 // Arrange
