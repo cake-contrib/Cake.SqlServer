@@ -7,14 +7,7 @@ namespace Cake.SqlServer
 {
     internal static class SqlDacpacImpl
     {
-        /// <summary>
-        /// Extract the schema from a database into a package.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="connectionString">The connection string.</param>
-        /// <param name="targetDatabaseName">The target database.</param>
-        /// <param name="settings">The settings.</param>
-        public static void ExtractDacpacFile(ICakeContext context, string connectionString, string targetDatabaseName, ExtractDacpacSettings settings)
+        internal static void ExtractDacpacFile(ICakeContext context, string connectionString, string targetDatabaseName, ExtractDacpacSettings settings)
         {
             context.Log.Information($"About to extract a dacpac file from database {targetDatabaseName}");
 
@@ -25,15 +18,8 @@ namespace Cake.SqlServer
             context.Log.Information($"Finished creating dacpac file from database {targetDatabaseName}. File location is {settings.OutputFile}");
         }
 
-        /// <summary>
-        /// Extract the schema from a database into a package.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <param name="connectionString">The connection string.</param>
-        /// <param name="targetDatabaseName">The target database.</param>
-        /// <param name="dacpacFilePath">Path to the dac file.</param>
-        /// <param name="settings">Configure the sql deployment</param>
-        public static void PublishDacpacFile(ICakeContext context, string connectionString, string targetDatabaseName, string dacpacFilePath, PublishDacpacSettings settings = null)
+
+        internal static void PublishDacpacFile(ICakeContext context, string connectionString, string targetDatabaseName, string dacpacFilePath, PublishDacpacSettings settings = null)
         {
             context.Log.Information($"About to publish dacpac from {dacpacFilePath} into database {targetDatabaseName}");
 
@@ -52,7 +38,7 @@ namespace Cake.SqlServer
 
         private static PublishOptions GetPublishOptions(PublishDacpacSettings settings)
         {
-            PublishOptions options = new PublishOptions();
+            var options = new PublishOptions();
             if (settings == null)
             {
                 return options;

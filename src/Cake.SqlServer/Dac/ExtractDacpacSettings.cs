@@ -71,14 +71,8 @@ namespace Cake.SqlServer
         /// <exception cref="ArgumentNullException"></exception>
         public ExtractDacpacSettings WithTable(string table, string schema = "dbo")
         {
-            if (string.IsNullOrEmpty(table))
-            {
-                throw new ArgumentNullException(nameof(table));
-            }
-            if (string.IsNullOrEmpty(schema))
-            {
-                throw new ArgumentNullException(nameof(schema));
-            }
+            Guard.ArgumentIsNotNull(table, nameof(table));
+            Guard.ArgumentIsNotNull(schema, nameof(schema));
 
             tables.Add(new Tuple<string, string>(schema, table));
             return this;
