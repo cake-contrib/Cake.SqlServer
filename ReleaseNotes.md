@@ -1,6 +1,7 @@
 ### New in 1.7.0
 * Wroking with DACPAC files
 * Restructuring documentation
+* Updated to Cake 0.19.2
 
 ### New in 1.6.0
 * Creating and restoring BACPAC files

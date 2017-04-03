@@ -35,8 +35,8 @@
     <DocumentationFile>bin\Release\Cake.SqlServer.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cake.Core, Version=0.17.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Cake.Core.0.17.0\lib\net45\Cake.Core.dll</HintPath>
+    <Reference Include="Cake.Core, Version=0.19.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cake.Core.0.19.2\lib\net45\Cake.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Data.Tools.Schema.Sql, Version=13.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
