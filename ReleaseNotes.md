@@ -1,3 +1,7 @@
+### New in 1.7.0
+* Wroking with DACPAC files
+* Restructuring documentation
+
 ### New in 1.6.0
 * Creating and restoring BACPAC files
 

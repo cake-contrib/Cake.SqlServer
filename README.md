@@ -2,16 +2,18 @@
  
 Cake Build addin for working with SqlServer and LocalDb.
 
+Show me the codez: [integration tests](https://github.com/AMVSoftware/Cake.SqlServer/blob/master/tests.cake) for live up to date examples.  
+Or look through XML-generated documentation on [Cakebuild.net site](http://cakebuild.net/dsl/sqlserver/).
 
-# Functionality
+# General Functionality
 
-## Create Database
+### Create Database
 ```c#
 CreateDatabase(string connectionString, string databaseName)
 ```
 Creates database. If database with this name exists - SqlException is thrown. 
 
-## Create Database If Not Exist
+### Create Database If Not Exist
 ```c#
 CreateDatabaseIfNotExists(string connectionString, string databaseName)
 ```
@@ -19,7 +21,7 @@ CreateDatabaseIfNotExists(string connectionString, string databaseName)
 Here we check if the database exists first, if it does not exists - create it. Does not do anything if database with this name already exists.
 
 
-## Drop Database
+### Drop Database
 ```c#
 DropDatabase(string connectionString, string databaseName)
 ```
@@ -27,7 +29,7 @@ DropDatabase(string connectionString, string databaseName)
 Basically executes `Drop Database databasename` with some fail-safes. Actually it sets the database into offline mode - to cut off all existing connections. Then sets the database back online and then drops it. 
 Reason for this dance - you can't drop a database if there are existing connections to the database.  
 
-## Drop and Create Database
+### Drop and Create Database
 ```c#
 DropAndCreateDatabase(String connectionString, String databaseName)
 ```
@@ -35,7 +37,7 @@ DropAndCreateDatabase(String connectionString, String databaseName)
 Simply a short-hand for `DropDatabase(); CreateDatabase();`. I found these calls frequently together to create a short-hand. 
 
 
-## Execute Sql Command
+### Execute Sql Command
 ```c#
 ExecuteSqlCommand(String connectionString, string sqlCommands);
 ExecuteSqlCommand(SqlConnection connection, string sqlCommands);
@@ -43,14 +45,14 @@ ExecuteSqlCommand(SqlConnection connection, string sqlCommands);
 
 Does what it says on the tin: executes the sql query. But this method accommodates for `Go` within scripts. Usually executing long queries from .Net won't work when query has `GO` inside. This one does know what to do with it.
 
-## Execute Command from SQL File
+### Execute Command from SQL File
 ```c#
 ExecuteSqlFile(String connectionString, string sqlFile);  
 ExecuteSqlFile(SqlConnection connection, string sqlFile);
 ```
 Reads sql file and executes commands from it. Executes parts of scripts separated by `GO` as a separate command executions. 
 
-## Open Connection for Use in Multiple Operations
+### Open Connection for Use in Multiple Operations
 ```c#
 OpenSqlConnection(String connectionString)
 ```
@@ -66,7 +68,7 @@ using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial 
 }
 ```
 
-## Set Default Execution Timeout
+### Set Default Execution Timeout
 ```c#
 SetSqlCommandTimeout(int commandTimeout)
 ```
@@ -81,7 +83,9 @@ using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial 
 }
 ```
 
-## Restore Database Backup File
+# Working With Backup files
+
+### Restore Database Backup File
 ```c#
 RestoreSqlBackup(String connectionString, FilePath backupFile, RestoreSqlBackupSettings settings)
 RestoreSqlBackup(String connectionString, FilePath backupFile)
@@ -109,52 +113,13 @@ Task("Restore-Database")
 	});
 ```
 
+# Working with BACPAC and DACPAC 
 
-## Usage
-Samples show here are using `LocalDb\v12.0`. This used to be default name for LocalDB instance when installed with SQL Server 2012. Since Sql Server 2014 the default name for LocalDB instance is `MSSQLLocalDB`, making the default instance name for LocalDB looking like this: `(LocalDB)\MSSQLLocalDB`. So before using `v12.0` double check what instance you have installed and go from there. 
+This addin includes a thin wrapper around `Microsoft.SqlServer.DacFx` to provide ability to work with BACPAC and DACPAC files
 
-Also please don't be alarmed that all the examples are using LocalDB. The plugin is capable of working with any SQL Server installation.
+### Working with BACPAC files
 
-You can also check our [integration tests](https://github.com/AMVSoftware/Cake.SqlServer/blob/master/tests.cake) for live examples.
-
-```c#
-#addin "nuget:?package=Cake.SqlServer"
-
-Task("Database-Operations")
-	.Does(() => 
-	{
-	    var masterConnectionString = @"data source=(LocalDb)\v12.0;";
-	    var connectionString = @"data source=(LocalDb)\v12.0;Database=CakeTest";
-
-		var dbName = "CakeTest";
-
-		// drop the db to be sure
-		DropDatabase(masterConnectionString, dbName);
-			
-		// first create database
-		CreateDatabase(masterConnectionString, dbName);
-
-		// try the database again
-		CreateDatabaseIfNotExists(masterConnectionString, dbName);
-			
-		// and recreate the db again
-		DropAndCreateDatabase(masterConnectionString, dbName);
-
-		// and create some tables
-		ExecuteSqlCommand(connectionString, "create table dbo.Products(id int null)");
-			
-		// and execute sql from a file 
-		ExecuteSqlFile(connectionString, "install.sql");
-
-		// then drop the database
-		DropDatabase(masterConnectionString, dbName);
-	});
-```
-
-# Working with BACPAC files
-This package also includes a wrapper to create bacpac files and restore them back into database. This is a thin wrapper around `Microsoft.SqlServer.DacFx` package. 
-
-To create a bacpac file from a database call 
+To create a bacpac file from a database call:
 
 ```c#
 Task("Create-Bacpac")
@@ -184,10 +149,9 @@ Task("Restore-From-Bacpac")
 	})
 ```
 
-# Working with DACPAC files
-This package also includes a wrapper to extract dacpac files and publish them back into database. This is a thin wrapper around `Microsoft.SqlServer.DacFx` package. 
+### Working with DACPAC files
 
-To extract a dacpac file from a database call 
+To extract a dacpac file from a database call:
 
 ```c#
 Task("Extract-Dacpac")
@@ -228,7 +192,11 @@ Task("Create-Bacpac")
 ```
 
 # Working with LocalDB 
-This package includes a wrapper for working with LocalDB. LocalDB is a lightweight SQL Server version that is great for running tests against. This package includes commands to `Create`, `Start`, `Stop` and `Delete` instances of LocalDB. To be used like this:
+Samples show here are using `LocalDb\v12.0`. This used to be default name for LocalDB instance when installed with SQL Server 2012. Since Sql Server 2014 the default name for LocalDB instance is `MSSQLLocalDB`, making the default instance name for LocalDB looking like this: `(LocalDB)\MSSQLLocalDB`. So before using `v12.0` double check what instance you have installed and go from there. 
+
+This package includes a wrapper for working with LocalDB. LocalDB is a lightweight SQL Server version that is great for running tests against. 
+
+Also please don't be alarmed that all the examples are using LocalDB. The plugin is capable of working with any SQL Server installation. This package includes commands to `Create`, `Start`, `Stop` and `Delete` instances of LocalDB. To be used like this:
 
 ```c#
 #addin "nuget:?package=Cake.SqlServer"
@@ -260,7 +228,13 @@ Task("Delete-LocalDB")
     });
 ```
 
-# Gotchas
+
+# Usage
+
+You can also check our [integration tests](https://github.com/AMVSoftware/Cake.SqlServer/blob/master/tests.cake) for live examples.
+
+
+### Gotchas
 
 Remember to always add `@` before your connection strings. Some connection strings (i.e. `(localdb)\v12.0`) can contain backward slash `\` and that is an escape symbol in C#. So you need to always add `@` before the string:
 
@@ -268,9 +242,7 @@ Remember to always add `@` before your connection strings. Some connection strin
 
 `\v` is the C# escape sequence for vertical tab which is not what you want. Using the verbatim string syntax `@` prevents escape sequences from being interpreted and you get what you expect, verbatim `\` and `v` characters.
 
-# Patterns of Use
-
-## Generating Connection String
+### Generating Connection String
 
 If you have complex connection strings, please consider using [SqlConnectionStringBuilder](https://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlconnectionstringbuilder)
 for creating your connection strings:
@@ -284,7 +256,7 @@ for creating your connection strings:
 ```
 This class adds a lot of sugar around creating a connection string. 
 
-## Creating Temp Database and Clean Up
+### Creating Temp Database and Clean Up
 
 This script is curtesy of [Joseph Musser](https://github.com/jnm2)
 
