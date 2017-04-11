@@ -5,6 +5,14 @@ Cake Build addin for working with SqlServer and LocalDb.
 Show me the codez: [integration tests](https://github.com/AMVSoftware/Cake.SqlServer/blob/master/tests.cake) for live up to date examples.  
 Or look through XML-generated documentation on [Cakebuild.net site](http://cakebuild.net/dsl/sqlserver/).
 
+* [General Functionality](#general-functionality)
+* [Working With Backup files](#working-with-backup-files)
+* [Working with BACPAC and DACPAC](#working-with-bacpac-and-dacpac)
+* [Working with LocalDB](#working-with-localdb)
+* [Usage](#usage)
+* [Reason to Develop](#reason-to-develop)
+
+
 # General Functionality
 
 ### Create Database
