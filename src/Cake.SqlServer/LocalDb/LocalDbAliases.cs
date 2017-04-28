@@ -6,7 +6,7 @@ using Cake.Core.Diagnostics;
 [assembly: InternalsVisibleTo("Tests")]
 namespace Cake.SqlServer
 {
-#pragma warning disable 1570
+    #pragma warning disable 1570
     /// <summary>
     /// <para>
     /// Contains functionality to deal with LocalDB. A wrapper for SQLLocalDb.exe. Allows to create, start, stop and delete instances in LocalDB.

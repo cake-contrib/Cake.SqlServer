@@ -76,6 +76,7 @@ Task("Build")
 
 Task("Start-LocalDB")
     .Description(@"Starts LocalDB - executes the following: C:\Program Files\Microsoft SQL Server\120\Tools\Binn\SqlLocalDB.exe create v12.0 12.0 -s")
+    .WithCriteria(() => !parameters.SkipTests)
     .Does(() => 
     {
         var sqlLocalDbPath13 = @"c:\Program Files\Microsoft SQL Server\130\Tools\Binn\SqlLocalDB.exe";
@@ -101,6 +102,7 @@ Task("Start-LocalDB")
 Task("Run-Unit-Tests")
     .IsDependentOn("Build")
     .IsDependentOn("Start-LocalDB")
+    .WithCriteria(() => !parameters.SkipTests)
     .Does(() =>
 	{
 		var testsFile ="./src/**/bin/" + configuration + "/Tests.dll";

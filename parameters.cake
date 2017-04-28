@@ -11,12 +11,12 @@ public class BuildParameters
     public bool IsRunningOnAppVeyor { get; private set; }
     public bool IsTagged { get; private set; }
     public bool IsPullRequest  { get; private set; }
-    public bool SkipGitVersion { get; private set; }
     public ReleaseNotes ReleaseNotes { get; private set; }
     public bool IsMasterBranch { get; private set; }
 
     public string Version { get; private set; }
     public string SemVersion { get; private set; }
+    public bool SkipTests { get; private set; }
 
 
     public void Initialize(ICakeContext context)
@@ -65,7 +65,7 @@ public class BuildParameters
 
             IsMasterBranch = isMaster,
             ReleaseNotes = context.ParseReleaseNotes("./ReleaseNotes.md"),
-            SkipGitVersion = StringComparer.OrdinalIgnoreCase.Equals("True", context.EnvironmentVariable("CAKE_SKIP_GITVERSION")),
+            SkipTests = StringComparer.OrdinalIgnoreCase.Equals("True", context.Argument("skiptests", "false")),
         };
     }
 
@@ -104,7 +104,8 @@ public class BuildParameters
     {
         get
         {
-            return !IsLocalBuild && !IsPullRequest && IsTagged && IsMasterBranch;
+            return false;
+            // return !IsLocalBuild && !IsPullRequest && IsTagged && IsMasterBranch;
         }
     }
 
@@ -112,7 +113,8 @@ public class BuildParameters
     {
         get
         {
-            return !IsLocalBuild && !IsPullRequest && !IsTagged || IsMasterBranch;
+            return true;
+            // return !IsLocalBuild && !IsPullRequest && !IsTagged || IsMasterBranch;
         }
     }    
 

@@ -106,6 +106,7 @@ if($Experimental.IsPresent -and !($Mono.IsPresent)) {
     Write-Verbose -Message "Using experimental version of Roslyn."
     $UseExperimental = "-experimental"
 }
+$UseExperimental = "-experimental"
 
 # Is this a dry run?
 $UseDryRun = "";
