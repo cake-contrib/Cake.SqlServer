@@ -6,6 +6,7 @@ using Cake.Core.Diagnostics;
 [assembly: InternalsVisibleTo("Tests")]
 namespace Cake.SqlServer
 {
+#pragma warning disable 1570
     /// <summary>
     /// <para>
     /// Contains functionality to deal with LocalDB. A wrapper for SQLLocalDb.exe. Allows to create, start, stop and delete instances in LocalDB.
@@ -18,6 +19,7 @@ namespace Cake.SqlServer
     ///     #addin "nuget:?package=Cake.SqlServer"
     /// </code>
     /// </summary>
+    /// #pragma warning enable 1570
     [CakeAliasCategory("SqlServer")]
     public static class LocalDbAliases
     {

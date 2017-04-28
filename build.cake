@@ -78,15 +78,23 @@ Task("Start-LocalDB")
     .Description(@"Starts LocalDB - executes the following: C:\Program Files\Microsoft SQL Server\120\Tools\Binn\SqlLocalDB.exe create v12.0 12.0 -s")
     .Does(() => 
     {
-        // var sqlLocalDbPath = @"c:\Program Files\Microsoft SQL Server\130\Tools\Binn\SqlLocalDB.exe";
-        var sqlLocalDbPath = @"C:\Program Files\Microsoft SQL Server\120\Tools\Binn\SqlLocalDB.exe";
-        if(!FileExists(sqlLocalDbPath))
+        var sqlLocalDbPath13 = @"c:\Program Files\Microsoft SQL Server\130\Tools\Binn\SqlLocalDB.exe";
+        var sqlLocalDbPath12 = @"C:\Program Files\Microsoft SQL Server\120\Tools\Binn\SqlLocalDB.exe";
+
+        if(FileExists(sqlLocalDbPath13))
         {
-            Information("Unable to start LocalDB");
-            throw new Exception("LocalDB v12 is not installed. Can't complete tests");
+            StartProcess(sqlLocalDbPath13, new ProcessSettings(){ Arguments="create \"v12.0\" 12.0 -s" });    
+            return;
         }
 
-        StartProcess(sqlLocalDbPath, new ProcessSettings(){ Arguments="create \"v12.0\" 12.0 -s" });
+        if(FileExists(sqlLocalDbPath12))
+        {
+            StartProcess(sqlLocalDbPath12, new ProcessSettings(){ Arguments="create \"v12.0\" 12.0 -s" });    
+            return;
+        }
+
+        Information("Unable to start LocalDB");
+        throw new Exception("LocalDB v12 is not installed. Can't complete tests");
     });
 
 
