@@ -266,7 +266,7 @@ This class adds a lot of sugar around creating a connection string.
 
 ### Creating Temp Database and Clean Up
 
-This script is curtesy of [Joseph Musser](https://github.com/jnm2)
+This script is courtesy of [Joseph Musser](https://github.com/jnm2)
 
 If you need to create and delete the database inside of your build script you can use this nice trick.
 
