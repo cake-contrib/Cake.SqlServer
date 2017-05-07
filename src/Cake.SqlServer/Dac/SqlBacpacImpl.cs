@@ -24,7 +24,7 @@ namespace Cake.SqlServer
 
             var bacPackage = BacPackage.Load(bacpacFilePath);
 
-            context.Log.Debug($"Loaded bacpac file {bacPackage}");
+            context.Log.Debug($"Loaded bacpac file {bacpacFilePath}");
 
             var service = new DacServices(connectionString);
 

@@ -25,7 +25,7 @@ namespace Cake.SqlServer
 
             var dacPackage = DacPackage.Load(dacpacFilePath);
 
-            context.Log.Debug($"Loaded dacpac file {dacPackage}");
+            context.Log.Debug($"Loaded dacpac file {dacpacFilePath}");
 
             var service = new DacServices(connectionString);
 
