@@ -35,8 +35,8 @@
     <DocumentationFile>bin\Release\Cake.SqlServer.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cake.Core, Version=0.19.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Cake.Core.0.19.4\lib\net45\Cake.Core.dll</HintPath>
+    <Reference Include="Cake.Core, Version=0.19.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cake.Core.0.19.5\lib\net45\Cake.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Data.Tools.Schema.Sql, Version=13.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.SqlServer.DacFx.x64.130.3485.1\lib\net40\Microsoft.Data.Tools.Schema.Sql.dll</HintPath>
@@ -86,7 +86,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Cake.SqlServer.nuspec" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
