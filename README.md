@@ -2,6 +2,9 @@
  
 Cake Build addin for working with SqlServer and LocalDb.
 
+[![Build status](https://ci.appveyor.com/api/projects/status/wgbuq8pw180w42t2/branch/master?svg=true)](https://ci.appveyor.com/project/trailmax/cake-sqlserver/branch/master)
+[![NuGet version](https://badge.fury.io/nu/cake.sqlserver.svg)](https://badge.fury.io/nu/cake.sqlserver)
+
 Show me the codez: [integration tests](https://github.com/AMVSoftware/Cake.SqlServer/blob/master/tests.cake) for live up to date examples.  
 Or look through XML-generated documentation on [Cakebuild.net site](http://cakebuild.net/dsl/sqlserver/).
 
