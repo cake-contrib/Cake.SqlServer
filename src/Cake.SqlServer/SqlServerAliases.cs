@@ -314,7 +314,7 @@ namespace Cake.SqlServer
         ///     Task("Sql-Operations")
         ///         .Does(() =>
         ///         {
-        ///             SetCommandTimeout(60);
+        ///             SetSqlCommandTimeout(60);
         ///             using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase"))
         ///             {
         ///                 ExecuteSqlCommand(connection, "...");
