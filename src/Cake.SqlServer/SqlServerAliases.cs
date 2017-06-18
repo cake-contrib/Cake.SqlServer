@@ -317,7 +317,7 @@ namespace Cake.SqlServer
         ///             SetCommandTimeout(60);
         ///             using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase"))
         ///             {
-        ///                 ExecuteSqlCommand(connection, "...");
+        ///                 SetSqlCommandTimeout(connection, "...");
         ///                 ExecuteSqlFile(connection, "./somePath/MyScript.sql");
         ///             }
         ///         });
