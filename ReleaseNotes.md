@@ -1,3 +1,8 @@
+### New in 1.7.1
+* Update of Cake.Core package to v0.20.0
+* Change of NuGet icon
+* Minor corrections to documentation
+
 ### New in 1.7.0
 * Wroking with DACPAC files
 * Restructuring documentation
