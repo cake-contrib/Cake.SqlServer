@@ -9,6 +9,14 @@ namespace Cake.SqlServer
     public class RestoreSqlBackupSettings
     {
         /// <summary>
+        /// Default constructor for settings object. Sets SwitchToSingleUserMode to true.
+        /// </summary>
+        public RestoreSqlBackupSettings()
+        {
+            SwitchToSingleUserMode = true;
+        }
+
+        /// <summary>
         /// Gets or sets the new name of the database.
         /// Name of the database where to restore. If this is not specified, database name is taken from the backup file
         /// </summary>
@@ -33,5 +41,13 @@ namespace Cake.SqlServer
         /// in the transaction log and move forward with the restore.
         /// </summary>
         public bool WithReplace { get; set; }
+
+
+        /// <summary>
+        /// Before restoring backup, database will be switched to a single user mode. 
+        /// Default operation is to go into single user mode. However in some situation this might not work.
+        /// Use this switch to bypass single user mode and restore the DB as it is
+        /// </summary>
+        public bool SwitchToSingleUserMode { get; set; }
     }
 }

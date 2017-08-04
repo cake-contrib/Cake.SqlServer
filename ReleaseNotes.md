@@ -1,3 +1,6 @@
+### New in 1.8
+* Option to disable switch to single user mode on backup restoring 
+
 ### New in 1.7.2
 * Update of Cake.Core package to v0.20.0
 * Change of NuGet icon

@@ -7,7 +7,7 @@ using Cake.Core.Diagnostics;
 
 namespace Cake.SqlServer
 {
-    internal class SqlBackupsImpl
+    internal static class SqlBackupsImpl
     {
         // if database name is not provided, dbname from the backup is used.
         // if newStoragePath is not provided, system defaults are used
@@ -21,15 +21,20 @@ namespace Cake.SqlServer
 
                 var logicalNames = GetLogicalNames(backupFile, connection);
 
-                var sql = $@"
+                var sql = "";
+
+                if (settings.SwitchToSingleUserMode)
+                {
+                    sql += $@"
 if db_id({Sql.EscapeNameQuotes(newDatabaseName)}) is not null 
 begin
     use master;
     alter database {Sql.EscapeName(newDatabaseName)} set single_user with rollback immediate;
 end
-
-Restore database {Sql.EscapeName(newDatabaseName)} from disk = @backupFile with 
 ";
+                }
+
+                sql += $"Restore database {Sql.EscapeName(newDatabaseName)} from disk = @backupFile with ";
 
                 for (var i = 0; i < logicalNames.Count; i++)
                 {
