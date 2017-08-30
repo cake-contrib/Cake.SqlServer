@@ -53,7 +53,7 @@ end
 
                 context.Log.Debug($"Executing SQL : {sql}");
 
-                var command = new SqlCommand(sql, connection);
+                var command = SqlServerAliasesImpl.CreateSqlCommand(sql, connection);
                 command.Parameters.AddWithValue("@backupFile", backupFile.ToString());
                 for (var i = 0; i < logicalNames.Count; i++)
                 {
