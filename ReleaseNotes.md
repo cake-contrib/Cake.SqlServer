@@ -1,5 +1,6 @@
 ### New in 1.8
-* Option to disable switch to single user mode on backup restoring 
+* Option to disable switch to single user mode on backup restoring #31
+* Fix for ignored timeout on Backup Restore #33
 
 ### New in 1.7.2
 * Update of Cake.Core package to v0.20.0
