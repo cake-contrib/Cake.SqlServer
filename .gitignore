@@ -24,7 +24,8 @@ bld/
 
 # Build related
 build-results/
-tools/
+tools/*
+!tools/packages.config
 
 # Visual Studio 2015 cache/options directory
 .vs/

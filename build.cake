@@ -1,6 +1,5 @@
-#tool "nuget:?package=NUnit.ConsoleRunner"
-#tool "nuget:?package=GitVersion.CommandLine"
-#addin "Cake.Figlet"
+#tool "nuget:?package=NUnit.ConsoleRunner&version=3.7.0"
+#tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
 #load "./parameters.cake"
 
 
@@ -21,7 +20,7 @@ Setup(context =>
 
 Teardown(context =>
 {
-    Information(Figlet("Cake.. NOM-NOM"));
+    Information("Cake.. NOM-NOM");
 });
 
 
@@ -109,7 +108,11 @@ Task("Run-Unit-Tests")
 		Information(testsFile);
 
 		NUnit3(testsFile, new NUnit3Settings {
-            Results = parameters.TestResultsFile,
+            Results = new List<NUnit3Result>(){
+                new NUnit3Result(){
+                    FileName = parameters.TestResultsFile,
+                }
+            } 
 		});
     })
     .Finally(() =>
