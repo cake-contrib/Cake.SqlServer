@@ -73,6 +73,9 @@ namespace Cake.SqlServer
                     case LocalDbVersion.V12:
                         argumentBuilder.Append("12.0");
                         break;
+                    case LocalDbVersion.V13:
+                        argumentBuilder.Append("13.0");
+                        break;
                 }
 
                 argumentBuilder.Append("-s"); // start the instance;
