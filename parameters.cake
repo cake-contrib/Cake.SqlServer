@@ -22,15 +22,13 @@ public class BuildParameters
     public void Initialize(ICakeContext context)
     {
         context.Information("Executing GitVersion");
-        // var result = context.GitVersion(new GitVersionSettings{
-        //     UpdateAssemblyInfoFilePath = ProjectDir + "properties/AssemblyInfo.cs",
-        //     UpdateAssemblyInfo = true,
-        // });
-        // Version = result.MajorMinorPatch ?? "0.0.1";
-        // SemVersion = result.LegacySemVerPadded ?? "0.0.1";
+        var result = context.GitVersion(new GitVersionSettings{
+            UpdateAssemblyInfoFilePath = ProjectDir + "properties/AssemblyInfo.cs",
+            UpdateAssemblyInfo = true,
+        });
+        Version = result.MajorMinorPatch ?? "0.0.1";
+        SemVersion = result.LegacySemVerPadded ?? "0.0.1";
 
-        Version = "1.8.1";
-        SemVersion = "1.8.1";
 		// print gitversion
         context.GitVersion(new GitVersionSettings{
             UpdateAssemblyInfo = false,
