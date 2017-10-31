@@ -73,6 +73,23 @@ namespace Tests
             }
         }
 
+        [Test]
+        public void GetPublishOptions_MapsDictionary_Correctly()
+        {
+            //Arrange
+            var publishSettings = new PublishDacpacSettings();
+            publishSettings.SqlCommandVariableValues["Hello"] = "World";
+            publishSettings.SqlCommandVariableValues["31Oct"] = "25Dec";
+
+            // Act
+            var publishOptions = SqlDacpacImpl.GetPublishOptions(publishSettings);
+
+            // Assert
+            var result = publishOptions.DeployOptions.SqlCommandVariableValues;
+            result["Hello"].Should().Be("World");
+            result["31Oct"].Should().Be("25Dec");
+        }
+
         private static string GetDacpacFilePath()
         {
             return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "Nsaga.dacpac", SearchOption.AllDirectories).FirstOrDefault();

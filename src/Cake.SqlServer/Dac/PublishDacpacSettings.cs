@@ -1,4 +1,6 @@
-﻿namespace Cake.SqlServer
+﻿using System.Collections.Generic;
+
+namespace Cake.SqlServer
 {
     /// <summary>
     /// Settings for extract dacpac from database
@@ -818,6 +820,14 @@
         public bool VerifyDeployment { get; set; }
 
         /// <summary>
+        /// Get dictionary of SQL command variable values, keyed by variable name.
+        /// </summary>
+        /// <remarks>
+        /// Valid values must be provided for every variable before deployment, or failures may occur during deployment.
+        /// </remarks>
+        public Dictionary<string, string> SqlCommandVariableValues { get; }
+
+        /// <summary>
         /// Configures options for what will be reported when performing certain operations from <see cref="T:Microsoft.SqlServer.Dac.DacServices" />,
         /// in particular whether a DeployReport and/or DeployScript will be generated
         /// </summary>
@@ -825,6 +835,7 @@
         {
             this.GenerateDeploymentScript = true;
             this.GenerateDeploymentReport = false;
+            SqlCommandVariableValues = new Dictionary<string, string>();
         }
     }
 }

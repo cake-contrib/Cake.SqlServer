@@ -36,7 +36,7 @@ namespace Cake.SqlServer
             context.Log.Information($"Finished restoring dacpac file into database {targetDatabaseName}");
         }
 
-        private static PublishOptions GetPublishOptions(PublishDacpacSettings settings)
+        internal static PublishOptions GetPublishOptions(PublishDacpacSettings settings)
         {
             var options = new PublishOptions();
             if (settings == null)
@@ -127,8 +127,13 @@ namespace Cake.SqlServer
                 TreatVerificationErrorsAsWarnings = settings.TreatVerificationErrorsAsWarnings,
                 UnmodifiableObjectWarnings = settings.UnmodifiableObjectWarnings,
                 VerifyCollationCompatibility = settings.VerifyCollationCompatibility,
-                VerifyDeployment = settings.VerifyDeployment
+                VerifyDeployment = settings.VerifyDeployment,
             };
+
+            foreach (var pair in settings.SqlCommandVariableValues)
+            {
+                options.DeployOptions.SqlCommandVariableValues[pair.Key] = pair.Value;
+            }
 
             return options;
         }

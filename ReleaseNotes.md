@@ -1,3 +1,6 @@
+### New in 1.8.4
+* Added SqlCommandVariableValues to PublishDacpacSettings
+
 ### New in 1.8
 * Option to disable switch to single user mode on backup restoring #31
 * Fix for ignored timeout on Backup Restore #33
