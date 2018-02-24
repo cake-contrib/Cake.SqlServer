@@ -46,6 +46,21 @@ namespace Cake.SqlServer
             }
         }
 
+        internal static bool DatabaseExists(ICakeContext context, String connectionString, String databaseName)
+        {
+            var databaseExistsSql = "select DB_ID(@DatabaseName) as Id";
+
+            using (var connection = OpenSqlConnection(context, connectionString))
+            {
+                context.Log.Debug($"Executing SQL : {databaseExistsSql}");
+                using (var command = CreateSqlCommand(databaseExistsSql, connection))
+                {
+                    command.Parameters.AddWithValue("@DatabaseName", databaseName);
+                    return command.ExecuteScalar() != DBNull.Value;
+                }
+            }
+        }
+
         internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName)
         {
             var createDbSql = $"if (select DB_ID(@DatabaseName)) is null create database {Sql.EscapeName(databaseName)}";

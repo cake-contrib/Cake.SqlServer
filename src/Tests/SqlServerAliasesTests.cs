@@ -23,6 +23,26 @@ namespace Tests
             context = Substitute.For<ICakeContext>();
         }
 
+        [Test]
+        public void DatabaseExists_DoesNotExist_ReturnFalse()
+        {
+            var dbExists = SqlServerAliases.DatabaseExists(context, ConnectionString, "DoesNotExist");
+            dbExists.Should().BeFalse();
+        }
+
+        [Test]
+        public void DatabaseExists_DoesExist_ReturnTrue()
+        {
+            // Arrange
+            var dbName = "WillExists";
+            SqlHelpers.ExecuteSql(ConnectionString, $"Create database {dbName}");
+
+            // Act
+            var dbExists = SqlServerAliases.DatabaseExists(context, ConnectionString, dbName);
+
+            // Assert
+            dbExists.Should().BeTrue();
+        }
 
         [Test]
         public void DropDatabase_DoesNotExist_DoesNotThrow()
@@ -327,6 +347,7 @@ namespace Tests
         {
             SqlHelpers.DropDatabase(ConnectionString, "ForFileExecution");
             SqlHelpers.DropDatabase(ConnectionString, "WillBeDropped");
+            SqlHelpers.DropDatabase(ConnectionString, "WillExists");
             SqlHelpers.DropDatabase(ConnectionString, "CakeTest");
             SqlHelpers.DropDatabase(ConnectionString, "ToBeRecreated");
             SqlHelpers.DropDatabase(ConnectionString, "ToBeRecreatedAgain");

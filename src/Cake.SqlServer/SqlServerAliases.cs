@@ -25,6 +25,44 @@ namespace Cake.SqlServer
     public static class SqlServerAliases
     {
         /// <summary>
+        /// Test if the database exists
+        /// </summary>
+        /// <param name="context">The Cake context.</param>
+        /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
+        /// <param name="databaseName">Database name to test</param>
+        /// <example>
+        /// <code>
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        /// 
+        ///     Task("Deploy-Database")
+        ///          .Does(() =>
+        ///          {
+        ///             var connectionString = @"Server=(LocalDb)\v12.0";
+        ///             var dbName = "CakeTest";
+        ///             var backupFile = new FilePath("C:/tmp/myBackup.bak");
+        /// 
+        ///             if (DatabaseExists(connectionString, dbName))
+        ///             {
+        ///                 throw new Exception("A database with the same name already exists");
+        ///             }
+        ///             RestoreSqlBackup(connectionString, backupFile, new RestoreSqlBackupSettings()
+        ///                {
+        ///                      NewDatabaseName = dbName
+        ///                }); 
+        ///         });
+        /// </code>
+        /// </example>
+        [CakeMethodAlias]
+        public static bool DatabaseExists(this ICakeContext context, String connectionString, String databaseName)
+        {
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
+            Guard.ArgumentIsNotNull(databaseName, nameof(databaseName));
+
+            return SqlServerAliasesImpl.DatabaseExists(context, connectionString, databaseName);
+        }
+
+        /// <summary>
         /// Drops database. Before dropping the DB, database is set to be offline, then online again.
         /// This is to be sure that there are no live connections, otherwise the script will fail.
         /// Also if the database does not exist - it will not do anything.
