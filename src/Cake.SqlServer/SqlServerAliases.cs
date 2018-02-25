@@ -39,16 +39,12 @@ namespace Cake.SqlServer
         ///          {
         ///             var connectionString = @"Server=(LocalDb)\v12.0";
         ///             var dbName = "CakeTest";
-        ///             var backupFile = new FilePath("C:/tmp/myBackup.bak");
         /// 
         ///             if (DatabaseExists(connectionString, dbName))
         ///             {
         ///                 throw new Exception("A database with the same name already exists");
         ///             }
-        ///             RestoreSqlBackup(connectionString, backupFile, new RestoreSqlBackupSettings()
-        ///                {
-        ///                      NewDatabaseName = dbName
-        ///                }); 
+        ///             // do other stuff
         ///         });
         /// </code>
         /// </example>
