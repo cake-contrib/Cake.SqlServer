@@ -18,6 +18,12 @@ Or look through XML-generated documentation on [Cakebuild.net site](http://cakeb
 
 # General Functionality
 
+### Database Exists
+```c#
+DatabaseExists(string connectionString, string databaseName)
+```
+Return true if the database exists, false otherwise.
+
 ### Create Database
 ```c#
 CreateDatabase(string connectionString, string databaseName)
