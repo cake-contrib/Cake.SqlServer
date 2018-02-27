@@ -145,7 +145,7 @@ Task("Create-Bacpac")
 
 		var dbName = "ForBacpac";
 
-       var resultingFile = new FilePath(@".\ForBacpac.bacpac")
+        var resultingFile = new FilePath(@".\ForBacpac.bacpac");
 
 		CreateBacpacFile(connString, dbName, resultingFile);
 	});
