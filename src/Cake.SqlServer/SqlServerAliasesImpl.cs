@@ -61,8 +61,9 @@ namespace Cake.SqlServer
             }
         }
 
-        internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName)
+        internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings createDatabaseSettings = null)
         {
+            //create database Donno on primary (filename= 'd:/tmp/donno.mdf')
             var createDbSql = $"if (select DB_ID(@DatabaseName)) is null create database {Sql.EscapeName(databaseName)}";
 
             using (var connection = OpenSqlConnection(context, connectionString))
