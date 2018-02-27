@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -61,9 +62,8 @@ namespace Cake.SqlServer
             }
         }
 
-        internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings createDatabaseSettings = null)
+        internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName)
         {
-            //create database Donno on primary (filename= 'd:/tmp/donno.mdf')
             var createDbSql = $"if (select DB_ID(@DatabaseName)) is null create database {Sql.EscapeName(databaseName)}";
 
             using (var connection = OpenSqlConnection(context, connectionString))
@@ -73,6 +73,30 @@ namespace Cake.SqlServer
 
                 var command = CreateSqlCommand(sqlToExecute, connection);
                 command.Parameters.AddWithValue("@DatabaseName", databaseName);
+
+                command.ExecuteNonQuery();
+                context.Log.Information($"Database {databaseName} is created if it was not there");
+            }
+        }
+
+        internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        {
+            settings.AssignNames(databaseName);
+
+            var (sql, param) = GenerateCreateDbSql(databaseName, settings);
+
+            sql = "if (select DB_ID(@DatabaseName)) is null " + sql;
+
+            using (var connection = OpenSqlConnection(context, connectionString))
+            {
+                context.Log.Debug($"Executing SQL : {sql}");
+
+                var command = CreateSqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@DatabaseName", databaseName);
+                foreach (var pair in param)
+                {
+                    command.Parameters.AddWithValue(pair.Key, pair.Value);
+                }
 
                 command.ExecuteNonQuery();
                 context.Log.Information($"Database {databaseName} is created if it was not there");
@@ -94,6 +118,49 @@ namespace Cake.SqlServer
                 command.ExecuteNonQuery();
                 context.Log.Information($"Database {databaseName} is created");
             }
+        }
+
+        internal static void CreateDatabase(ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        {
+            settings.AssignNames(databaseName);
+
+            var (sql, param) = GenerateCreateDbSql(databaseName, settings);
+
+            using (var connection = OpenSqlConnection(context, connectionString))
+            {
+                context.Log.Debug($"Executing SQL : {sql}");
+
+                var command = CreateSqlCommand(sql, connection);
+                foreach (var pair in param)
+                {
+                    command.Parameters.AddWithValue(pair.Key, pair.Value);
+                }
+
+                command.ExecuteNonQuery();
+                context.Log.Information($"Database {databaseName} is created if it was not there");
+            }
+        }
+
+        private static (string sql, Dictionary<String, String> param) GenerateCreateDbSql(String databaseName, CreateDatabaseSettings settings)
+        {
+            var param = new Dictionary<String, String>();
+
+            var createDbSql = $" create database {Sql.EscapeName(databaseName)}";
+            if (settings.PrimaryFile != null || settings.LogFile != null)
+            {
+                createDbSql += " ON ";
+            }
+            if (settings.PrimaryFile != null)
+            {
+                createDbSql += $" PRIMARY ( Name = {Sql.EscapeName(settings.PrimaryFile.Name)}, FILENAME = @PrimaryFileName) "; // TODO replace with param
+                param["@PrimaryFileName"] = settings.PrimaryFile.FileName;
+            }
+            if (settings.LogFile != null)
+            {
+                createDbSql += $" LOG ON (NAME = {Sql.EscapeName(settings.LogFile.Name)}, FILENAME = @LogFileName) ";
+                param["@LogFileName"] = settings.LogFile.FileName;
+            }
+            return (createDbSql, param);
         }
 
 
