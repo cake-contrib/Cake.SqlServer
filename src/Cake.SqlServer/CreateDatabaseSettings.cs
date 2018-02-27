@@ -37,7 +37,8 @@ namespace Cake.SqlServer
     {
         public CreateDatabaseFileSpec(String fileName)
         {
-            FileName = fileName;
+            // need to replace fowards slashes to backward because SQL Server does not like them.
+            FileName = fileName.Replace("/", "\\");
         }
 
         public String FileName { get; }

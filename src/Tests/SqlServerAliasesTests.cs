@@ -8,7 +8,6 @@ using Cake.SqlServer;
 using FluentAssertions;
 using NUnit.Framework;
 using NSubstitute;
-// ReSharper disable InvokeAsExtensionMethod
 
 
 namespace Tests
@@ -77,6 +76,23 @@ namespace Tests
 
             // Assert
             SqlHelpers.DbExists(ConnectionString, dbName).Should().BeTrue();
+
+            // Cleanup
+            SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
+        }
+
+        [Test]
+        public void CreateDatabaseIfNotExistsWithPrimaryFile()
+        {
+            // Act
+            var dbName = "CakeTest";
+            var mdfFilePath = $"{Path.GetTempPath()}MyCakeTest.mdf";
+            var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath);
+            SqlServerAliases.CreateDatabaseIfNotExists(context, ConnectionString, dbName, createSettings);
+
+            // Assert
+            SqlHelpers.DbExists(ConnectionString, dbName).Should().BeTrue();
+            File.Exists(mdfFilePath).Should().BeTrue();
 
             // Cleanup
             SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");

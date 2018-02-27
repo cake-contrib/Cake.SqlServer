@@ -152,6 +152,17 @@ namespace Cake.SqlServer
         }
 
 
+        [CakeMethodAlias]
+        public static void CreateDatabaseIfNotExists(this ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        {
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
+            Guard.ArgumentIsNotNull(databaseName, nameof(databaseName));
+            Guard.ArgumentIsNotNull(settings, nameof(settings));
+
+            SqlServerAliasesImpl.CreateDatabaseIfNotExists(context, connectionString, databaseName, settings);
+        }
+
         /// <summary>
         /// First drops, then recreates the database
         /// </summary>
