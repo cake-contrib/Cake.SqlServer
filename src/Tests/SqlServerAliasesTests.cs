@@ -48,7 +48,7 @@ namespace Tests
         {
             Action act = () => SqlServerAliases.DropDatabase(context, ConnectionString, "DoesNotExist");
 
-            act.ShouldNotThrow();
+            act.Should().NotThrow();
         }
 
 
@@ -136,9 +136,11 @@ namespace Tests
         {
             using (var connection = SqlServerAliases.OpenSqlConnection(context, ConnectionString))
             {
-                connection.MonitorEvents();
-                SqlServerAliases.ExecuteSqlCommand(context, connection, "select * from sys.tables");
-                connection.ShouldNotRaise(nameof(connection.StateChange));
+                using (var monitoringSubject = connection.Monitor())
+                {
+                    SqlServerAliases.ExecuteSqlCommand(context, connection, "select * from sys.tables");
+                    monitoringSubject.Should().NotRaise(nameof(connection.StateChange));
+                }
             }
         }
 
@@ -150,10 +152,10 @@ namespace Tests
             try
             {
                 using (var connection = SqlServerAliases.OpenSqlConnection(context, ConnectionString))
+                using (var monitoringSubject = connection.Monitor())
                 {
-                    connection.MonitorEvents();
                     SqlServerAliases.ExecuteSqlFile(context, connection, GetSqlFilePath());
-                    connection.ShouldNotRaise(nameof(connection.StateChange));
+                    monitoringSubject.Should().NotRaise(nameof(connection.StateChange));
                 }
             }
             finally
@@ -221,7 +223,7 @@ namespace Tests
             var connString = "data source=(LocalDb)\v12.0";
             Action act = () => SqlServerAliases.CreateDatabaseIfNotExists(context, connString, "ShouldThrow");
 
-            act.ShouldThrow<Exception>()
+            act.Should().Throw<Exception>()
                .WithMessage("Looks like you are trying to connect to LocalDb. Have you correctly escaped your connection string with '@'? It should look like 'var connString = @\"(localDb)\\v12.0\"'");
         }
 
@@ -235,7 +237,7 @@ namespace Tests
 
             // Assert
             Action act = () => SqlServerAliases.CreateDatabase(context, ConnectionString, dbName);
-            act.ShouldThrow<SqlException>();
+            act.Should().Throw<SqlException>();
 
             // Cleanup
             SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
@@ -338,7 +340,7 @@ namespace Tests
 
             Action act = () => SqlServerAliases.ExecuteSqlCommand(context, ConnectionString, "WAITFOR DELAY '00:00:02'");
 
-            act.ShouldThrow<Exception>();
+            act.Should().Throw<Exception>();
         }
 
         [Test]
@@ -348,7 +350,7 @@ namespace Tests
 
             Action act = () => SqlServerAliases.ExecuteSqlCommand(context, ConnectionString, "WAITFOR DELAY '00:00:02'");
 
-            act.ShouldNotThrow();
+            act.Should().NotThrow();
         }
 
 
@@ -357,7 +359,7 @@ namespace Tests
         {
             public int? Id { get; set; }
         }
-        
+
 
         public void Dispose()
         {

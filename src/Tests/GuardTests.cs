@@ -18,7 +18,7 @@ namespace Tests
             Action act = () => Guard.ArgumentIsNotNull(value, "value");
 
             // Assert
-            act.ShouldThrow<ArgumentNullException>();
+            act.Should().Throw<ArgumentNullException>();
         }
 
         [Test]
@@ -30,7 +30,7 @@ namespace Tests
             Action act = () => Guard.ArgumentIsNotNull(value, "value");
 
             // Assert
-            act.ShouldThrow<ArgumentNullException>();
+            act.Should().Throw<ArgumentNullException>();
         }
     }
 }
