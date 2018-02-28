@@ -84,7 +84,9 @@ Task("Database-Operations")
 	});
 
 Task("Create-With-Parameters")
+	.WithCriteria(() => ! BuildSystem.AppVeyor.IsRunningOnAppVeyor)
 	.Does(() => {
+		// excluding these tests from appveyor because they are causing timeout on their SQL
 	    var masterConnectionString = @"data source=(LocalDb)\v12.0;";
 
 		var dbName = "CreateCakeTest";
@@ -100,6 +102,10 @@ Task("Create-With-Parameters")
 		}
 
 		CreateDatabase(masterConnectionString, dbName, createSettings);
+
+		DropAndCreateDatabase(masterConnectionString, dbName, createSettings);
+
+		CreateDatabaseIfNotExists(masterConnectionString, dbName, createSettings);
 	})
 	.Finally(() =>
 	{  
