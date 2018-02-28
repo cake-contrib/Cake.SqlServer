@@ -83,6 +83,33 @@ Task("Database-Operations")
 		DropDatabase(masterConnectionString, dbName);
 	});
 
+Task("Create-With-Parameters")
+	.Does(() => {
+	    var masterConnectionString = @"data source=(LocalDb)\v12.0;";
+
+		var dbName = "CreateCakeTest";
+		var mdfFilePath = $"{System.IO.Path.GetTempPath()}MyCakeTest.mdf";
+		var logFilePath = $"{System.IO.Path.GetTempPath()}MyCakeTest.ldf";
+
+		var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath).WithLogFile(logFilePath);
+		
+		// making sure we use DatabaseExists feature here
+		if(DatabaseExists(masterConnectionString, dbName))
+		{
+			DropDatabase(masterConnectionString, dbName);
+		}
+
+		CreateDatabase(masterConnectionString, dbName, createSettings);
+
+		DropAndCreateDatabase(masterConnectionString, dbName, createSettings);
+
+		DropDatabase(masterConnectionString, dbName);
+
+		CreateDatabaseIfNotExists(masterConnectionString, dbName, createSettings);
+		
+		DropDatabase(masterConnectionString, dbName);
+	});
+
 
 Task("SqlConnection")
 	.Does(() => {
@@ -238,6 +265,7 @@ Task("Default")
     .IsDependentOn("Restore-From-Bacpac")
     .IsDependentOn("Dacpac-Extract")
     .IsDependentOn("Dacpac-Publish")
+    .IsDependentOn("Create-With-Parameters")
     ;    
 
 RunTarget(target);
