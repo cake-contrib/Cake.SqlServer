@@ -100,11 +100,6 @@ Task("Create-With-Parameters")
 		}
 
 		CreateDatabase(masterConnectionString, dbName, createSettings);
-
-		var newCreateSettings = new CreateDatabaseSettings().WithPrimaryFile($"{System.IO.Path.GetTempPath()}NewCakeTest.mdf");
-		DropAndCreateDatabase(masterConnectionString, dbName, newCreateSettings);
-
-		CreateDatabaseIfNotExists(masterConnectionString, dbName, newCreateSettings);
 	})
 	.Finally(() =>
 	{  
