@@ -90,8 +90,8 @@ Task("Create-With-Parameters")
         var masterConnectionString = @"data source=(LocalDb)\v12.0;";
 
         var dbName = "CreateCakeTest";
-        var mdfFilePath = $"{System.IO.Path.GetTempPath()}MyCakeTest.mdf";
-        var logFilePath = $"{System.IO.Path.GetTempPath()}MyCakeTest.ldf";
+        var mdfFilePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "MyCakeTest.mdf");
+        var logFilePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "MyCakeTest.ldf");
 
         var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath).WithLogFile(logFilePath);
         

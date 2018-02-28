@@ -271,7 +271,10 @@ namespace Cake.SqlServer
         ///          {
         ///             var connectionString = @"Server=(LocalDb)\v12.0";
         ///             var dbName = "CakeTest";
-        ///             DropAndCreateDatabase(connectionString, dbName);
+        ///             var createSettings = new CreateDatabaseSettings()
+        ///                                          .WithPrimaryFile(@"C:\MyPath\DB\CakeTest.mdf")
+        ///                                          .WithLogFile(@"C:\MyPath\DB\CakeTest.ldf");
+        ///             DropAndCreateDatabase(connectionString, dbName, createSettings);
         ///         });
         /// </code>
         /// </example>
