@@ -142,7 +142,7 @@ namespace Cake.SqlServer
             }
             if (settings.PrimaryFile != null)
             {
-                createDbSql += $" PRIMARY ( Name = {Sql.EscapeName(settings.PrimaryFile.Name)}, FILENAME = '{settings.PrimaryFile.FileName}') "; // TODO replace with param
+                createDbSql += $" PRIMARY (Name = {Sql.EscapeName(settings.PrimaryFile.Name)}, FILENAME = '{settings.PrimaryFile.FileName}') "; // TODO replace with param
             }
             if (settings.LogFile != null)
             {

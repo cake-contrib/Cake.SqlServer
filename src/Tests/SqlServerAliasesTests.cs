@@ -86,7 +86,7 @@ namespace Tests
         {
             // Act
             var dbName = "CakeTest";
-            var mdfFilePath = $"{Path.GetTempPath()}MyCakeTest.mdf";
+            var mdfFilePath = Path.Combine(Path.GetTempPath(), "MyCakeTest.mdf");
             var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath);
             SqlServerAliases.CreateDatabaseIfNotExists(context, ConnectionString, dbName, createSettings);
 
@@ -103,8 +103,8 @@ namespace Tests
         {
             // Act
             var dbName = "CakeTest";
-            var mdfFilePath = $"{Path.GetTempPath()}MyCakeTest.mdf";
-            var logFilePath = $"{Path.GetTempPath()}MyCakeTest.ldf";
+            var mdfFilePath = Path.Combine(Path.GetTempPath(), "MyCakeTest.mdf");
+            var logFilePath = Path.Combine(Path.GetTempPath(), "MyCakeTest.ldf");
             var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath).WithLogFile(logFilePath);
             SqlServerAliases.CreateDatabaseIfNotExists(context, ConnectionString, dbName, createSettings);
 
@@ -124,7 +124,7 @@ namespace Tests
             //Arrange
             var dbName = "ToBeRecreated";
             var tableName = "WillNotExist";
-            SqlHelpers.ExecuteSql(ConnectionString, $"Create database {dbName}");
+            SqlHelpers.ExecuteSql(ConnectionString, $"create database {dbName}");
             SqlHelpers.ExecuteSql(ConnectionString, $"create table [{dbName}].dbo.{tableName} (id int null)");
             SqlHelpers.TableExists(ConnectionString, dbName, tableName).Should().BeTrue();
 
@@ -143,11 +143,11 @@ namespace Tests
             //Arrange
             var dbName = "ToBeRecreated";
             var tableName = "WillNotExist";
-            SqlHelpers.ExecuteSql(ConnectionString, $"Create database {dbName}");
+            SqlHelpers.ExecuteSql(ConnectionString, $"create database {dbName}");
             SqlHelpers.ExecuteSql(ConnectionString, $"create table [{dbName}].dbo.{tableName} (id int null)");
             SqlHelpers.TableExists(ConnectionString, dbName, tableName).Should().BeTrue();
-            var mdfFilePath = $"{Path.GetTempPath()}MyCakeTest.mdf";
-            var logFilePath = $"{Path.GetTempPath()}MyCakeTest.ldf";
+            var mdfFilePath = Path.Combine(Path.GetTempPath(), "MyCakeTest.mdf");
+            var logFilePath = Path.Combine(Path.GetTempPath(), "MyCakeTest.ldf");
             var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath).WithLogFile(logFilePath);
 
             // Act
@@ -188,7 +188,7 @@ namespace Tests
         public void ExecuteSqlFile_does_not_change_connection_state()
         {
             const string dbName = "ForFileExecution";
-            SqlHelpers.ExecuteSql(ConnectionString, $"Create database {dbName}");
+            SqlHelpers.ExecuteSql(ConnectionString, $"create database {dbName}");
             try
             {
                 using (var connection = SqlServerAliases.OpenSqlConnection(context, ConnectionString))
@@ -200,7 +200,7 @@ namespace Tests
             }
             finally
             {
-                SqlHelpers.ExecuteSql(ConnectionString, $"Drop database {dbName}");
+                SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
             }
         }
 
@@ -213,7 +213,7 @@ namespace Tests
             var dbName = "ForSqlExecution";
             var tableName1 = "WillExist1";
             var tableName2 = "WillExist2";
-            SqlHelpers.ExecuteSql(ConnectionString, $"Create database {dbName}");
+            SqlHelpers.ExecuteSql(ConnectionString, $"create database {dbName}");
             var sql = $@"
             create table [{dbName}].dbo.{tableName1} (id int null);
             Go
@@ -240,7 +240,7 @@ namespace Tests
             var dbName = "ForFileExecution";
             var tableName1 = "WillExist1";
             var tableName2 = "WillExist2";
-            SqlHelpers.ExecuteSql(ConnectionString, $"Create database {dbName}");
+            SqlHelpers.ExecuteSql(ConnectionString, $"create database {dbName}");
             var sqlFilePath = GetSqlFilePath();
 
             // Act
@@ -318,7 +318,7 @@ namespace Tests
         {
             // Act
             var dbName = "CakeTest";
-            var mdfFilePath = $"{Path.GetTempPath()}MyCakeTest.mdf";
+            var mdfFilePath = Path.Combine(Path.GetTempPath(), "MyCakeTest.mdf");
             var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath);
             SqlServerAliases.CreateDatabase(context, ConnectionString, dbName, createSettings);
 
@@ -335,8 +335,8 @@ namespace Tests
         {
             // Act
             var dbName = "CakeTest";
-            var mdfFilePath = $"{Path.GetTempPath()}MyCakeTest.mdf";
-            var logFilePath = $"{Path.GetTempPath()}MyCakeTest.ldf";
+            var mdfFilePath = Path.Combine(Path.GetTempPath(), "MyCakeTest.mdf");
+            var logFilePath = Path.Combine(Path.GetTempPath(), "MyCakeTest.ldf");
             var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath).WithLogFile(logFilePath);
             SqlServerAliases.CreateDatabase(context, ConnectionString, dbName, createSettings);
 
