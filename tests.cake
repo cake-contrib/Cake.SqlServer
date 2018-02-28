@@ -103,11 +103,12 @@ Task("Create-With-Parameters")
 
 		DropAndCreateDatabase(masterConnectionString, dbName, createSettings);
 
-		DropDatabase(masterConnectionString, dbName);
-
 		CreateDatabaseIfNotExists(masterConnectionString, dbName, createSettings);
-		
-		DropDatabase(masterConnectionString, dbName);
+	})
+	.Finally(() =>
+	{  
+		// Cleanup
+		DropDatabase(@"data source=(LocalDb)\v12.0", "CreateCakeTest");
 	});
 
 
