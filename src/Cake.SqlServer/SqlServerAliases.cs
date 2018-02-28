@@ -121,6 +121,31 @@ namespace Cake.SqlServer
             SqlServerAliasesImpl.CreateDatabase(context, connectionString, databaseName);
         }
 
+
+        /// <summary>
+        /// Creates an empty database. If database with this name already exists, throws a SqlException.
+        /// Allows to specify primary and log files location.
+        /// </summary>
+        /// <param name="context">The Cake context</param>
+        /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
+        /// <param name="databaseName">Database name to be created</param>
+        /// <param name="settings">Settings object with parameters</param>
+        /// <example>
+        /// <code>
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        /// 
+        ///     Task("Create-Database")
+        ///          .Does(() =>
+        ///          {
+        ///             var connectionString = @"Server=(LocalDb)\v12.0";
+        ///             var dbName = "CakeTest";
+        ///             var createSettings = new CreateDatabaseSettings()
+        ///                                          .WithPrimaryFile(@"C:\MyPath\DB\CakeTest.mdf")
+        ///                                          .WithLogFile(@"C:\MyPath\DB\CakeTest.ldf");
+        ///             CreateDatabase(connectionString, dbName, createSettings);
+        ///         });
+        /// </code>
+        /// </example>        
         [CakeMethodAlias]
         public static void CreateDatabase(this ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
         {
@@ -162,7 +187,29 @@ namespace Cake.SqlServer
             SqlServerAliasesImpl.CreateDatabaseIfNotExists(context, connectionString, databaseName);
         }
 
-
+        /// <summary>
+        /// Creates an empty database if another database with the same does not already exist.
+        /// </summary>
+        /// <param name="context">The Cake context</param>
+        /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
+        /// <param name="databaseName">Database name to be created</param>
+        /// <param name="settings">Settings object with parameters</param>
+        /// <example>
+        /// <code>
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        /// 
+        ///     Task("Create-Database-If-Not-Exists")
+        ///          .Does(() =>
+        ///          {
+        ///             var connectionString = @"Server=(LocalDb)\v12.0";
+        ///             var dbName = "CakeTest";
+        ///             var createSettings = new CreateDatabaseSettings()
+        ///                                          .WithPrimaryFile(@"C:\MyPath\DB\CakeTest.mdf")
+        ///                                          .WithLogFile(@"C:\MyPath\DB\CakeTest.ldf");
+        ///             CreateDatabaseIfNotExists(connectionString, dbName, createSettings);
+        ///         });
+        /// </code>
+        /// </example>
         [CakeMethodAlias]
         public static void CreateDatabaseIfNotExists(this ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
         {
