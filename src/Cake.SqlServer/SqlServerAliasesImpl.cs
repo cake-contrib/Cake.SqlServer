@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -78,6 +79,26 @@ namespace Cake.SqlServer
             }
         }
 
+        internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        {
+            settings.AssignNames(databaseName);
+
+            var sql = GenerateCreateDbSql(databaseName, settings);
+
+            sql = "if (select DB_ID(@DatabaseName)) is null " + sql;
+
+            using (var connection = OpenSqlConnection(context, connectionString))
+            {
+                context.Log.Debug($"Executing SQL : {sql}");
+
+                var command = CreateSqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@DatabaseName", databaseName);
+                
+                command.ExecuteNonQuery();
+                context.Log.Information($"Database {databaseName} is created if it was not there");
+            }
+        }
+
 
         internal static void CreateDatabase(ICakeContext context, String connectionString, String databaseName)
         {
@@ -95,6 +116,41 @@ namespace Cake.SqlServer
             }
         }
 
+        internal static void CreateDatabase(ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        {
+            settings.AssignNames(databaseName);
+
+            var sql = GenerateCreateDbSql(databaseName, settings);
+
+            using (var connection = OpenSqlConnection(context, connectionString))
+            {
+                context.Log.Debug($"Executing SQL : {sql}");
+
+                var command = CreateSqlCommand(sql, connection);
+
+                command.ExecuteNonQuery();
+                context.Log.Information($"Database {databaseName} is created if it was not there");
+            }
+        }
+
+        private static string GenerateCreateDbSql(String databaseName, CreateDatabaseSettings settings)
+        {
+            var createDbSql = $" create database {Sql.EscapeName(databaseName)}";
+            if (settings.PrimaryFile != null || settings.LogFile != null)
+            {
+                createDbSql += " ON ";
+            }
+            if (settings.PrimaryFile != null)
+            {
+                createDbSql += $" PRIMARY (Name = {Sql.EscapeName(settings.PrimaryFile.Name)}, FILENAME = '{settings.PrimaryFile.FileName}') "; // TODO replace with param
+            }
+            if (settings.LogFile != null)
+            {
+                createDbSql += $" LOG ON (NAME = {Sql.EscapeName(settings.LogFile.Name)}, FILENAME = '{settings.LogFile.FileName}') ";
+            }
+            return createDbSql;
+        }
+
 
         internal static void DropAndCreateDatabase(ICakeContext context, String connectionString, String databaseName)
         {
@@ -102,6 +158,11 @@ namespace Cake.SqlServer
             CreateDatabase(context, connectionString, databaseName);
         }
 
+        internal static void DropAndCreateDatabase(ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        {
+            DropDatabase(context, connectionString, databaseName);
+            CreateDatabase(context, connectionString, databaseName, settings);
+        }
 
         internal static void ExecuteSqlCommand(ICakeContext context, String connectionString, string sqlCommands)
         {

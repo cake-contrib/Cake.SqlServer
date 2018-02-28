@@ -30,12 +30,28 @@ CreateDatabase(string connectionString, string databaseName)
 ```
 Creates database. If database with this name exists - SqlException is thrown. 
 
+```c#
+var createSettings = new CreateDatabaseSettings()
+                        .WithPrimaryFile(@"C:\MyPath\MyCakeTest.mdf")
+                        .WithLogFile(@"C:\MyPath\MyCakeTest.ldf");
+CreateDatabase(masterConnectionString, "CreateCakeTest", createSettings);
+```
+Creates a database with the specified primary and log files locations.
+
 ### Create Database If Not Exist
 ```c#
 CreateDatabaseIfNotExists(string connectionString, string databaseName)
 ```
 
 Here we check if the database exists first, if it does not exists - create it. Does not do anything if database with this name already exists.
+
+```c#
+var createSettings = new CreateDatabaseSettings()
+                        .WithPrimaryFile(@"C:\MyPath\MyCakeTest.mdf")
+                        .WithLogFile(@"C:\MyPath\MyCakeTest.ldf");
+CreateDatabaseIfNotExists(masterConnectionString, "MyCakeTest", createSettings)
+```
+This will check if database does not yet exist and will create a new one. And will place primary data file and log file into specified locations.
 
 
 ### Drop Database
@@ -53,6 +69,13 @@ DropAndCreateDatabase(String connectionString, String databaseName)
 
 Simply a short-hand for `DropDatabase(); CreateDatabase();`. I found these calls frequently together to create a short-hand. 
 
+```c#
+var createSettings = new CreateDatabaseSettings()
+                        .WithPrimaryFile(@"C:\MyPath\MyCakeTest.mdf")
+                        .WithLogFile(@"C:\MyPath\MyCakeTest.ldf");
+DropAndCreateDatabase(masterConnectionString, "MyCakeTest", createSettings)
+```
+This will drop and re-create the database with provided locations for data and log files.
 
 ### Execute Sql Command
 ```c#
@@ -145,7 +168,7 @@ Task("Create-Bacpac")
 
 		var dbName = "ForBacpac";
 
-       var resultingFile = new FilePath(@".\ForBacpac.bacpac")
+        var resultingFile = new FilePath(@".\ForBacpac.bacpac");
 
 		CreateBacpacFile(connString, dbName, resultingFile);
 	});

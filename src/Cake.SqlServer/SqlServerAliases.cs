@@ -123,6 +123,42 @@ namespace Cake.SqlServer
 
 
         /// <summary>
+        /// Creates an empty database. If database with this name already exists, throws a SqlException.
+        /// Allows to specify primary and log files location.
+        /// </summary>
+        /// <param name="context">The Cake context</param>
+        /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
+        /// <param name="databaseName">Database name to be created</param>
+        /// <param name="settings">Settings object with parameters</param>
+        /// <example>
+        /// <code>
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        /// 
+        ///     Task("Create-Database")
+        ///          .Does(() =>
+        ///          {
+        ///             var connectionString = @"Server=(LocalDb)\v12.0";
+        ///             var dbName = "CakeTest";
+        ///             var createSettings = new CreateDatabaseSettings()
+        ///                                          .WithPrimaryFile(@"C:\MyPath\DB\CakeTest.mdf")
+        ///                                          .WithLogFile(@"C:\MyPath\DB\CakeTest.ldf");
+        ///             CreateDatabase(connectionString, dbName, createSettings);
+        ///         });
+        /// </code>
+        /// </example>        
+        [CakeMethodAlias]
+        public static void CreateDatabase(this ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        {
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
+            Guard.ArgumentIsNotNull(databaseName, nameof(databaseName));
+            Guard.ArgumentIsNotNull(settings, nameof(settings));
+
+
+            SqlServerAliasesImpl.CreateDatabase(context, connectionString, databaseName, settings);
+        }
+
+        /// <summary>
         /// Creates an empty database if another database with the same does not already exist.
         /// </summary>
         /// <param name="context">The Cake context</param>
@@ -151,6 +187,39 @@ namespace Cake.SqlServer
             SqlServerAliasesImpl.CreateDatabaseIfNotExists(context, connectionString, databaseName);
         }
 
+        /// <summary>
+        /// Creates an empty database if another database with the same does not already exist.
+        /// </summary>
+        /// <param name="context">The Cake context</param>
+        /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
+        /// <param name="databaseName">Database name to be created</param>
+        /// <param name="settings">Settings object with parameters</param>
+        /// <example>
+        /// <code>
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        /// 
+        ///     Task("Create-Database-If-Not-Exists")
+        ///          .Does(() =>
+        ///          {
+        ///             var connectionString = @"Server=(LocalDb)\v12.0";
+        ///             var dbName = "CakeTest";
+        ///             var createSettings = new CreateDatabaseSettings()
+        ///                                          .WithPrimaryFile(@"C:\MyPath\DB\CakeTest.mdf")
+        ///                                          .WithLogFile(@"C:\MyPath\DB\CakeTest.ldf");
+        ///             CreateDatabaseIfNotExists(connectionString, dbName, createSettings);
+        ///         });
+        /// </code>
+        /// </example>
+        [CakeMethodAlias]
+        public static void CreateDatabaseIfNotExists(this ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        {
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
+            Guard.ArgumentIsNotNull(databaseName, nameof(databaseName));
+            Guard.ArgumentIsNotNull(settings, nameof(settings));
+
+            SqlServerAliasesImpl.CreateDatabaseIfNotExists(context, connectionString, databaseName, settings);
+        }
 
         /// <summary>
         /// First drops, then recreates the database
@@ -167,7 +236,10 @@ namespace Cake.SqlServer
         ///          {
         ///             var connectionString = @"Server=(LocalDb)\v12.0";
         ///             var dbName = "CakeTest";
-        ///             DropAndCreateDatabase(connectionString, dbName);
+        ///             var createSettings = new CreateDatabaseSettings()
+        ///                                          .WithPrimaryFile(@"C:\MyPath\DB\CakeTest.mdf")
+        ///                                          .WithLogFile(@"C:\MyPath\DB\CakeTest.ldf");
+        ///             DropAndCreateDatabase(connectionString, dbName, createSettings);
         ///         });
         /// </code>
         /// </example>
@@ -180,6 +252,43 @@ namespace Cake.SqlServer
 
             SqlServerAliasesImpl.DropAndCreateDatabase(context, connectionString, databaseName);
         }
+
+
+
+        /// <summary>
+        /// First drops, then recreates the database
+        /// </summary>
+        /// <param name="context">The Cake context.</param>
+        /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
+        /// <param name="databaseName">Database to be dropped and re-created</param>
+        /// <param name="settings">Settings object with parameters</param>
+        /// <example>
+        /// <code>
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        ///
+        ///     Task("ReCreate-Database")
+        ///          .Does(() =>
+        ///          {
+        ///             var connectionString = @"Server=(LocalDb)\v12.0";
+        ///             var dbName = "CakeTest";
+        ///             var createSettings = new CreateDatabaseSettings()
+        ///                                          .WithPrimaryFile(@"C:\MyPath\DB\CakeTest.mdf")
+        ///                                          .WithLogFile(@"C:\MyPath\DB\CakeTest.ldf");
+        ///             DropAndCreateDatabase(connectionString, dbName, createSettings);
+        ///         });
+        /// </code>
+        /// </example>
+        [CakeMethodAlias]
+        public static void DropAndCreateDatabase(this ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        {
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
+            Guard.ArgumentIsNotNull(databaseName, nameof(databaseName));
+            Guard.ArgumentIsNotNull(settings, nameof(settings));
+
+            SqlServerAliasesImpl.DropAndCreateDatabase(context, connectionString, databaseName, settings);
+        }
+
 
 
         /// <summary>
