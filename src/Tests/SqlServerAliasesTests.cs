@@ -137,6 +137,28 @@ namespace Tests
         }
 
 
+        [Test]
+        public void DropAndCreateDatabase_WithCreateParams()
+        {
+            //Arrange
+            var dbName = "ToBeRecreated";
+            var tableName = "WillNotExist";
+            SqlHelpers.ExecuteSql(ConnectionString, $"Create database {dbName}");
+            SqlHelpers.ExecuteSql(ConnectionString, $"create table [{dbName}].dbo.{tableName} (id int null)");
+            SqlHelpers.TableExists(ConnectionString, dbName, tableName).Should().BeTrue();
+            var mdfFilePath = $"{Path.GetTempPath()}MyCakeTest.mdf";
+            var logFilePath = $"{Path.GetTempPath()}MyCakeTest.ldf";
+            var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath).WithLogFile(logFilePath);
+
+            // Act
+            SqlServerAliases.DropAndCreateDatabase(context, ConnectionString, dbName, createSettings);
+
+            // Assert
+            File.Exists(mdfFilePath).Should().BeTrue();
+            File.Exists(logFilePath).Should().BeTrue();
+        }
+
+
 
         [Test]
         public void OpenSqlConnection_returns_open_connection()

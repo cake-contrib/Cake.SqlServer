@@ -158,6 +158,11 @@ namespace Cake.SqlServer
             CreateDatabase(context, connectionString, databaseName);
         }
 
+        internal static void DropAndCreateDatabase(ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        {
+            DropDatabase(context, connectionString, databaseName);
+            CreateDatabase(context, connectionString, databaseName, settings);
+        }
 
         internal static void ExecuteSqlCommand(ICakeContext context, String connectionString, string sqlCommands)
         {
