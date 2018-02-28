@@ -82,7 +82,7 @@ namespace Tests
         }
 
         [Test]
-        public void CreateDatabaseIfNotExistsWithPrimaryFile()
+        public void CreateDatabaseIfNotExists_WithPrimaryFile()
         {
             // Act
             var dbName = "CakeTest";
@@ -98,6 +98,24 @@ namespace Tests
             SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
         }
 
+        [Test]
+        public void CreateDatabaseIfNotExists_WithPrimaryAndLogFile()
+        {
+            // Act
+            var dbName = "CakeTest";
+            var mdfFilePath = $"{Path.GetTempPath()}MyCakeTest.mdf";
+            var logFilePath = $"{Path.GetTempPath()}MyCakeTest.ldf";
+            var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath).WithLogFile(logFilePath);
+            SqlServerAliases.CreateDatabaseIfNotExists(context, ConnectionString, dbName, createSettings);
+
+            // Assert
+            SqlHelpers.DbExists(ConnectionString, dbName).Should().BeTrue();
+            File.Exists(mdfFilePath).Should().BeTrue();
+            File.Exists(logFilePath).Should().BeTrue();
+
+            // Cleanup
+            SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
+        }
 
 
         [Test]
@@ -273,6 +291,41 @@ namespace Tests
             SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
         }
 
+        [Test]
+        public void CreateDatabase_WithPrimaryFile()
+        {
+            // Act
+            var dbName = "CakeTest";
+            var mdfFilePath = $"{Path.GetTempPath()}MyCakeTest.mdf";
+            var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath);
+            SqlServerAliases.CreateDatabase(context, ConnectionString, dbName, createSettings);
+
+            // Assert
+            SqlHelpers.DbExists(ConnectionString, dbName).Should().BeTrue();
+            File.Exists(mdfFilePath).Should().BeTrue();
+
+            // Cleanup
+            SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
+        }
+
+        [Test]
+        public void CreateDatabase_WithPrimaryAndLogFile()
+        {
+            // Act
+            var dbName = "CakeTest";
+            var mdfFilePath = $"{Path.GetTempPath()}MyCakeTest.mdf";
+            var logFilePath = $"{Path.GetTempPath()}MyCakeTest.ldf";
+            var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath).WithLogFile(logFilePath);
+            SqlServerAliases.CreateDatabase(context, ConnectionString, dbName, createSettings);
+
+            // Assert
+            SqlHelpers.DbExists(ConnectionString, dbName).Should().BeTrue();
+            File.Exists(mdfFilePath).Should().BeTrue();
+            File.Exists(logFilePath).Should().BeTrue();
+
+            // Cleanup
+            SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
+        }
 
         [Test]
         public void CreateDatabase_SqlNameInjection_DoesNotInject()

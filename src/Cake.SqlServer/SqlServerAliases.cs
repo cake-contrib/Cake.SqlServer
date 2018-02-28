@@ -121,6 +121,17 @@ namespace Cake.SqlServer
             SqlServerAliasesImpl.CreateDatabase(context, connectionString, databaseName);
         }
 
+        [CakeMethodAlias]
+        public static void CreateDatabase(this ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        {
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
+            Guard.ArgumentIsNotNull(databaseName, nameof(databaseName));
+            Guard.ArgumentIsNotNull(settings, nameof(settings));
+
+
+            SqlServerAliasesImpl.CreateDatabase(context, connectionString, databaseName, settings);
+        }
 
         /// <summary>
         /// Creates an empty database if another database with the same does not already exist.

@@ -83,7 +83,7 @@ namespace Cake.SqlServer
         {
             settings.AssignNames(databaseName);
 
-            var (sql, param) = GenerateCreateDbSql(databaseName, settings);
+            var sql = GenerateCreateDbSql(databaseName, settings);
 
             sql = "if (select DB_ID(@DatabaseName)) is null " + sql;
 
@@ -93,11 +93,7 @@ namespace Cake.SqlServer
 
                 var command = CreateSqlCommand(sql, connection);
                 command.Parameters.AddWithValue("@DatabaseName", databaseName);
-                foreach (var pair in param)
-                {
-                    command.Parameters.AddWithValue(pair.Key, pair.Value);
-                }
-
+                
                 command.ExecuteNonQuery();
                 context.Log.Information($"Database {databaseName} is created if it was not there");
             }
@@ -124,27 +120,21 @@ namespace Cake.SqlServer
         {
             settings.AssignNames(databaseName);
 
-            var (sql, param) = GenerateCreateDbSql(databaseName, settings);
+            var sql = GenerateCreateDbSql(databaseName, settings);
 
             using (var connection = OpenSqlConnection(context, connectionString))
             {
                 context.Log.Debug($"Executing SQL : {sql}");
 
                 var command = CreateSqlCommand(sql, connection);
-                foreach (var pair in param)
-                {
-                    command.Parameters.AddWithValue(pair.Key, pair.Value);
-                }
 
                 command.ExecuteNonQuery();
                 context.Log.Information($"Database {databaseName} is created if it was not there");
             }
         }
 
-        private static (string sql, Dictionary<String, String> param) GenerateCreateDbSql(String databaseName, CreateDatabaseSettings settings)
+        private static string GenerateCreateDbSql(String databaseName, CreateDatabaseSettings settings)
         {
-            var param = new Dictionary<String, String>();
-
             var createDbSql = $" create database {Sql.EscapeName(databaseName)}";
             if (settings.PrimaryFile != null || settings.LogFile != null)
             {
@@ -152,15 +142,13 @@ namespace Cake.SqlServer
             }
             if (settings.PrimaryFile != null)
             {
-                createDbSql += $" PRIMARY ( Name = {Sql.EscapeName(settings.PrimaryFile.Name)}, FILENAME = @PrimaryFileName) "; // TODO replace with param
-                param["@PrimaryFileName"] = settings.PrimaryFile.FileName;
+                createDbSql += $" PRIMARY ( Name = {Sql.EscapeName(settings.PrimaryFile.Name)}, FILENAME = '{settings.PrimaryFile.FileName}') "; // TODO replace with param
             }
             if (settings.LogFile != null)
             {
-                createDbSql += $" LOG ON (NAME = {Sql.EscapeName(settings.LogFile.Name)}, FILENAME = @LogFileName) ";
-                param["@LogFileName"] = settings.LogFile.FileName;
+                createDbSql += $" LOG ON (NAME = {Sql.EscapeName(settings.LogFile.Name)}, FILENAME = '{settings.LogFile.FileName}') ";
             }
-            return (createDbSql, param);
+            return createDbSql;
         }
 
 
