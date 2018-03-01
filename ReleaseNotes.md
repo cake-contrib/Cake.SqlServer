@@ -1,3 +1,9 @@
+### New in 1.9.0
+* Update to Cake v0.26.0
+* Adding DatabaseExists
+* Adding file parameters for database creation
+* Other minor fixes
+
 ### New in 1.8.4
 * Added SqlCommandVariableValues to PublishDacpacSettings
 
