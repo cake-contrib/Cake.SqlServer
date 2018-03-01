@@ -77,7 +77,7 @@ namespace Cake.SqlServer
 
         /// <summary>
         /// Name of file - internal name of file in SQL Server. 
-        /// Defaulted to database name for mdf and <DatabaseName>_log for log files
+        /// Defaulted to database name for mdf and {DatabaseName}_log for log files
         /// </summary>
         public String Name { get; set; }
         //public String Size { get; set; }

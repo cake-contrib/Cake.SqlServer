@@ -93,7 +93,7 @@ namespace Cake.SqlServer
 
         /// <summary>
         /// Creates an empty database. If database with this name already exists, throws a SqlException.
-        /// <see cref="CreateDatabaseIfNotExists"/> if you would like to check if database already exists.
+        /// <see cref="CreateDatabaseIfNotExists(ICakeContext, String, String)"/> if you would like to check if database already exists.
         /// </summary>
         /// <param name="context">The Cake context</param>
         /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
