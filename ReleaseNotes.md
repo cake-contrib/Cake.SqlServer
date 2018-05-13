@@ -1,3 +1,6 @@
+### New in 1.10.0
+* Updated to Cake v0.27.1
+
 ### New in 1.9.0
 * Update to Cake v0.26.0
 * Adding DatabaseExists
