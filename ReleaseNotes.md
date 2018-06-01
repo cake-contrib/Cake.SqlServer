@@ -1,3 +1,7 @@
+### New in 1.11.0
+* Update to Cake v0.28.0
+* Adding LocalDb path that works with SqlServer2017
+
 ### New in 1.10.0
 * Updated to Cake v0.27.1
 
