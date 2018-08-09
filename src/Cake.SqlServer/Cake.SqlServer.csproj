@@ -68,6 +68,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Backup\BackupAliases.cs" />
+    <Compile Include="Backup\BackupDatabase.cs" />
+    <Compile Include="Backup\BackupDatabaseSettings.cs" />
     <Compile Include="CreateDatabaseSettings.cs" />
     <Compile Include="Dac\DacAliases.cs" />
     <Compile Include="Dac\ExtractDacpacSettings.cs" />

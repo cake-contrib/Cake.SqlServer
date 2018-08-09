@@ -1,5 +1,5 @@
-#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer
-//#r "src/Cake.SqlServer/bin/debug/Cake.SqlServer.dll"
+//#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer
+#r "src/Cake.SqlServer/bin/debug/Cake.SqlServer.dll"
 
 var target = Argument("target", "Default");
 
@@ -170,6 +170,28 @@ Task("Restore-Database")
         DropDatabase(@"data source=(LocalDb)\v12.0", "CakeRestoreTest");
     });
 
+Task("Backup-Database")
+    .Does(() => {
+		var connString = @"data source=(LocalDb)\v12.0";
+		
+        var backupFilePath = new FilePath(@".\src\Tests\multiFileBackup.bak");
+        backupFilePath = backupFilePath.MakeAbsolute(Context.Environment);
+
+        RestoreSqlBackup(connString, backupFilePath); 
+	
+		var databaseName = "CakeRestoreTest";
+		BackupDatabase(connString, databaseName, new BackupDatabaseSettings() 
+		{
+			Compress = false,
+			// you can specify a folder or a file
+			Path = System.IO.Path.GetTempPath()
+		}); 
+	})
+    .Finally(() =>
+    {  
+        DropDatabase(@"data source=(LocalDb)\v12.0", "CakeRestoreTest");
+    });
+
 
 Task("Create-Bacpac")
     .Does(() =>{
@@ -264,6 +286,7 @@ Task("Default")
     .IsDependentOn("SqlConnection")
     .IsDependentOn("SqlTimeout")
     .IsDependentOn("Restore-Database")
+    .IsDependentOn("Backup-Database")	
     .IsDependentOn("Create-Bacpac")
     .IsDependentOn("Restore-From-Bacpac")
     .IsDependentOn("Dacpac-Extract")

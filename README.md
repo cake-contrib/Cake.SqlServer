@@ -153,6 +153,30 @@ Task("Restore-Database")
 	});
 ```
 
+### Backup Database
+```c#
+BackupDatabase(string connectionString, string databaseName, BackupDatabaseSettings settings)
+```
+
+Backup a database to a `.bak` file. Options all you to compress the backup file and specify the path (or the specific filename). 
+
+Example: 
+
+```c#
+Task("Backup-Database")
+    .Does(() =>
+    {
+        var connString = @"data source=(LocalDb)\v12.0";
+        var databaseName = "MyDatabase";
+        BackupDatabase(connString, databaseName, new BackupDatabaseSettings() 
+           {
+                 Compress = false,
+				 // you can specify either a folder or a file
+                 Path = System.IO.Path.GetTempPath()
+           }); 
+    });
+```
+
 # Working with BACPAC and DACPAC 
 
 This addin includes a thin wrapper around `Microsoft.SqlServer.DacFx` to provide ability to work with BACPAC and DACPAC files
