@@ -7,7 +7,7 @@ using Cake.Core.IO;
 namespace Cake.SqlServer
 { 
     /// <summary>
-    /// Contains functionality to restore SQL Server backup files *.bak
+    /// Contains functionality to backup and restore SQL Server database
     /// </summary>
     [CakeAliasCategory("SqlServer")]
     public static class BackupAliases
@@ -70,6 +70,36 @@ namespace Cake.SqlServer
         public static void RestoreSqlBackup(this ICakeContext context, String connectionString, FilePath backupFile)
         {
             RestoreSqlBackup(context, connectionString, backupFile, new RestoreSqlBackupSettings());
+        }
+
+        /// <summary>
+        /// Backup an existing database to a file.
+        /// </summary>
+        /// <param name="context">The Cake context.</param>
+        /// <param name="connectionString">The connection string. Regardless of the database specified, the connection will switch to master database for this operation.</param>
+        /// <param name="databaseName">Database to backup.</param>
+        /// <param name="settings">Settings for backing up database.</param>
+        /// <example>
+        /// <code>
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        /// 
+        ///     Task("Backup-Database")
+        ///         .Does(() =>
+        ///         {
+        ///             var connString = @"data source=(LocalDb)\v12.0";
+        ///             var databaseName = "MyDatabase";
+        ///             BackupDatabase(connString, databaseName, new BackupDatabaseSettings() 
+        ///                {
+        ///                      Compress = false,
+        ///                      Path = System.IO.Path.GetTempPath() // place files in Temp folder
+        ///                }); 
+        ///         });
+        /// </code>
+        /// </example>
+        [CakeMethodAlias]
+        public static void BackupDatabase(this ICakeContext context, string connectionString, string databaseName, BackupDatabaseSettings settings)
+        {
+            new BackupDatabase().Execute(context, connectionString, databaseName, settings);
         }
     }
 }

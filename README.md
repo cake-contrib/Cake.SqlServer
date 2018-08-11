@@ -153,6 +153,30 @@ Task("Restore-Database")
 	});
 ```
 
+### Backup Database
+```c#
+BackupDatabase(string connectionString, string databaseName, BackupDatabaseSettings settings)
+```
+
+Backup a database to a `.bak` file. Options all you to compress the backup file and specify the path (or the specific filename). 
+
+Example: 
+
+```c#
+Task("Backup-Database")
+    .Does(() =>
+    {
+        var connString = @"data source=(LocalDb)\v12.0";
+        var databaseName = "MyDatabase";
+        BackupDatabase(connString, databaseName, new BackupDatabaseSettings() 
+           {
+                 Compress = false,
+				 // you can specify either a folder or a file
+                 Path = System.IO.Path.GetTempPath()
+           }); 
+    });
+```
+
 # Working with BACPAC and DACPAC 
 
 This addin includes a thin wrapper around `Microsoft.SqlServer.DacFx` to provide ability to work with BACPAC and DACPAC files
@@ -358,9 +382,28 @@ using (TempDatabase(masterConnectionString, databaseName))
 ```
 This technique will make sure your temp database will be dropped after the payload/integration tests are executed.
 
-
-
 # Reason to Develop
 There is already a project that does similar things: [Cake.SqlTools](https://github.com/SharpeRAD/Cake.SqlTools). I have tried it and it was not enough for my purposes. I did look into extending functionality, but the way the project is structured - it won't let me do what I would like to do. The great idea in that project - be able to switch between MySql and SqlServer with a change of a single parameter.
 
 But I wanted to implement things like creating a database if it does not exist. And syntax for that in MySql and SqlServer is different. So if I wanted to extend that project I had to come up with the same functionality in MySql. But I don't use MySql, hell I don't even have it installed on my dev-machines any more.
+
+# How To Contribute
+
+Install [.Net Framwork 4.7.2 Developer Pack](https://www.microsoft.com/net/download/thank-you/net472-developer-pack)
+
+Open a command prompt in the root folder, and run these commands (Only need to run this once for any project. It will allow powershell scripts to execute):
+
+```
+powershell Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+powershell Get-ExecutionPolicy -List
+```
+
+# Running Cake Scripts
+
+```
+# compile and run unit tests
+powershell .\build.ps1 -target run-unit-tests
+
+# publish NUGET package
+powershell .\build.ps1
+```
