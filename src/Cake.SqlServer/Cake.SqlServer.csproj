@@ -67,14 +67,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Backup\BackupAliases.cs" />
-    <Compile Include="Backup\BackupDatabase.cs" />
+    <Compile Include="Backup\BackupDatabaseImpl.cs" />
     <Compile Include="Backup\BackupDatabaseSettings.cs" />
     <Compile Include="CreateDatabaseSettings.cs" />
     <Compile Include="Dac\DacAliases.cs" />
     <Compile Include="Dac\ExtractDacpacSettings.cs" />
     <Compile Include="Dac\PublishDacpacSettings.cs" />
     <Compile Include="Backup\RestoreSqlBackupSettings.cs" />
-    <Compile Include="Backup\SqlBackupsImpl.cs" />
+    <Compile Include="Backup\RestoreSqlBackupImpl.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Sql.cs" />
     <Compile Include="Guard.cs" />
     <Compile Include="LocalDb\LocalDbAliases.cs" />

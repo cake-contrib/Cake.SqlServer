@@ -5,9 +5,9 @@ using Cake.Core.Diagnostics;
 
 namespace Cake.SqlServer
 {
-    internal class BackupDatabase
+    internal static class BackupDatabaseImpl
     {
-        public void Execute(ICakeContext context, string connectionString, string databaseName, BackupDatabaseSettings settings)
+        internal static void Execute(ICakeContext context, string connectionString, string databaseName, BackupDatabaseSettings settings)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
@@ -34,14 +34,14 @@ namespace Cake.SqlServer
             }
         }
 
-        private string GetBackupFileName(string databaseName, string path)
+        private static string GetBackupFileName(string databaseName, string path)
         {
             var fileName = databaseName.Replace("[", string.Empty).Replace("]", string.Empty) + ".bak";
             if (string.IsNullOrWhiteSpace(path))
                 return fileName;
 
             return Directory.Exists(path)
-                ? System.IO.Path.Combine(path, fileName)
+                ? Path.Combine(path, fileName)
                 : path;
         }
     }
