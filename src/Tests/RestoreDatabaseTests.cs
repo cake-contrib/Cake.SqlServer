@@ -31,7 +31,7 @@ namespace Tests
                 var path = GetBackupFilePath();
 
                 // Act
-                SqlBackupsImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), new RestoreSqlBackupSettings());
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), new RestoreSqlBackupSettings());
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, originalDbName);
@@ -54,7 +54,7 @@ namespace Tests
                 var settings = new RestoreSqlBackupSettings() { SwitchToSingleUserMode = false };
 
                 // Act
-                SqlBackupsImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), settings);
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), settings);
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, originalDbName);
@@ -75,7 +75,7 @@ namespace Tests
                 //Arrange
                 var path = GetBackupFilePath();
 
-                SqlBackupsImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), new RestoreSqlBackupSettings() { NewDatabaseName = databaseName });
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), new RestoreSqlBackupSettings() { NewDatabaseName = databaseName });
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, databaseName);
@@ -99,7 +99,7 @@ namespace Tests
                 var settings = new RestoreSqlBackupSettings() { NewDatabaseName = newDatabaseName, NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()) };
 
                 // Act
-                SqlBackupsImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), settings);
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), settings);
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, newDatabaseName);
@@ -121,7 +121,7 @@ namespace Tests
                 var path = GetBackupFilePath();
 
                 // Act
-                SqlBackupsImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), new RestoreSqlBackupSettings() { WithReplace = true });
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), new RestoreSqlBackupSettings() { WithReplace = true });
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, originalDbName);
@@ -139,7 +139,7 @@ namespace Tests
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, ConnectionString))
             {
                 // Act
-                var path = SqlBackupsImpl.GetDefaultLogPath(connection);
+                var path = RestoreSqlBackupImpl.GetDefaultLogPath(connection);
 
                 // Assert
                 path.Should().NotBeNullOrEmpty();
@@ -153,7 +153,7 @@ namespace Tests
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, ConnectionString))
             {
                 // Act
-                var path = SqlBackupsImpl.GetDefaultDataPath(connection);
+                var path = RestoreSqlBackupImpl.GetDefaultDataPath(connection);
 
                 // Assert
                 path.Should().NotBeNullOrEmpty();
@@ -171,7 +171,7 @@ namespace Tests
                 var path = GetBackupFilePath();
 
                 // Act
-                var names = SqlBackupsImpl.GetLogicalNames(path, connection);
+                var names = RestoreSqlBackupImpl.GetLogicalNames(path, connection);
 
                 // Assert
                 names.Should().HaveCount(3);
@@ -187,7 +187,7 @@ namespace Tests
                 var path = GetBackupFilePath();
 
                 // Act
-                var names = SqlBackupsImpl.GetDatabaseName(path, connection);
+                var names = RestoreSqlBackupImpl.GetDatabaseName(path, connection);
 
                 // Assert
                 names.Should().Be("CakeRestoreTest");
@@ -212,7 +212,7 @@ namespace Tests
                 };
 
                 // Act
-                SqlBackupsImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), settings);
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), settings);
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, newDatabaseName);

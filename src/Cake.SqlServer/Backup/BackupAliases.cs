@@ -5,7 +5,7 @@ using Cake.Core.IO;
 
 
 namespace Cake.SqlServer
-{ 
+{
     /// <summary>
     /// Contains functionality to backup and restore SQL Server database
     /// </summary>
@@ -44,7 +44,7 @@ namespace Cake.SqlServer
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
             Guard.ArgumentIsNotNull(backupFile, nameof(backupFile));
 
-            SqlBackupsImpl.RestoreSqlBackup(context, connectionString, backupFile, settings);
+            RestoreSqlBackupImpl.RestoreSqlBackup(context, connectionString, backupFile, settings);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Cake.SqlServer
         [CakeMethodAlias]
         public static void BackupDatabase(this ICakeContext context, string connectionString, string databaseName, BackupDatabaseSettings settings)
         {
-            new BackupDatabase().Execute(context, connectionString, databaseName, settings);
+            BackupDatabaseImpl.Execute(context, connectionString, databaseName, settings);
         }
     }
 }

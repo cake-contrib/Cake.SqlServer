@@ -35,8 +35,8 @@
     <DocumentationFile>bin\Release\Cake.SqlServer.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cake.Core, Version=0.28.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Cake.Core.0.28.0\lib\net46\Cake.Core.dll</HintPath>
+    <Reference Include="Cake.Core, Version=0.29.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Cake.Core.0.29.0\lib\net46\Cake.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Data.Tools.Schema.Sql, Version=13.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.SqlServer.DacFx.x64.130.3485.1\lib\net40\Microsoft.Data.Tools.Schema.Sql.dll</HintPath>
@@ -55,7 +55,6 @@
     </Reference>
     <Reference Include="Microsoft.SqlServer.Types, Version=13.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.SqlServer.DacFx.x64.130.3485.1\lib\net40\Microsoft.SqlServer.Types.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -68,14 +67,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Backup\BackupAliases.cs" />
-    <Compile Include="Backup\BackupDatabase.cs" />
+    <Compile Include="Backup\BackupDatabaseImpl.cs" />
     <Compile Include="Backup\BackupDatabaseSettings.cs" />
     <Compile Include="CreateDatabaseSettings.cs" />
     <Compile Include="Dac\DacAliases.cs" />
     <Compile Include="Dac\ExtractDacpacSettings.cs" />
     <Compile Include="Dac\PublishDacpacSettings.cs" />
     <Compile Include="Backup\RestoreSqlBackupSettings.cs" />
-    <Compile Include="Backup\SqlBackupsImpl.cs" />
+    <Compile Include="Backup\RestoreSqlBackupImpl.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="Sql.cs" />
     <Compile Include="Guard.cs" />
     <Compile Include="LocalDb\LocalDbAliases.cs" />
