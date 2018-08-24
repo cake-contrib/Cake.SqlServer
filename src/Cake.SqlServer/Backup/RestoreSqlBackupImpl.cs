@@ -53,6 +53,8 @@ end
 
                 context.Log.Debug($"Executing SQL : {sql}");
 
+                var pathSeparator = GetPlatformPathSeparator(connection);
+
                 var command = SqlServerAliasesImpl.CreateSqlCommand(sql, connection);
                 command.Parameters.AddWithValue("@backupFile", backupFile.ToString());
                 for (var i = 0; i < logicalNames.Count; i++)
@@ -61,7 +63,7 @@ end
                     context.Log.Debug($"Adding parameter '{lParameterName}' with value '{logicalNames[i].LogicalName}'");
                     command.Parameters.AddWithValue(lParameterName, logicalNames[i].LogicalName);
 
-                    var filePath = GetFilePath(connection, oldDbName, newDatabaseName, settings.NewStorageFolder, logicalNames[i]);
+                    var filePath = GetFilePath(connection, oldDbName, newDatabaseName, settings.NewStorageFolder, logicalNames[i], pathSeparator);
                     var pathParamName = "@LPath" + i;
                     context.Log.Debug($"Adding parameter '{pathParamName}' with value '{filePath}'");
                     command.Parameters.AddWithValue(pathParamName, filePath);
@@ -70,6 +72,22 @@ end
             }
         }
 
+        private static char GetPlatformPathSeparator(SqlConnection connection)
+        {
+            OS os = GetSqlServerOS(connection);
+            char pathSeparator = '/';
+            switch (os)
+            {
+                case OS.Windows:
+                    pathSeparator = '\\';
+                    break;
+                case OS.Linux:
+                    pathSeparator = '/';
+                    break;
+            }
+
+            return pathSeparator;
+        }
 
         internal static List<LogicalNames> GetLogicalNames(FilePath backupFile, SqlConnection connection)
         {
@@ -111,7 +129,7 @@ end
         }
 
 
-        private static String GetFilePath(SqlConnection connection, string oldDatabaseName, string newDatabaseName, DirectoryPath newPath, LogicalNames logicalName)
+        private static String GetFilePath(SqlConnection connection, string oldDatabaseName, string newDatabaseName, DirectoryPath newPath, LogicalNames logicalName, char pathSeparator)
         {
             var fileName = System.IO.Path.GetFileName(logicalName.PhysicalName);
             fileName = fileName.Replace(oldDatabaseName, newDatabaseName);
@@ -126,10 +144,18 @@ end
             {
                 folder = folder ?? GetDefaultDataPath(connection);
             }
+            
+            var fullPath = folder.FullPath + pathSeparator + fileName;
 
-            var fullPath = folder + "\\" + fileName;
-
-            return fullPath.Replace("/", "\\");
+            if (pathSeparator == '\\')
+            {
+                return fullPath.Replace("/", "\\");
+            }
+            else
+            {
+                return fullPath.Replace("\\", "/");
+            }
+            
         }
 
 
@@ -150,6 +176,25 @@ end
             var defaultPath = ReadSingleString(sql, "defaultpath", connection);
 
             return defaultPath;
+        }
+
+        internal static OS GetSqlServerOS(SqlConnection connection)
+        {
+            var sql = "select @@version as version";
+
+            var version = ReadSingleString(sql, "version", connection).ToLower();
+
+            if (version.Contains("windows"))
+            {
+                return OS.Windows;
+            }
+
+            if (version.Contains("linux"))
+            {
+                return OS.Linux;
+            }
+
+            throw new PlatformNotSupportedException();
         }
 
 
@@ -181,6 +226,13 @@ end
             public String LogicalName { get; set; }
             public String PhysicalName { get; set; }
             public String Type { get; set; }
+        }
+
+
+        internal enum OS
+        {
+            Windows,
+            Linux
         }
     }
 }
