@@ -1,3 +1,7 @@
+### New in 1.13.0
+* Update to Cake v0.30.0
+* Fix for incorrect path separators when restoring backup on Linux
+
 ### New in 1.11.0
 * Update to Cake v0.28.0
 * Adding LocalDb path that works with SqlServer2017
