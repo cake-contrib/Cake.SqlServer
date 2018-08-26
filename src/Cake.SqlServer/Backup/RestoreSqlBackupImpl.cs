@@ -74,19 +74,16 @@ end
 
         private static char GetPlatformPathSeparator(SqlConnection connection)
         {
-            OS os = GetSqlServerOS(connection);
-            char pathSeparator = '/';
-            switch (os)
+            var sql = "select @@version as version";
+
+            var version = ReadSingleString(sql, "version", connection).ToLower();
+
+            if (version.Contains("linux"))
             {
-                case OS.Windows:
-                    pathSeparator = '\\';
-                    break;
-                case OS.Linux:
-                    pathSeparator = '/';
-                    break;
+                return '/';
             }
 
-            return pathSeparator;
+            return '\\';
         }
 
         internal static List<LogicalNames> GetLogicalNames(FilePath backupFile, SqlConnection connection)
@@ -177,27 +174,6 @@ end
 
             return defaultPath;
         }
-
-        internal static OS GetSqlServerOS(SqlConnection connection)
-        {
-            var sql = "select @@version as version";
-
-            var version = ReadSingleString(sql, "version", connection).ToLower();
-
-            if (version.Contains("windows"))
-            {
-                return OS.Windows;
-            }
-
-            if (version.Contains("linux"))
-            {
-                return OS.Linux;
-            }
-
-            throw new PlatformNotSupportedException();
-        }
-
-
         private static string ReadSingleString(String sql, String columnName, SqlConnection connection)
         {
             var command = SqlServerAliasesImpl.CreateSqlCommand(sql, connection);
@@ -226,13 +202,6 @@ end
             public String LogicalName { get; set; }
             public String PhysicalName { get; set; }
             public String Type { get; set; }
-        }
-
-
-        internal enum OS
-        {
-            Windows,
-            Linux
         }
     }
 }
