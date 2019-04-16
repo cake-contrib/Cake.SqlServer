@@ -26,7 +26,7 @@ namespace Cake.SqlServer
         ///     Task("Restore-Database")
         ///         .Does(() =>
         ///         {
-        ///             var connString = @"data source=(LocalDb)\v12.0";
+        ///             var connString = @"data source=(localdb)\MSSqlLocalDb";
         ///             var backupFile = new FilePath("C:/tmp/myBackup.bak");
         ///             RestoreSqlBackup(connString, backupFile, new RestoreSqlBackupSettings() 
         ///                {
@@ -60,7 +60,7 @@ namespace Cake.SqlServer
         ///     Task("Restore-Database")
         ///         .Does(() =>
         ///         {
-        ///             var connString = @"data source=(LocalDb)\v12.0";
+        ///             var connString = @"data source=(localdb)\MSSqlLocalDb";
         ///             var backupFile = new FilePath("C:/tmp/myBackup.bak");
         ///             RestoreSqlBackup(connString, backupFile); 
         ///         });
@@ -86,7 +86,7 @@ namespace Cake.SqlServer
         ///     Task("Backup-Database")
         ///         .Does(() =>
         ///         {
-        ///             var connString = @"data source=(LocalDb)\v12.0";
+        ///             var connString = @"data source=(localdb)\MSSqlLocalDb";
         ///             var databaseName = "MyDatabase";
         ///             BackupDatabase(connString, databaseName, new BackupDatabaseSettings() 
         ///                {

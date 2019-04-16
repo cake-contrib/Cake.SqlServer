@@ -25,7 +25,7 @@ namespace Cake.SqlServer
         /// 
         ///     Task("Create-Bacpac")
         ///     	.Does(() =>{
-        ///     		var connString = @"data source=(LocalDb)\v12.0";
+        ///     		var connString = @"data source=(localdb)\MSSqlLocalDb";
         ///     
         ///     		var dbName = "ForBacpac";
         ///     
@@ -63,7 +63,7 @@ namespace Cake.SqlServer
         /// 
         ///     Task("Create-Bacpac")
         ///     	.Does(() =>{
-        ///     		var connString = @"data source=(LocalDb)\v12.0";
+        ///     		var connString = @"data source=(localdb)\MSSqlLocalDb";
         ///     
         ///     		var dbName = "FromBacpac";
         ///     
@@ -98,7 +98,7 @@ namespace Cake.SqlServer
         /// 
         ///     Task("Extract-Dacpac")
         ///     	.Does(() =>{
-        ///     		var connString = @"data source=(LocalDb)\v12.0";
+        ///     		var connString = @"data source=(localdb)\MSSqlLocalDb";
         ///     
         ///     		var dbName = "ForDacpac";
         ///     
@@ -139,7 +139,7 @@ namespace Cake.SqlServer
         /// 
         ///     Task("Create-Bacpac")
         ///     	.Does(() =>{
-        ///     		var connString = @"data source=(LocalDb)\v12.0";
+        ///     		var connString = @"data source=(localdb)\MSSqlLocalDb";
         ///     
         ///     		var dbName = "ForDacpac";
         ///     

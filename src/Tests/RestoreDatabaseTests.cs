@@ -13,7 +13,7 @@ namespace Tests
 {
     public class RestoreDatabaseTests
     {
-        private const String ConnectionString = @"data source=(LocalDb)\v12.0";
+        private const String ConnectionString = @"data source=(localdb)\MSSqlLocalDb";
         private readonly ICakeContext context;
 
         public RestoreDatabaseTests()
