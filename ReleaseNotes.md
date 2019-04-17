@@ -1,3 +1,6 @@
+### New in 1.14.0
+* Update to Cake v0.33.0
+
 ### New in 1.13.0
 * Update to Cake v0.30.0
 * Fix for incorrect path separators when restoring backup on Linux
