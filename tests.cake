@@ -56,8 +56,8 @@ Task("Debug")
 Task("Database-Operations")
     .Does(() => 
     {
-        var masterConnectionString = @"data source=(LocalDb)\v12.0;";
-        var connectionString = @"data source=(LocalDb)\v12.0;Database=OpsCakeTest";
+        var masterConnectionString = @"data source=(localdb)\MSSqlLocalDb;";
+        var connectionString = @"data source=(localdb)\MSSqlLocalDb;Database=OpsCakeTest";
 
         var dbName = "OpsCakeTest";
 
@@ -87,7 +87,7 @@ Task("Create-With-Parameters")
     .WithCriteria(() => !BuildSystem.AppVeyor.IsRunningOnAppVeyor)
     .Does(() => {
         // excluding these tests from appveyor because they are causing timeout on their SQL
-        var masterConnectionString = @"data source=(LocalDb)\v12.0;";
+        var masterConnectionString = @"data source=(localdb)\MSSqlLocalDb;";
 
         var dbName = "CreateCakeTest";
         var mdfFilePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "MyCakeTest.mdf");
@@ -110,14 +110,14 @@ Task("Create-With-Parameters")
     .Finally(() =>
     {  
         // Cleanup
-        DropDatabase(@"data source=(LocalDb)\v12.0", "CreateCakeTest");
+        DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "CreateCakeTest");
     });
 
 
 Task("SqlConnection")
     .Does(() => {
-        var masterConnectionString = @"data source=(LocalDb)\v12.0;";
-        var connectionString = @"data source=(LocalDb)\v12.0;Database=OpenConnection";
+        var masterConnectionString = @"data source=(localdb)\MSSqlLocalDb;";
+        var connectionString = @"data source=(localdb)\MSSqlLocalDb;Database=OpenConnection";
 
         var dbName = "OpenConnection";
 
@@ -134,14 +134,14 @@ Task("SqlConnection")
     .Finally(() =>
     {  
         // Cleanup
-        DropDatabase(@"data source=(LocalDb)\v12.0;", "OpenConnection");
+        DropDatabase(@"data source=(localdb)\MSSqlLocalDb;", "OpenConnection");
     });
 
 
 Task("SqlTimeout")
     .Does(() => {
         SetSqlCommandTimeout(3);
-        using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;"))
+        using (var connection = OpenSqlConnection(@"Data Source=(localdb)\MSSqlLocalDb;"))
         {
             ExecuteSqlCommand(connection, "WAITFOR DELAY '00:00:02'");
         }
@@ -150,7 +150,7 @@ Task("SqlTimeout")
 
 Task("Restore-Database")
     .Does(() => {
-        var connString = @"data source=(LocalDb)\v12.0";
+        var connString = @"data source=(localdb)\MSSqlLocalDb";
 
         var backupFilePath = new FilePath(@".\src\Tests\multiFileBackup.bak");
         backupFilePath = backupFilePath.MakeAbsolute(Context.Environment);
@@ -166,13 +166,13 @@ Task("Restore-Database")
     .Finally(() =>
     {  
         // Cleanup
-        DropDatabase(@"data source=(LocalDb)\v12.0", "RestoredFromTest.Cake");
-        DropDatabase(@"data source=(LocalDb)\v12.0", "CakeRestoreTest");
+        DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "RestoredFromTest.Cake");
+        DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "CakeRestoreTest");
     });
 
 Task("Backup-Database")
     .Does(() => {
-		var connString = @"data source=(LocalDb)\v12.0";
+		var connString = @"data source=(localdb)\MSSqlLocalDb";
 		
         var backupFilePath = new FilePath(@".\src\Tests\multiFileBackup.bak");
         backupFilePath = backupFilePath.MakeAbsolute(Context.Environment);
@@ -189,13 +189,13 @@ Task("Backup-Database")
 	})
     .Finally(() =>
     {  
-        DropDatabase(@"data source=(LocalDb)\v12.0", "CakeRestoreTest");
+        DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "CakeRestoreTest");
     });
 
 
 Task("Create-Bacpac")
     .Does(() =>{
-        var connString = @"data source=(LocalDb)\v12.0";
+        var connString = @"data source=(localdb)\MSSqlLocalDb";
 
         var dbName = "ForBacpac";
 
@@ -206,7 +206,7 @@ Task("Create-Bacpac")
     .Finally(() =>
     {  
         // Cleanup
-        DropDatabase(@"data source=(LocalDb)\v12.0", "ForBacpac");
+        DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "ForBacpac");
         if(FileExists(@".\ForBacpac.bacpac"))
         {
             DeleteFile(@".\ForBacpac.bacpac");
@@ -216,7 +216,7 @@ Task("Create-Bacpac")
 
 Task("Restore-From-Bacpac")
     .Does(() =>{
-        var connString = @"data source=(LocalDb)\v12.0";
+        var connString = @"data source=(localdb)\MSSqlLocalDb";
 
         var dbName = "FromBacpac";
 
@@ -226,14 +226,14 @@ Task("Restore-From-Bacpac")
     .Finally(() =>
     {  
         // Cleanup
-        DropDatabase(@"data source=(LocalDb)\v12.0", "FromBacpac");
+        DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "FromBacpac");
     });
 
 
 Task("Dacpac-Publish")
     .Does(() => 
     {
-        var connectionString = @"data source=(LocalDb)\v12.0";
+        var connectionString = @"data source=(localdb)\MSSqlLocalDb";
         var dbName = "DacpacTestDb";
         var dacpacFile = new FilePath(@".\src\Tests\Nsaga.dacpac");
 
@@ -244,7 +244,7 @@ Task("Dacpac-Publish")
     .Finally(() => 
     {
         // Cleanup
-        DropDatabase(@"data source=(LocalDb)\v12.0", "DacpacTestDb");
+        DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "DacpacTestDb");
     });
 
 
@@ -252,7 +252,7 @@ Task("Dacpac-Extract")
     .Does(() => 
     {
         var dbName = "DacpacTestDb";
-        var connectionString = @"data source=(LocalDb)\v12.0";
+        var connectionString = @"data source=(localdb)\MSSqlLocalDb";
         var resultingFilePath = "NsagaCreated.dacpac";
         var settings = new ExtractDacpacSettings("TestApp", "1.0.0.0") { OutputFile = resultingFilePath };
 
@@ -268,7 +268,7 @@ Task("Dacpac-Extract")
     })
     .Finally(() => 
     {
-        DropDatabase(@"data source=(LocalDb)\v12.0", "DacpacTestDb");
+        DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "DacpacTestDb");
         //if(FileExists(@".\NsagaCreated.dacpac"))
         {
             DeleteFile(@".\NsagaCreated.dacpac");

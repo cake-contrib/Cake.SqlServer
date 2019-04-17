@@ -37,7 +37,7 @@ namespace Cake.SqlServer
         ///     Task("Deploy-Database")
         ///          .Does(() =>
         ///          {
-        ///             var connectionString = @"Server=(LocalDb)\v12.0";
+        ///             var connectionString = @"Server=(localdb)\MSSqlLocalDb";
         ///             var dbName = "CakeTest";
         /// 
         ///             if (DatabaseExists(connectionString, dbName))
@@ -73,7 +73,7 @@ namespace Cake.SqlServer
         ///     Task("Drop-Database")
         ///          .Does(() =>
         ///          {
-        ///             var connectionString = @"Server=(LocalDb)\v12.0";
+        ///             var connectionString = @"Server=(localdb)\MSSqlLocalDb";
         ///             var dbName = "CakeTest";
         ///             DropDatabase(connectionString, dbName);
         ///         });
@@ -105,7 +105,7 @@ namespace Cake.SqlServer
         ///     Task("Create-Database")
         ///          .Does(() =>
         ///          {
-        ///             var connectionString = @"Server=(LocalDb)\v12.0";
+        ///             var connectionString = @"Server=(localdb)\MSSqlLocalDb";
         ///             var dbName = "CakeTest";
         ///             CreateDatabase(connectionString, dbName);
         ///         });
@@ -137,7 +137,7 @@ namespace Cake.SqlServer
         ///     Task("Create-Database")
         ///          .Does(() =>
         ///          {
-        ///             var connectionString = @"Server=(LocalDb)\v12.0";
+        ///             var connectionString = @"Server=(localdb)\MSSqlLocalDb";
         ///             var dbName = "CakeTest";
         ///             var createSettings = new CreateDatabaseSettings()
         ///                                          .WithPrimaryFile(@"C:\MyPath\DB\CakeTest.mdf")
@@ -171,7 +171,7 @@ namespace Cake.SqlServer
         ///     Task("Create-Database-If-Not-Exists")
         ///          .Does(() =>
         ///          {
-        ///             var connectionString = @"Server=(LocalDb)\v12.0";
+        ///             var connectionString = @"Server=(localdb)\MSSqlLocalDb";
         ///             var dbName = "CakeTest";
         ///             CreateDatabaseIfNotExists(connectionString, dbName);
         ///         });
@@ -201,7 +201,7 @@ namespace Cake.SqlServer
         ///     Task("Create-Database-If-Not-Exists")
         ///          .Does(() =>
         ///          {
-        ///             var connectionString = @"Server=(LocalDb)\v12.0";
+        ///             var connectionString = @"Server=(localdb)\MSSqlLocalDb";
         ///             var dbName = "CakeTest";
         ///             var createSettings = new CreateDatabaseSettings()
         ///                                          .WithPrimaryFile(@"C:\MyPath\DB\CakeTest.mdf")
@@ -234,7 +234,7 @@ namespace Cake.SqlServer
         ///     Task("ReCreate-Database")
         ///          .Does(() =>
         ///          {
-        ///             var connectionString = @"Server=(LocalDb)\v12.0";
+        ///             var connectionString = @"Server=(localdb)\MSSqlLocalDb";
         ///             var dbName = "CakeTest";
         ///             var createSettings = new CreateDatabaseSettings()
         ///                                          .WithPrimaryFile(@"C:\MyPath\DB\CakeTest.mdf")
@@ -269,7 +269,7 @@ namespace Cake.SqlServer
         ///     Task("ReCreate-Database")
         ///          .Does(() =>
         ///          {
-        ///             var connectionString = @"Server=(LocalDb)\v12.0";
+        ///             var connectionString = @"Server=(localdb)\MSSqlLocalDb";
         ///             var dbName = "CakeTest";
         ///             var createSettings = new CreateDatabaseSettings()
         ///                                          .WithPrimaryFile(@"C:\MyPath\DB\CakeTest.mdf")
@@ -304,7 +304,7 @@ namespace Cake.SqlServer
         ///     Task("Sql-Operations")
         ///         .Does(() =>
         ///         {
-        ///             var connectionString = @"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase";
+        ///             var connectionString = @"Data Source=(localdb)\MSSqlLocalDb;Initial Catalog=MyDatabase";
         ///             var sqlCommand = "create table [CakeTest].dbo.[CakeTestTable] (id int null)";
         ///             ExecuteSqlCommand(connectionString, sqlCommand);
         ///         });
@@ -334,7 +334,7 @@ namespace Cake.SqlServer
         ///     Task("Sql-Operations")
         ///         .Does(() =>
         ///         {
-        ///             using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase"))
+        ///             using (var connection = OpenSqlConnection(@"Data Source=(localdb)\MSSqlLocalDb;Initial Catalog=MyDatabase"))
         ///             {
         ///                 ExecuteSqlCommand(connection, "create table [CakeTest].dbo.[CakeTestTable] (id int null)");
         ///                 ExecuteSqlCommand(connection, "...");
@@ -366,7 +366,7 @@ namespace Cake.SqlServer
         ///     Task("Sql-Operations")
         ///         .Does(() =>
         ///         {
-        ///             var connectionString = @"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase";
+        ///             var connectionString = @"Data Source=(localdb)\MSSqlLocalDb;Initial Catalog=MyDatabase";
         ///             var sqlFile = "./somePath/MyScript.sql";
         ///             ExecuteSqlCommand(connectionString, sqlFile);
         ///         });
@@ -396,7 +396,7 @@ namespace Cake.SqlServer
         ///     Task("Sql-Operations")
         ///         .Does(() =>
         ///         {
-        ///             using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase"))
+        ///             using (var connection = OpenSqlConnection(@"Data Source=(localdb)\MSSqlLocalDb;Initial Catalog=MyDatabase"))
         ///             {
         ///                 ExecuteSqlFile(connection, "./somePath/MyScript.sql");
         ///                 ExecuteSqlFile(connection, "./somePath/MyOtherScript.sql");
@@ -427,7 +427,7 @@ namespace Cake.SqlServer
         ///     Task("Sql-Operations")
         ///         .Does(() =>
         ///         {
-        ///             using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase"))
+        ///             using (var connection = OpenSqlConnection(@"Data Source=(localdb)\MSSqlLocalDb;Initial Catalog=MyDatabase"))
         ///             {
         ///                 ExecuteSqlCommand(connection, "...");
         ///                 ExecuteSqlFile(connection, "./somePath/MyScript.sql");
@@ -458,7 +458,7 @@ namespace Cake.SqlServer
         ///         .Does(() =>
         ///         {
         ///             SetSqlCommandTimeout(60);
-        ///             using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase"))
+        ///             using (var connection = OpenSqlConnection(@"Data Source=(localdb)\MSSqlLocalDb;Initial Catalog=MyDatabase"))
         ///             {
         ///                 ExecuteSqlCommand(connection, "...");
         ///                 ExecuteSqlFile(connection, "./somePath/MyScript.sql");

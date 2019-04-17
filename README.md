@@ -101,7 +101,7 @@ Allows you to use the same connection for multiple SQL commands. Close the conne
 Example:
 
 ```c#
-using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase"))
+using (var connection = OpenSqlConnection(@"Data Source=(localdb)\MSSqlLocalDb;Initial Catalog=MyDatabase"))
 {
     ExecuteSqlCommand(connection, "...");
     ExecuteSqlFile(connection, "./somePath/MyScript.sql");
@@ -117,7 +117,7 @@ Allows you to specify the command timeout in seconds for all commands. This is u
 
 ```c#
 SetSqlCommandTimeout(60);
-using (var connection = OpenSqlConnection(@"Data Source=(LocalDb)\v12.0;Initial Catalog=MyDatabase"))
+using (var connection = OpenSqlConnection(@"Data Source=(localdb)\MSSqlLocalDb;Initial Catalog=MyDatabase"))
 {
     ExecuteSqlCommand(connection, "..."); // <- execute long-running command
 }
@@ -140,7 +140,7 @@ Example:
 ```c#
 Task("Restore-Database")
 	.Does(() => {
-		var connString = @"data source=(LocalDb)\v12.0";
+		var connString = @"data source=(localdb)\MSSqlLocalDb";
 
 		var backupFilePath = new FilePath(@".\src\Tests\multiFileBackup.bak");
 		backupFilePath = backupFilePath.MakeAbsolute(Context.Environment);
@@ -166,7 +166,7 @@ Example:
 Task("Backup-Database")
     .Does(() =>
     {
-        var connString = @"data source=(LocalDb)\v12.0";
+        var connString = @"data source=(localdb)\MSSqlLocalDb";
         var databaseName = "MyDatabase";
         BackupDatabase(connString, databaseName, new BackupDatabaseSettings() 
            {
@@ -188,7 +188,7 @@ To create a bacpac file from a database call:
 ```c#
 Task("Create-Bacpac")
 	.Does(() =>{
-		var connString = @"data source=(LocalDb)\v12.0";
+		var connString = @"data source=(localdb)\MSSqlLocalDb";
 
 		var dbName = "ForBacpac";
 
@@ -203,7 +203,7 @@ To restore from bacpac file into a database use this:
 ```c#
 Task("Restore-From-Bacpac")
 	.Does(() =>{
-		var connString = @"data source=(LocalDb)\v12.0";
+		var connString = @"data source=(localdb)\MSSqlLocalDb";
 
 		var dbName = "FromBacpac";
 
@@ -220,7 +220,7 @@ To extract a dacpac file from a database call:
 ```c#
 Task("Extract-Dacpac")
 	.Does(() =>{
-		var connString = @"data source=(LocalDb)\v12.0";
+		var connString = @"data source=(localdb)\MSSqlLocalDb";
      
 		var dbName = "ForDacpac";
      
@@ -240,7 +240,7 @@ To publish from dacpac file into a database use this:
 ```c#
 Task("Create-Bacpac")
 	.Does(() =>{
-		var connString = @"data source=(LocalDb)\v12.0";
+		var connString = @"data source=(localdb)\MSSqlLocalDb";
 
 		var dbName = "ForDacpac";
 
@@ -300,9 +300,9 @@ You can also check our [integration tests](https://github.com/AMVSoftware/Cake.S
 
 ### Gotchas
 
-Remember to always add `@` before your connection strings. Some connection strings (i.e. `(localdb)\v12.0`) can contain backward slash `\` and that is an escape symbol in C#. So you need to always add `@` before the string:
+Remember to always add `@` before your connection strings. Some connection strings (i.e. `(localdb)\MSSqlLocalDb`) can contain backward slash `\` and that is an escape symbol in C#. So you need to always add `@` before the string:
 
-	var connString = @"(localDb)\v12.0";
+	var connString = @"(localdb)\MSSqlLocalDb";
 
 `\v` is the C# escape sequence for vertical tab which is not what you want. Using the verbatim string syntax `@` prevents escape sequences from being interpreted and you get what you expect, verbatim `\` and `v` characters.
 

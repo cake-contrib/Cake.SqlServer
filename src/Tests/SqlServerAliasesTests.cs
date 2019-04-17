@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -14,7 +14,7 @@ namespace Tests
 {
     public class SqlServerAliasesTests : IDisposable
     {
-        private const String ConnectionString = @"data source=(LocalDb)\v12.0";
+        private const String ConnectionString = @"data source=(localdb)\MSSqlLocalDb";
         private readonly ICakeContext context;
 
         public SqlServerAliasesTests()
@@ -236,7 +236,7 @@ namespace Tests
         public void ExecuteSqlFile_Executes_Successfuly()
         {
             //Arrange
-            var connectionString = @"data source=(LocalDb)\v12.0;Database=ForFileExecution";
+            var connectionString = @"data source=(localdb)\MSSqlLocalDb;Database=ForFileExecution";
             var dbName = "ForFileExecution";
             var tableName1 = "WillExist1";
             var tableName2 = "WillExist2";
@@ -260,7 +260,7 @@ namespace Tests
         [Test]
         public void Trying_To_Connect_WithBadConnString_ThowsMeaningful_Exception()
         {
-            var connString = "data source=(LocalDb)\v12.0";
+            var connString = "data source=(localdb)\v12.0";
             Action act = () => SqlServerAliases.CreateDatabaseIfNotExists(context, connString, "ShouldThrow");
 
             act.Should().Throw<Exception>()
