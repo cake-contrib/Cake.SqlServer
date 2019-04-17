@@ -1,3 +1,6 @@
+### New in 2.0.0
+* Update to DacFx 15. This brings in support for BACPAC and DACPAC in Sql Server 2017 and Sql Azure
+
 ### New in 1.14.0
 * Update to Cake v0.33.0
 
