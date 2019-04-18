@@ -17,9 +17,7 @@
     <tags>Cake Script Build SQLServer </tags>
   </metadata>
   <files>
-    <file src="Cake.SqlServer.dll" target="lib/net472" />
-    <file src="Cake.SqlServer.pdb" target="lib/net472" />
-    <file src="Cake.SqlServer.xml" target="lib/net472"/>
+    <file src="Cake.SqlServer.*" target="lib/net472" />
     <file src="LICENSE" />
   </files>
 </package>

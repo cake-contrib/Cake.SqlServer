@@ -17,9 +17,7 @@
     <tags>Cake Script Build SQLServer </tags>
   </metadata>
   <files>
-    <file src="Cake.SqlServer.DacFx.dll" target="lib/net472" />
-    <file src="Cake.SqlServer.DacFx.pdb" target="lib/net472" />
-    <file src="Cake.SqlServer.DacFx.xml" target="lib/net472"/>
+    <file src="Cake.SqlServer.DacFx.*" target="lib/net472" />
     <file src="Microsoft.*.dll" target="lib/net472"/>
     <file src="LICENSE" />
   </files>
