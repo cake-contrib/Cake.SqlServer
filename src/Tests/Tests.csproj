@@ -80,6 +80,9 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.SqlClient, Version=4.5.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Data.SqlClient.4.6.0\lib\net461\System.Data.SqlClient.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
@@ -131,7 +134,7 @@
       <Name>Cake.SqlServer.DacFx</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cake.SqlServer\Cake.SqlServer.csproj">
-      <Project>{98fc2609-eabb-45f4-a3e0-a25e9f5b0584}</Project>
+      <Project>{8cefec04-df76-4cc4-9461-eeaf56f3a92e}</Project>
       <Name>Cake.SqlServer</Name>
     </ProjectReference>
   </ItemGroup>
