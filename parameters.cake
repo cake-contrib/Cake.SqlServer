@@ -1,9 +1,11 @@
 public class BuildParameters
 {
     public static String ProjectDir = "./src/Cake.SqlServer/";
+    public static String ProjectDacDir = "./src/Cake.SqlServer.DacFx/";
     public static String Solution = "./src/Cake.SqlServer.sln";
 
     public DirectoryPath BuildDir { get; private set; }
+    public DirectoryPath BuildDacDir { get; private set; }
 
     public string Target { get; private set; }
     public string Configuration { get; private set; }
@@ -26,6 +28,10 @@ public class BuildParameters
             UpdateAssemblyInfoFilePath = ProjectDir + "properties/AssemblyInfo.cs",
             UpdateAssemblyInfo = true,
         });
+        context.GitVersion(new GitVersionSettings{
+            UpdateAssemblyInfoFilePath = ProjectDacDir + "properties/AssemblyInfo.cs",
+            UpdateAssemblyInfo = true,
+        });        
         Version = result.MajorMinorPatch ?? "0.0.1";
         SemVersion = result.LegacySemVerPadded ?? "0.0.1";
 
@@ -56,6 +62,7 @@ public class BuildParameters
             Configuration = configuration,
             
             BuildDir = ProjectDir + "bin/" + configuration,
+            BuildDacDir =ProjectDacDir + "bin/" + configuration,
 
             IsLocalBuild = buildSystem.IsLocalBuild,
             IsRunningOnAppVeyor = buildSystem.AppVeyor.IsRunningOnAppVeyor,
