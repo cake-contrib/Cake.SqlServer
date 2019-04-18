@@ -94,6 +94,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Cake.SqlServer\Guard.cs">
+      <Link>Guard.cs</Link>
+    </Compile>
     <Compile Include="GuardTests.cs" />
     <Compile Include="LocalDbToolRunnerFixture.cs" />
     <Compile Include="LocalDbToolTests.cs" />
@@ -123,6 +126,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cake.SqlServer.DacFx\Cake.SqlServer.DacFx.csproj">
+      <Project>{7140ded5-cca1-4b23-abee-fa76a5e871ce}</Project>
+      <Name>Cake.SqlServer.DacFx</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cake.SqlServer\Cake.SqlServer.csproj">
       <Project>{98fc2609-eabb-45f4-a3e0-a25e9f5b0584}</Project>
       <Name>Cake.SqlServer</Name>

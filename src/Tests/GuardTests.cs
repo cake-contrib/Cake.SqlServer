@@ -15,7 +15,9 @@ namespace Tests
         public void String_Empty_ThrowsException(String value)
         {
             // Act
+#pragma warning disable CS0436 // Type conflicts with imported type
             Action act = () => Guard.ArgumentIsNotNull(value, "value");
+#pragma warning restore CS0436 // Type conflicts with imported type
 
             // Assert
             act.Should().Throw<ArgumentNullException>();
@@ -27,7 +29,9 @@ namespace Tests
             //Arrange
             object value = null;
 
+#pragma warning disable CS0436 // Type conflicts with imported type
             Action act = () => Guard.ArgumentIsNotNull(value, "value");
+#pragma warning restore CS0436 // Type conflicts with imported type
 
             // Assert
             act.Should().Throw<ArgumentNullException>();
