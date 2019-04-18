@@ -12,15 +12,14 @@
     <projectUrl>https://github.com/AMVSoftware/Cake.SqlServer</projectUrl>
     <iconUrl>https://raw.githubusercontent.com/cake-contrib/graphics/a5cf0f881c390650144b2243ae551d5b9f836196/png/cake-contrib-medium.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <copyright>Copyright (c) AMV Software 2015</copyright>
+    <copyright>Copyright (c) AMV Software 2019</copyright>
     <releaseNotes></releaseNotes>
     <tags>Cake Script Build SQLServer </tags>
   </metadata>
   <files>
-    <file src="Cake.SqlServer.dll" target="lib/net45" />
-    <file src="Cake.SqlServer.pdb" target="lib/net45" />
-    <file src="Cake.SqlServer.xml" target="lib/net45"/>
-    <file src="Microsoft.*.dll" target="lib/net45"/>
+    <file src="Cake.SqlServer.dll" target="lib/net472" />
+    <file src="Cake.SqlServer.pdb" target="lib/net472" />
+    <file src="Cake.SqlServer.xml" target="lib/net472"/>
     <file src="LICENSE" />
   </files>
 </package>

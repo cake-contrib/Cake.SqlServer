@@ -73,6 +73,7 @@
     <Compile Include="SqlDacpacImpl.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Cake.SqlServer.DacFx.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
