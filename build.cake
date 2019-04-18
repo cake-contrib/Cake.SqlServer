@@ -32,18 +32,12 @@ Task("debug")
 Task("Clean")
     .Does(() =>
 {
-    // Clean solution directories.
     Information("Cleaning old files");
 
+    CleanDirectories("./src/**/bin/**");
+    CleanDirectories("./src/**/obj/**");    
 
-    CleanDirectories(new DirectoryPath[]{
-        parameters.BuildDir,
-        parameters.BuildResultDir,
-        Directory("./src/Tests/bin/"),
-        Directory("./src/Tests/obj/"),
-        Directory(BuildParameters.ProjectDir + "bin"),
-        Directory(BuildParameters.ProjectDir + "obj"),
-    });
+    CleanDirectories(parameters.BuildResultDir);
 });
 
 
@@ -55,6 +49,15 @@ Task("Restore-Nuget-Packages")
     Information("Restoring packages in {0}", BuildParameters.Solution);
 
     NuGetRestore(BuildParameters.Solution);
+
+    var settings = new DotNetCoreRestoreSettings
+    {
+        Sources = new[] { "https://www.nuget.org/api/v2" },
+        DisableParallel = false,
+        WorkingDirectory = BuildParameters.ProjectDacDir,
+    };
+
+    DotNetCoreRestore(settings);    
 });
 
 
