@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\..\LICENSE" Link="LICENSE" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Cake.Core" Version="0.33.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
   </ItemGroup>

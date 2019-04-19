@@ -1,12 +1,21 @@
 public class BuildParameters
 {
-    public static String ProjectDir = "./src/Cake.SqlServer/";
-    public static String ProjectDacDir = "./src/Cake.SqlServer.DacFx/";
-    public static String Solution = "./src/Cake.SqlServer.sln";
+    public String ProjectDir => "./src/Cake.SqlServer/";
+    public String ProjectDacDir => "./src/Cake.SqlServer.DacFx/";
+    public String Solution => "./src/Cake.SqlServer.sln";
 
-    public DirectoryPath BuildDir { get; private set; }
-    public DirectoryPath BuildDacDir { get; private set; }
+    public DirectoryPath BuildDir => ProjectDir + "bin/" + Configuration;
+    public DirectoryPath BuildDacDir => ProjectDacDir + "bin/" + Configuration;
+    public string BuildResultDir => "./build-results/v" + SemVersion + "/";
 
+    public string ResultBinDir => BuildResultDir + "bin";
+
+    public string ResultNugetPath => BuildResultDir + "Cake.SqlServer." + Version + ".nupkg";
+
+    public string TestResultsFile  => BuildResultDir + "/TestsResults.xml";
+
+    public bool ShouldPublishToNugetOrg => false;
+    public bool ShouldPublishToMyGet => true;
     public string Target { get; private set; }
     public string Configuration { get; private set; }
     public bool IsLocalBuild { get; private set; }
@@ -60,15 +69,10 @@ public class BuildParameters
         return new BuildParameters {
             Target = target,
             Configuration = configuration,
-            
-            BuildDir = ProjectDir + "bin/" + configuration,
-            BuildDacDir =ProjectDacDir + "bin/" + configuration,
-
             IsLocalBuild = buildSystem.IsLocalBuild,
             IsRunningOnAppVeyor = buildSystem.AppVeyor.IsRunningOnAppVeyor,
             IsPullRequest = buildSystem.AppVeyor.Environment.PullRequest.IsPullRequest,
             IsTagged = IsBuildTagged(buildSystem),
-
 
             IsMasterBranch = isMaster,
             ReleaseNotes = context.ParseReleaseNotes("./ReleaseNotes.md"),
@@ -81,56 +85,5 @@ public class BuildParameters
         return buildSystem.AppVeyor.Environment.Repository.Tag.IsTag
             && !string.IsNullOrWhiteSpace(buildSystem.AppVeyor.Environment.Repository.Tag.Name);
     }
-
-    public string BuildResultDir
-    {
-        get 
-        {
-            return "./build-results/v" + SemVersion + "/";
-        }
-    }
-
-    public string ResultBinDir
-    {
-        get 
-        {
-            return BuildResultDir + "bin";
-        }
-    }
-
-
-    public string ResultNugetPath
-    {
-        get 
-        {
-            return BuildResultDir + "Cake.SqlServer." + Version + ".nupkg";
-        }
-    }
-
-    public bool ShouldPublishToNugetOrg
-    {
-        get
-        {
-            return false;
-            // return !IsLocalBuild && !IsPullRequest && IsTagged && IsMasterBranch;
-        }
-    }
-
-    public bool ShouldPublishToMyGet
-    {
-        get
-        {
-            return true;
-            // return !IsLocalBuild && !IsPullRequest && !IsTagged || IsMasterBranch;
-        }
-    }    
-
-    public string TestResultsFile 
-    {
-        get
-        {
-            return BuildResultDir + "/TestsResults.xml";
-        }
-    }    
 }
 

@@ -46,31 +46,27 @@ Task("Restore-Nuget-Packages")
     .IsDependentOn("Clean")
     .Does(() =>
 {
-    Information("Restoring packages in {0}", BuildParameters.Solution);
+    Information("Restoring packages in {0}", parameters.Solution);
 
-    NuGetRestore(BuildParameters.Solution);
+    NuGetRestore(parameters.Solution);
 
     var settings = new DotNetCoreRestoreSettings
     {
         Sources = new[] { "https://www.nuget.org/api/v2" },
         DisableParallel = false,
-        WorkingDirectory = BuildParameters.ProjectDacDir,
+        WorkingDirectory = parameters.ProjectDacDir,
     };
 
     DotNetCoreRestore(settings);    
 });
 
-
-
-
-
 Task("Build")
     .IsDependentOn("Restore-Nuget-Packages")
     .Does(() =>
 {
-    Information("Building {0}", BuildParameters.Solution);
+    Information("Building {0}", parameters.Solution);
 
-    MSBuild(BuildParameters.Solution, settings =>
+    MSBuild(parameters.Solution, settings =>
         settings.SetPlatformTarget(PlatformTarget.MSIL)
                 .WithTarget("Build")
                 .SetConfiguration(configuration));
@@ -129,34 +125,36 @@ Task("Run-Unit-Tests")
 
 
 
-Task("Copy-Files")
-    .IsDependentOn("Run-Unit-Tests")
-    .Does(() =>
-	{
-		EnsureDirectoryExists(parameters.ResultBinDir);
+// Task("Copy-Files")
+//     .IsDependentOn("Run-Unit-Tests")
+//     .Does(() =>
+// 	{
+// 		EnsureDirectoryExists(parameters.ResultBinDir);
 
-		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.dll", parameters.ResultBinDir);
-		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.pdb", parameters.ResultBinDir);
-		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.xml", parameters.ResultBinDir);
+// 		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.dll", parameters.ResultBinDir);
+// 		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.pdb", parameters.ResultBinDir);
+// 		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.xml", parameters.ResultBinDir);
 
-		CopyFiles(parameters.BuildDir + "/Microsoft.*.dll", parameters.ResultBinDir);
+// 		CopyFiles(parameters.BuildDir + "/Microsoft.*.dll", parameters.ResultBinDir);
 
-		CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, parameters.ResultBinDir);
-	});
+// 		CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, parameters.ResultBinDir);
+// 	});
 
 
 
 Task("Create-NuGet-Packages")
-    .IsDependentOn("Copy-Files")
+    // .IsDependentOn("Copy-Files")
+    // .IsDependentOn("Run-Unit-Tests")
+    .IsDependentOn("Build")
     .Does(() =>
 	{
 		var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");
 
-		NuGetPack("./src/Cake.SqlServer/Cake.SqlServer.nuspec", new NuGetPackSettings
+		NuGetPack("./src/Cake.SqlServer.DacFx/Cake.SqlServer.DacFx.nuspec", new NuGetPackSettings
 		{
 			Version = parameters.Version,
 			ReleaseNotes = releaseNotes.Notes.ToArray(),
-			BasePath = parameters.ResultBinDir,
+			BasePath = parameters.ProjectDacDir,
 			OutputDirectory = parameters.BuildResultDir,
 			Symbols = false,
 			NoPackageAnalysis = true
