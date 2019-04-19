@@ -4,18 +4,39 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+
+  <PropertyGroup>
+    <PackageId>Cake.SqlServer</PackageId>
+    <Authors>Max Vasilyev</Authors>
+    <Company>AMV Software</Company>
+    <PackageProjectUrl>https://github.com/AMVSoftware/Cake.SqlServer</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/AMVSoftware/Cake.SqlServer</RepositoryUrl>
+    <Description>Cake Build addon for executing some operations in MS Sql Server.</Description>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/AMVSoftware/Cake.SqlServer/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/cake-contrib/graphics/a5cf0f881c390650144b2243ae551d5b9f836196/png/cake-contrib-medium.png</PackageIconUrl>
+    <PackageTags>Cake Script Build SQLServer cake-build cake-contrib</PackageTags>
+    <IncludeSymbols>false</IncludeSymbols>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+    <ApplicationIcon />
+    <OutputType>Library</OutputType>
+    <StartupObject />
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+
+
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netstandard2.0\Cake.SqlServer.xml</DocumentationFile>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath></OutputPath>
     <DocumentationFile>bin\Release\netstandard2.0\Cake.SqlServer.xml</DocumentationFile>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>    
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="..\..\LICENSE" Link="LICENSE" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Cake.Core" Version="0.33.0" />

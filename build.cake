@@ -124,28 +124,8 @@ Task("Run-Unit-Tests")
     });
 
 
-
-// Task("Copy-Files")
-//     .IsDependentOn("Run-Unit-Tests")
-//     .Does(() =>
-// 	{
-// 		EnsureDirectoryExists(parameters.ResultBinDir);
-
-// 		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.dll", parameters.ResultBinDir);
-// 		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.pdb", parameters.ResultBinDir);
-// 		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.xml", parameters.ResultBinDir);
-
-// 		CopyFiles(parameters.BuildDir + "/Microsoft.*.dll", parameters.ResultBinDir);
-
-// 		CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, parameters.ResultBinDir);
-// 	});
-
-
-
 Task("Create-NuGet-Packages")
-    // .IsDependentOn("Copy-Files")
-    // .IsDependentOn("Run-Unit-Tests")
-    .IsDependentOn("Build")
+    .IsDependentOn("Run-Unit-Tests")
     .Does(() =>
 	{
 		var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");
@@ -186,12 +166,18 @@ Task("Publish-Nuget")
 			throw new InvalidOperationException("Could not resolve MyGet API key.");
 		}
 
-		// Push the package.
-		NuGetPush(parameters.ResultNugetPath, new NuGetPushSettings
-		{
-			ApiKey = apiKey,
-			Source = "https://www.nuget.org/api/v2/package"
-		});
+        var files = GetFiles(parameters.BuildResultDir + "*.nupkg");
+        foreach(var file in files)
+        {
+            Information("Found nupkg file: {0}", file);
+
+            // Push the package.
+            NuGetPush(file, new NuGetPushSettings
+            {
+                ApiKey = apiKey,
+                Source = "https://www.nuget.org/api/v2/package"
+            });
+        }
 	})
 	.OnError(exception =>
 	{
@@ -217,11 +203,17 @@ Task("Publish-MyGet")
 			throw new InvalidOperationException("Could not resolve MyGet API url.");
 		}
 
-		// Push the package.
-		NuGetPush(parameters.ResultNugetPath, new NuGetPushSettings {
-			Source = apiUrl,
-			ApiKey = apiKey
-		});
+        var files = GetFiles(parameters.BuildResultDir + "*.nupkg");
+        foreach(var file in files)
+        {
+            Information("Found nupkg file: {0}", file);
+
+            // Push the package.
+            NuGetPush(file, new NuGetPushSettings {
+                Source = apiUrl,
+                ApiKey = apiKey
+            });
+        }
 	})
 	.OnError(exception =>
 	{
@@ -235,7 +227,11 @@ Task("Upload-AppVeyor-Artifacts")
     .WithCriteria(() => parameters.IsRunningOnAppVeyor)
     .Does(() =>
 	{
-		AppVeyor.UploadArtifact(parameters.ResultNugetPath);
+        var files = GetFiles(parameters.BuildResultDir + "*.*");
+        foreach(var file in files)
+        {
+		    AppVeyor.UploadArtifact(file);
+        }        
 	});
 
 
