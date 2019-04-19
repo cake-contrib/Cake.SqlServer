@@ -66,10 +66,17 @@ Task("Build")
 {
     Information("Building {0}", parameters.Solution);
 
-    MSBuild(parameters.Solution, settings =>
-        settings.SetPlatformTarget(PlatformTarget.MSIL)
-                .WithTarget("Build")
-                .SetConfiguration(configuration));
+    // MSBuild(parameters.Solution, settings =>
+    //     settings.SetPlatformTarget(PlatformTarget.MSIL)
+    //             .WithTarget("Build")
+    //             .SetConfiguration(configuration));
+    
+    var settings = new DotNetCoreBuildSettings
+    {
+        Configuration = configuration,
+    };
+
+    DotNetCoreBuild(parameters.Solution, settings);    
 });
 
 Task("Start-LocalDB")
