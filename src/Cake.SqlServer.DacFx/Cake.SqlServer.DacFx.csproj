@@ -75,10 +75,6 @@
     <Compile Include="SqlDacpacImpl.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\LICENSE">
-      <Link>LICENSE</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Cake.SqlServer.DacFx.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>

@@ -50,14 +50,14 @@ Task("Restore-Nuget-Packages")
 
     NuGetRestore(parameters.Solution);
 
-    var settings = new DotNetCoreRestoreSettings
-    {
-        Sources = new[] { "https://www.nuget.org/api/v2" },
-        DisableParallel = false,
-        WorkingDirectory = parameters.ProjectDacDir,
-    };
+    // var settings = new DotNetCoreRestoreSettings
+    // {
+    //     Sources = new[] { "https://www.nuget.org/api/v2" },
+    //     DisableParallel = false,
+    //     WorkingDirectory = parameters.ProjectDacDir,
+    // };
 
-    DotNetCoreRestore(settings);    
+    // DotNetCoreRestore(settings);    
 });
 
 Task("Build")
@@ -150,15 +150,25 @@ Task("Create-NuGet-Packages")
 	{
 		var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");
 
-		NuGetPack("./src/Cake.SqlServer.DacFx/Cake.SqlServer.DacFx.nuspec", new NuGetPackSettings
+		NuGetPack(parameters.ProjectDacDir + "Cake.SqlServer.DacFx.nuspec", new NuGetPackSettings
 		{
 			Version = parameters.Version,
 			ReleaseNotes = releaseNotes.Notes.ToArray(),
-			BasePath = parameters.ProjectDacDir,
+			BasePath = parameters.BuildDacDir,
 			OutputDirectory = parameters.BuildResultDir,
 			Symbols = false,
 			NoPackageAnalysis = true
 		});
+
+        var settings = new DotNetCorePackSettings
+        {
+            Configuration = parameters.Configuration,
+            OutputDirectory = parameters.BuildResultDir,
+            NoBuild = true, // should already be built
+            ArgumentCustomization = args=>args.Append("/p:Version=" + parameters.Version),
+        };
+
+        DotNetCorePack(parameters.ProjectDir + "Cake.SqlServer.csproj", settings);        
 	});
 
 

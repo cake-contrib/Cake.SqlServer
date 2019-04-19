@@ -19,6 +19,5 @@
   <files>
     <file src="Cake.SqlServer.DacFx.*" target="lib/net472" />
     <file src="Microsoft.*.dll" target="lib/net472"/>
-    <file src="LICENSE" />
   </files>
 </package>
