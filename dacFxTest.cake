@@ -1,5 +1,5 @@
 #addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer
-
+#addin "System.Data.SqlClient"
 var target = Argument("target", "Default");
 
 
@@ -104,21 +104,21 @@ Task("Debug")
 //     });
 
 
-Task("Default")
-    .IsDependentOn("Create-LocalDB")
-    .IsDependentOn("Start-LocalDB")
-    .IsDependentOn("Stop-LocalDB")
-    .IsDependentOn("Delete-LocalDB")
-    .IsDependentOn("Database-Operations")
-    .IsDependentOn("SqlConnection")
-    .IsDependentOn("SqlTimeout")
-    .IsDependentOn("Restore-Database")
-    .IsDependentOn("Backup-Database")	
-    .IsDependentOn("Create-Bacpac")
-    .IsDependentOn("Restore-From-Bacpac")
-    .IsDependentOn("Dacpac-Extract")
-    .IsDependentOn("Dacpac-Publish")
-    .IsDependentOn("Create-With-Parameters")
-    ;    
+// Task("Default")
+//     .IsDependentOn("Create-LocalDB")
+//     .IsDependentOn("Start-LocalDB")
+//     .IsDependentOn("Stop-LocalDB")
+//     .IsDependentOn("Delete-LocalDB")
+//     .IsDependentOn("Database-Operations")
+//     .IsDependentOn("SqlConnection")
+//     .IsDependentOn("SqlTimeout")
+//     .IsDependentOn("Restore-Database")
+//     .IsDependentOn("Backup-Database")	
+//     .IsDependentOn("Create-Bacpac")
+//     .IsDependentOn("Restore-From-Bacpac")
+//     .IsDependentOn("Dacpac-Extract")
+//     .IsDependentOn("Dacpac-Publish")
+//     .IsDependentOn("Create-With-Parameters")
+//     ;    
 
 RunTarget(target);
