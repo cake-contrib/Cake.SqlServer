@@ -3,6 +3,7 @@ using Cake.Core;
 using Cake.Core.Annotations;
 using Cake.Core.IO;
 
+[assembly: CakeNamespaceImport("System.Data.SqlClient")]
 namespace Cake.SqlServer
 {
     /// <summary>

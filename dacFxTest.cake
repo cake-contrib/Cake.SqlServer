@@ -1,6 +1,6 @@
-#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer
-#addin "System.Data.SqlClient"
-using System.Data.SqlClient
+#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer.DacFx
+// #addin "System.Data.SqlClient"
+// using System.Data.SqlClient
 
 var target = Argument("target", "Default");
 
@@ -26,26 +26,26 @@ Task("Create-Bacpac")
     .Does(() =>{
         var connString = @"data source=(localdb)\MSSqlLocalDb";
 
-        var dbName = "ForBacpac";
+        // var dbName = "ForBacpac";
 
-        using (var conn = new SqlConnection(connString))
-        {
-            conn.Open();
-            using(var command = new SqlCommand("create database ForBacpac", conn))
-            command.ExecuteNonQuery();
-        }
+        // using (var conn = new SqlConnection(connString))
+        // {
+        //     conn.Open();
+        //     using(var command = new SqlCommand("create database ForBacpac", conn))
+        //     command.ExecuteNonQuery();
+        // }
         // CreateDatabase(connString, dbName);
 
-        CreateBacpacFile(connString, "ForBacpac", new FilePath(@".\ForBacpac.bacpac"));
+        CreateBacpacFile(connString, "ShouldThrow", new FilePath(@".\ForBacpac.bacpac"));
     })
     .Finally(() =>
     {  
         // Cleanup
         // DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "ForBacpac");
-        using (var conn = new SqlConnection(@"data source=(localdb)\MSSqlLocalDb"))
-        {
-            conn.ExecuteSqlCommand("drop database ForBacpac");
-        }
+        // using (var conn = new SqlConnection(@"data source=(localdb)\MSSqlLocalDb"))
+        // {
+        //     conn.ExecuteSqlCommand("drop database ForBacpac");
+        // }
 
         if(FileExists(@".\ForBacpac.bacpac"))
         {
@@ -119,10 +119,10 @@ Task("Create-Bacpac")
 
 Task("Default")
     .IsDependentOn("Create-Bacpac")
-    .IsDependentOn("Restore-From-Bacpac")
-    .IsDependentOn("Dacpac-Extract")
-    .IsDependentOn("Dacpac-Publish")
-    .IsDependentOn("Create-With-Parameters")
+    // .IsDependentOn("Restore-From-Bacpac")
+    // .IsDependentOn("Dacpac-Extract")
+    // .IsDependentOn("Dacpac-Publish")
+    // .IsDependentOn("Create-With-Parameters")
     ;    
 
 RunTarget(target);

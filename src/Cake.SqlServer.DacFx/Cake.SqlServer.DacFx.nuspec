@@ -8,9 +8,8 @@
     <title>Cake.SqlServer.DacFx</title>
     <description>Cake Build addon for executing some operations in MS Sql Server to work with BACPAC and DACPAC files.</description>
     <summary>SqlServer tools addon for Cake Build to work with BACPAC and DACPAC files.</summary>
-    <licenseUrl>https://github.com/AMVSoftware/Cake.SqlServer/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/AMVSoftware/Cake.SqlServer</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/cake-contrib/graphics/a5cf0f881c390650144b2243ae551d5b9f836196/png/cake-contrib-medium.png</iconUrl>
+    <iconUrl>https://cdn.jsdelivr.net/gh/cake-contrib/graphics/png/cake-contrib-medium.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <copyright>Copyright (c) AMV Software 2019</copyright>
     <releaseNotes></releaseNotes>

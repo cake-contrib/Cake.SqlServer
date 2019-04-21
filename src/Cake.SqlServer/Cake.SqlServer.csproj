@@ -14,7 +14,7 @@
     <Description>Cake Build addon for executing some operations in MS Sql Server.</Description>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseUrl>https://raw.githubusercontent.com/AMVSoftware/Cake.SqlServer/master/LICENSE</PackageLicenseUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/cake-contrib/graphics/a5cf0f881c390650144b2243ae551d5b9f836196/png/cake-contrib-medium.png</PackageIconUrl>
+    <PackageIconUrl>https://cdn.jsdelivr.net/gh/cake-contrib/graphics/png/cake-contrib-medium.png</PackageIconUrl>
     <PackageTags>Cake Script Build SQLServer cake-build cake-contrib</PackageTags>
     <IncludeSymbols>false</IncludeSymbols>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>

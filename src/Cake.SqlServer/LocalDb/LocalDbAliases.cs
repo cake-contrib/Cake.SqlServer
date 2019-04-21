@@ -3,7 +3,7 @@ using Cake.Core;
 using Cake.Core.Annotations;
 using Cake.Core.Diagnostics;
 
-[assembly: InternalsVisibleTo("Tests")]
+
 namespace Cake.SqlServer
 {
     #pragma warning disable 1570
