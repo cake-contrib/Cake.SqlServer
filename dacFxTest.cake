@@ -1,6 +1,5 @@
-#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer.DacFx
-// #addin "System.Data.SqlClient"
-// using System.Data.SqlClient
+//#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer.DacFx&loaddependencies=true
+#addin nuget:file//C:\Projects\Cake.SqlServer\build-results\v2.0.2-CoreSplit0001\?package=Cake.SqlServer.DacFx&loaddependencies=true
 
 var target = Argument("target", "Default");
 
