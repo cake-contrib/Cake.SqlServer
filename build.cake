@@ -54,7 +54,7 @@ Task("Restore-Nuget-Packages")
     // {
     //     Sources = new[] { "https://www.nuget.org/api/v2" },
     //     DisableParallel = false,
-    //     WorkingDirectory = parameters.ProjectDacDir,
+    //     WorkingDirectory = parameters.ProjectDir,
     // };
 
     // DotNetCoreRestore(settings);    
@@ -127,8 +127,8 @@ Task("Run-Unit-Tests")
 
 
 Task("Create-NuGet-Packages")
-    // .IsDependentOn("Run-Unit-Tests")
-     .IsDependentOn("Build")
+    .IsDependentOn("Run-Unit-Tests")
+    //.IsDependentOn("Build")
     .Does(() =>
 	{
 		var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");

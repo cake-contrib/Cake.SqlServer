@@ -1,8 +1,9 @@
-//#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer
-//#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer.DacFx
+#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer&loaddependencies=true
+//#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer.DacFx&loaddependencies=true
 //#r "src/Cake.SqlServer/bin/release/Cake.SqlServer.dll"
-#addin nuget:file//C:\Projects\Cake.SqlServer\build-results\v2.0.2-CoreSplit0001\?package=Cake.SqlServer
 
+//#addin nuget:file//C:\Projects\Cake.SqlServer\build-results\v2.0.2-CoreSplit0001\?package=Cake.SqlServer&loaddependencies=true
+//#addin nuget:file//C:\Projects\Cake.SqlServer\build-results\v2.0.2-CoreSplit0001\?package=Cake.SqlServer.DacFx&loaddependencies=true
 
 var target = Argument("target", "Default");
 
