@@ -127,7 +127,8 @@ Task("Run-Unit-Tests")
 
 
 Task("Create-NuGet-Packages")
-    .IsDependentOn("Run-Unit-Tests")
+    // .IsDependentOn("Run-Unit-Tests")
+     .IsDependentOn("Build")
     .Does(() =>
 	{
 		var releaseNotes = ParseReleaseNotes("./ReleaseNotes.md");

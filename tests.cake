@@ -1,6 +1,8 @@
-#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer
-#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer.DacFx
+//#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer
+//#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer.DacFx
 //#r "src/Cake.SqlServer/bin/release/Cake.SqlServer.dll"
+#addin nuget:file//C:\Projects\Cake.SqlServer\build-results\v2.0.2-CoreSplit0001\?package=Cake.SqlServer
+
 
 var target = Argument("target", "Default");
 
@@ -114,6 +116,7 @@ Task("Create-With-Parameters")
         DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "CreateCakeTest");
     });
 
+using Cake.SqlServer;
 
 Task("SqlConnection")
     .Does(() => {
@@ -194,88 +197,88 @@ Task("Backup-Database")
     });
 
 
-Task("Create-Bacpac")
-    .Does(() =>{
-        var connString = @"data source=(localdb)\MSSqlLocalDb";
+// Task("Create-Bacpac")
+//     .Does(() =>{
+//         var connString = @"data source=(localdb)\MSSqlLocalDb";
 
-        var dbName = "ForBacpac";
+//         var dbName = "ForBacpac";
 
-        CreateDatabase(connString, dbName);
+//         CreateDatabase(connString, dbName);
 
-        CreateBacpacFile(connString, dbName, new FilePath(@".\ForBacpac.bacpac"));
-    })
-    .Finally(() =>
-    {  
-        // Cleanup
-        DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "ForBacpac");
-        if(FileExists(@".\ForBacpac.bacpac"))
-        {
-            DeleteFile(@".\ForBacpac.bacpac");
-        }
-    });
-
-
-Task("Restore-From-Bacpac")
-    .Does(() =>{
-        var connString = @"data source=(localdb)\MSSqlLocalDb";
-
-        var dbName = "FromBacpac";
-
-        var file = new FilePath(@".\src\Tests\Nsaga.bacpac");
-        RestoreBacpac(connString, dbName, file);
-    })
-    .Finally(() =>
-    {  
-        // Cleanup
-        DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "FromBacpac");
-    });
+//         CreateBacpacFile(connString, dbName, new FilePath(@".\ForBacpac.bacpac"));
+//     })
+//     .Finally(() =>
+//     {  
+//         // Cleanup
+//         DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "ForBacpac");
+//         if(FileExists(@".\ForBacpac.bacpac"))
+//         {
+//             DeleteFile(@".\ForBacpac.bacpac");
+//         }
+//     });
 
 
-Task("Dacpac-Publish")
-    .Does(() => 
-    {
-        var connectionString = @"data source=(localdb)\MSSqlLocalDb";
-        var dbName = "DacpacTestDb";
-        var dacpacFile = new FilePath(@".\src\Tests\Nsaga.dacpac");
+// Task("Restore-From-Bacpac")
+//     .Does(() =>{
+//         var connString = @"data source=(localdb)\MSSqlLocalDb";
 
-        CreateDatabase(connectionString, dbName);
+//         var dbName = "FromBacpac";
 
-        PublishDacpacFile(connectionString, dbName, dacpacFile);
-    })
-    .Finally(() => 
-    {
-        // Cleanup
-        DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "DacpacTestDb");
-    });
+//         var file = new FilePath(@".\src\Tests\Nsaga.bacpac");
+//         RestoreBacpac(connString, dbName, file);
+//     })
+//     .Finally(() =>
+//     {  
+//         // Cleanup
+//         DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "FromBacpac");
+//     });
 
 
-Task("Dacpac-Extract")
-    .Does(() => 
-    {
-        var dbName = "DacpacTestDb";
-        var connectionString = @"data source=(localdb)\MSSqlLocalDb";
-        var resultingFilePath = "NsagaCreated.dacpac";
-        var settings = new ExtractDacpacSettings("TestApp", "1.0.0.0") { OutputFile = resultingFilePath };
+// Task("Dacpac-Publish")
+//     .Does(() => 
+//     {
+//         var connectionString = @"data source=(localdb)\MSSqlLocalDb";
+//         var dbName = "DacpacTestDb";
+//         var dacpacFile = new FilePath(@".\src\Tests\Nsaga.dacpac");
 
-        CreateDatabase(connectionString, dbName);
-        var sql = $@"use {dbName}
-        GO
-        create table [{dbName}].[dbo].[Table1] (id int null, name nvarchar(max) null);
-        Go";
+//         CreateDatabase(connectionString, dbName);
 
-        ExecuteSqlCommand(connectionString, sql);
+//         PublishDacpacFile(connectionString, dbName, dacpacFile);
+//     })
+//     .Finally(() => 
+//     {
+//         // Cleanup
+//         DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "DacpacTestDb");
+//     });
 
-        ExtractDacpacFile(connectionString, dbName, settings);
-    })
-    .Finally(() => 
-    {
-        DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "DacpacTestDb");
-        //if(FileExists(@".\NsagaCreated.dacpac"))
-        {
-            DeleteFile(@".\NsagaCreated.dacpac");
-        }
+
+// Task("Dacpac-Extract")
+//     .Does(() => 
+//     {
+//         var dbName = "DacpacTestDb";
+//         var connectionString = @"data source=(localdb)\MSSqlLocalDb";
+//         var resultingFilePath = "NsagaCreated.dacpac";
+//         var settings = new ExtractDacpacSettings("TestApp", "1.0.0.0") { OutputFile = resultingFilePath };
+
+//         CreateDatabase(connectionString, dbName);
+//         var sql = $@"use {dbName}
+//         GO
+//         create table [{dbName}].[dbo].[Table1] (id int null, name nvarchar(max) null);
+//         Go";
+
+//         ExecuteSqlCommand(connectionString, sql);
+
+//         ExtractDacpacFile(connectionString, dbName, settings);
+//     })
+//     .Finally(() => 
+//     {
+//         DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "DacpacTestDb");
+//         //if(FileExists(@".\NsagaCreated.dacpac"))
+//         {
+//             DeleteFile(@".\NsagaCreated.dacpac");
+//         }
     
-    });
+//     });
 
 
 Task("Default")
@@ -288,11 +291,11 @@ Task("Default")
     .IsDependentOn("SqlTimeout")
     .IsDependentOn("Restore-Database")
     .IsDependentOn("Backup-Database")	
-    .IsDependentOn("Create-Bacpac")
-    .IsDependentOn("Restore-From-Bacpac")
-    .IsDependentOn("Dacpac-Extract")
-    .IsDependentOn("Dacpac-Publish")
-    .IsDependentOn("Create-With-Parameters")
+    // .IsDependentOn("Create-Bacpac")
+    // .IsDependentOn("Restore-From-Bacpac")
+    // .IsDependentOn("Dacpac-Extract")
+    // .IsDependentOn("Dacpac-Publish")
+    // .IsDependentOn("Create-With-Parameters")
     ;    
 
 RunTarget(target);
