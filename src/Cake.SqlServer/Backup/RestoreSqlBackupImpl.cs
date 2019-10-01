@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using Cake.Core;
 using Cake.Core.IO;
 using Cake.Core.Diagnostics;
@@ -11,15 +12,16 @@ namespace Cake.SqlServer
     {
         // if database name is not provided, dbname from the backup is used.
         // if newStoragePath is not provided, system defaults are used
-        internal static void RestoreSqlBackup(ICakeContext context, String connectionString, FilePath backupFile, RestoreSqlBackupSettings settings)
+        internal static void RestoreSqlBackup(ICakeContext context, String connectionString, RestoreSqlBackupSettings settings, params FilePath[] backupFiles)
         {
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, connectionString))
             {
-                var oldDbName = GetDatabaseName(backupFile, connection);
+                var firstBackupFile = backupFiles.First();
+                var oldDbName = GetDatabaseName(firstBackupFile, connection);
                 var newDatabaseName = settings.NewDatabaseName ?? oldDbName;
                 context.Log.Information($"Using database name '{newDatabaseName}' to be a name for the restored database");
 
-                var logicalNames = GetLogicalNames(backupFile, connection);
+                var logicalNames = GetLogicalNames(firstBackupFile, connection);
 
                 var sql = "";
 
@@ -34,8 +36,16 @@ end
 ";
                 }
 
-                sql += $"Restore database {Sql.EscapeName(newDatabaseName)} from disk = @backupFile with ";
-
+                sql += $"Restore database {Sql.EscapeName(newDatabaseName)} from";
+                for (var i = 0; i < backupFiles.Length; i++)
+                {
+                    sql += $" disk = @backupFile{i}";
+                    if (i < backupFiles.Length - 1)
+                    {
+                        sql += ", \r\n"; // only need comma before penultimate list
+                    }
+                }
+                sql += " with";
                 for (var i = 0; i < logicalNames.Count; i++)
                 {
                     sql += $" move @LName{i} to @LPath{i}";
@@ -56,7 +66,10 @@ end
                 var pathSeparator = GetPlatformPathSeparator(connection);
 
                 var command = SqlServerAliasesImpl.CreateSqlCommand(sql, connection);
-                command.Parameters.AddWithValue("@backupFile", backupFile.ToString());
+                for (var i=0; i < backupFiles.Length; i++)
+                {
+                    command.Parameters.AddWithValue($"@backupFile{i}", backupFiles[i].ToString());
+                }
                 for (var i = 0; i < logicalNames.Count; i++)
                 {
                     var lParameterName = "@LName" + i;

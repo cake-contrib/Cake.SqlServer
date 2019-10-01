@@ -13,6 +13,41 @@ namespace Cake.SqlServer
     public static class BackupAliases
     {
         /// <summary>
+        /// Restores a database from multiple backup files.
+        /// </summary>
+        /// <param name="context">The Cake context.</param>
+        /// <param name="connectionString">The connection string. You may want to connect to master database for this operation.</param>
+        /// <param name="settings">Settings for restoring database</param>
+        /// <param name="backupFiles">Absolute path to (multiple) .bak files</param>
+        /// <example>
+        /// <code>
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        ///
+        ///     Task("Restore-Database")
+        ///         .Does(() =>
+        ///         {
+        ///             var connString = @"data source=(localdb)\MSSqlLocalDb";
+        ///             var backupFile1 = new FilePath("C:/tmp/myBackup1.bak");
+        ///             var backupFile2 = new FilePath("C:/tmp/myBackup2.bak");
+        ///             RestoreMultipleSqlBackup(connString, new RestoreSqlBackupSettings()
+        ///                {
+        ///                      NewDatabaseName = "RestoredFromTest.Cake",
+        ///                      NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()), // place files in Temp folder
+        ///                      WithReplace = true, // tells sql server to discard non-backed up data when overwriting existing database
+        ///                }, backupFile1, backupFile2);
+        ///         });
+        /// </code>
+        /// </example>
+        [CakeMethodAlias]
+        public static void RestoreMultipleSqlBackup(this ICakeContext context, String connectionString, RestoreSqlBackupSettings settings, params FilePath[] backupFiles)
+        {
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
+
+            RestoreSqlBackupImpl.RestoreSqlBackup(context, connectionString, settings, backupFiles);
+        }
+
+        /// <summary>
         /// Restores a database from a backup file.
         /// </summary>
         /// <param name="context">The Cake context.</param>
@@ -44,7 +79,7 @@ namespace Cake.SqlServer
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
             Guard.ArgumentIsNotNull(backupFile, nameof(backupFile));
 
-            RestoreSqlBackupImpl.RestoreSqlBackup(context, connectionString, backupFile, settings);
+            RestoreSqlBackupImpl.RestoreSqlBackup(context, connectionString, settings, backupFile);
         }
 
         /// <summary>

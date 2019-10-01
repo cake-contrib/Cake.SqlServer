@@ -1,5 +1,7 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Cake.Core;
@@ -31,7 +33,29 @@ namespace Tests
                 var path = GetBackupFilePath();
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), new RestoreSqlBackupSettings());
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings(), new FilePath(path));
+
+                // Assert
+                SqlHelpers.DbExists(ConnectionString, originalDbName);
+            }
+            finally
+            {
+                // Cleanup
+                SqlHelpers.DropDatabase(ConnectionString, originalDbName);
+            }
+        }
+
+        [Test]
+        public void RestoreMultipleDatabase_MinimalInformation_DoesNotThrow()
+        {
+            var originalDbName = "CakeRestoreTest";
+            try
+            {
+                //Arrange
+                var pathList = GetMultipleBackupFilePaths();
+
+                // Act
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings(), pathList);
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, originalDbName);
@@ -54,7 +78,30 @@ namespace Tests
                 var settings = new RestoreSqlBackupSettings() { SwitchToSingleUserMode = false };
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), settings);
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, new FilePath(path));
+
+                // Assert
+                SqlHelpers.DbExists(ConnectionString, originalDbName);
+            }
+            finally
+            {
+                // Cleanup
+                SqlHelpers.DropDatabase(ConnectionString, originalDbName);
+            }
+        }
+
+        [Test]
+        public void RestoreMultipleDatabase_NoSingleUserModeInformation_DoesNotThrow()
+        {
+            var originalDbName = "CakeRestoreTest";
+            try
+            {
+                //Arrange
+                var pathList = GetMultipleBackupFilePaths();
+                var settings = new RestoreSqlBackupSettings() { SwitchToSingleUserMode = false };
+
+                // Act
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, pathList);
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, originalDbName);
@@ -75,7 +122,7 @@ namespace Tests
                 //Arrange
                 var path = GetBackupFilePath();
 
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), new RestoreSqlBackupSettings() { NewDatabaseName = databaseName });
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings() { NewDatabaseName = databaseName }, new FilePath(path));
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, databaseName);
@@ -87,6 +134,26 @@ namespace Tests
             }
         }
 
+        [Test]
+        public void RestoreMultipleDatabase_DatabaseRename_DoesNotThrow()
+        {
+            var databaseName = "NewRandomDatabase";
+            try
+            {
+                //Arrange
+                var pathList = GetMultipleBackupFilePaths();
+
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings() { NewDatabaseName = databaseName }, pathList);
+
+                // Assert
+                SqlHelpers.DbExists(ConnectionString, databaseName);
+            }
+            finally
+            {
+                // Cleanup
+                SqlHelpers.DropDatabase(ConnectionString, databaseName);
+            }
+        }
 
         [Test]
         public void RestoreDatabase_MoveLocation_DoesNotThrow()
@@ -99,7 +166,30 @@ namespace Tests
                 var settings = new RestoreSqlBackupSettings() { NewDatabaseName = newDatabaseName, NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()) };
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), settings);
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, new FilePath(path));
+
+                // Assert
+                SqlHelpers.DbExists(ConnectionString, newDatabaseName);
+            }
+            finally
+            {
+                // Cleanup
+                SqlHelpers.DropDatabase(ConnectionString, newDatabaseName);
+            }
+        }
+
+        [Test]
+        public void RestoreMultipleDatabase_MoveLocation_DoesNotThrow()
+        {
+            var newDatabaseName = "RestoredFromTest.Cake";
+            try
+            {
+                //Arrange
+                var pathList = GetMultipleBackupFilePaths();
+                var settings = new RestoreSqlBackupSettings() { NewDatabaseName = newDatabaseName, NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()) };
+
+                // Act
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, pathList);
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, newDatabaseName);
@@ -121,7 +211,29 @@ namespace Tests
                 var path = GetBackupFilePath();
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), new RestoreSqlBackupSettings() { WithReplace = true });
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings() { WithReplace = true }, new FilePath(path));
+
+                // Assert
+                SqlHelpers.DbExists(ConnectionString, originalDbName);
+            }
+            finally
+            {
+                // Cleanup
+                SqlHelpers.DropDatabase(ConnectionString, originalDbName);
+            }
+        }
+
+        [Test]
+        public void RestoreMultipleDatabase_WithReplace_DoesNotThrow()
+        {
+            var originalDbName = "CakeRestoreTest";
+            try
+            {
+                //Arrange
+                var pathList = GetMultipleBackupFilePaths();
+
+                // Act
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings() { WithReplace = true }, pathList);
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, originalDbName);
@@ -168,13 +280,13 @@ namespace Tests
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, ConnectionString))
             {
                 //Arrange
-                var path = GetBackupFilePath();
+                var path = GetBackupFilePath("multiFilesBackup1.bak");
 
                 // Act
                 var names = RestoreSqlBackupImpl.GetLogicalNames(path, connection);
 
                 // Assert
-                names.Should().HaveCount(3);
+                names.Should().HaveCount(2);
             }
         }
 
@@ -184,7 +296,7 @@ namespace Tests
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, ConnectionString))
             {
                 //Arrange
-                var path = GetBackupFilePath();
+                var path = GetBackupFilePath("multiFilesBackup1.bak");
 
                 // Act
                 var names = RestoreSqlBackupImpl.GetDatabaseName(path, connection);
@@ -193,7 +305,6 @@ namespace Tests
                 names.Should().Be("CakeRestoreTest");
             }
         }
-
 
         [Test]
         public void RestoreDatabase_AllOptionsToggled_DoesNotThrow()
@@ -212,7 +323,36 @@ namespace Tests
                 };
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new FilePath(path), settings);
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, new FilePath(path));
+
+                // Assert
+                SqlHelpers.DbExists(ConnectionString, newDatabaseName);
+            }
+            finally
+            {
+                // Cleanup
+                SqlHelpers.DropDatabase(ConnectionString, newDatabaseName);
+            }
+        }
+
+        [Test]
+        public void RestoreMultipleDatabase_AllOptionsToggled_DoesNotThrow()
+        {
+            var newDatabaseName = "RestoredFromTest.Cake";
+            try
+            {
+                //Arrange
+                var pathList = GetMultipleBackupFilePaths();
+                var settings = new RestoreSqlBackupSettings()
+                {
+                    NewDatabaseName = newDatabaseName,
+                    NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()),
+                    WithReplace = true,
+                    SwitchToSingleUserMode = false,
+                };
+
+                // Act
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, pathList);
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, newDatabaseName);
@@ -228,6 +368,12 @@ namespace Tests
         private static string GetBackupFilePath(String filename = "multiFileBackup.bak")
         {
             return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, filename, SearchOption.AllDirectories).FirstOrDefault();
+        }
+
+        private static FilePath[] GetMultipleBackupFilePaths(string searchPattern = "multiFilesBackup*.bak")
+        {
+            var fileList = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, searchPattern, SearchOption.AllDirectories);
+            return fileList.Select(path => new FilePath(path)).ToArray();
         }
     }
 }

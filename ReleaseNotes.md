@@ -1,3 +1,6 @@
+### New in 2.0.2
+* Support for restoring multiple separate backup files
+
 ### New in 2.0.0
 * Update to DacFx 15. This brings in support for BACPAC and DACPAC in Sql Server 2017 and Sql Azure
 
