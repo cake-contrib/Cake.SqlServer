@@ -109,6 +109,15 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="differentialMultiFilesBackup1.bak">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="differentialMultiFilesBackup2.bak">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="differentialMultiFilesBackup3.bak">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="multiFileBackup.bak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

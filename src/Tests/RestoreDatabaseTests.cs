@@ -1,6 +1,5 @@
 ﻿using NUnit.Framework;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -33,7 +32,7 @@ namespace Tests
                 var path = GetBackupFilePath();
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings(), new FilePath(path));
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings(), new List<FilePath> {new FilePath(path)});
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, originalDbName);
@@ -53,9 +52,10 @@ namespace Tests
             {
                 //Arrange
                 var pathList = GetMultipleBackupFilePaths();
+                var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings(), pathList);
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings(), pathList, differentialPathList);
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, originalDbName);
@@ -78,7 +78,7 @@ namespace Tests
                 var settings = new RestoreSqlBackupSettings() { SwitchToSingleUserMode = false };
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, new FilePath(path));
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, new List<FilePath> { new FilePath(path) });
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, originalDbName);
@@ -98,10 +98,11 @@ namespace Tests
             {
                 //Arrange
                 var pathList = GetMultipleBackupFilePaths();
+                var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
                 var settings = new RestoreSqlBackupSettings() { SwitchToSingleUserMode = false };
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, pathList);
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, pathList, differentialPathList);
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, originalDbName);
@@ -122,7 +123,7 @@ namespace Tests
                 //Arrange
                 var path = GetBackupFilePath();
 
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings() { NewDatabaseName = databaseName }, new FilePath(path));
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings() { NewDatabaseName = databaseName }, new List<FilePath> { new FilePath(path) });
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, databaseName);
@@ -142,8 +143,9 @@ namespace Tests
             {
                 //Arrange
                 var pathList = GetMultipleBackupFilePaths();
+                var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
 
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings() { NewDatabaseName = databaseName }, pathList);
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings() { NewDatabaseName = databaseName }, pathList, differentialPathList);
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, databaseName);
@@ -166,7 +168,7 @@ namespace Tests
                 var settings = new RestoreSqlBackupSettings() { NewDatabaseName = newDatabaseName, NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()) };
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, new FilePath(path));
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, new List<FilePath> { new FilePath(path) });
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, newDatabaseName);
@@ -186,10 +188,11 @@ namespace Tests
             {
                 //Arrange
                 var pathList = GetMultipleBackupFilePaths();
+                var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
                 var settings = new RestoreSqlBackupSettings() { NewDatabaseName = newDatabaseName, NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()) };
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, pathList);
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, pathList, differentialPathList);
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, newDatabaseName);
@@ -211,7 +214,7 @@ namespace Tests
                 var path = GetBackupFilePath();
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings() { WithReplace = true }, new FilePath(path));
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings() { WithReplace = true }, new List<FilePath> { new FilePath(path) });
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, originalDbName);
@@ -231,9 +234,10 @@ namespace Tests
             {
                 //Arrange
                 var pathList = GetMultipleBackupFilePaths();
+                var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings() { WithReplace = true }, pathList);
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, new RestoreSqlBackupSettings() { WithReplace = true }, pathList, differentialPathList);
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, originalDbName);
@@ -323,7 +327,7 @@ namespace Tests
                 };
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, new FilePath(path));
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, new List<FilePath> { new FilePath(path) });
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, newDatabaseName);
@@ -343,6 +347,7 @@ namespace Tests
             {
                 //Arrange
                 var pathList = GetMultipleBackupFilePaths();
+                var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
                 var settings = new RestoreSqlBackupSettings()
                 {
                     NewDatabaseName = newDatabaseName,
@@ -352,7 +357,7 @@ namespace Tests
                 };
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, pathList);
+                RestoreSqlBackupImpl.RestoreSqlBackup(context, ConnectionString, settings, pathList, differentialPathList);
 
                 // Assert
                 SqlHelpers.DbExists(ConnectionString, newDatabaseName);
@@ -370,10 +375,10 @@ namespace Tests
             return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, filename, SearchOption.AllDirectories).FirstOrDefault();
         }
 
-        private static FilePath[] GetMultipleBackupFilePaths(string searchPattern = "multiFilesBackup*.bak")
+        private static IList<FilePath> GetMultipleBackupFilePaths(string searchPattern = "multiFilesBackup*.bak")
         {
             var fileList = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, searchPattern, SearchOption.AllDirectories);
-            return fileList.Select(path => new FilePath(path)).ToArray();
+            return fileList.Select(path => new FilePath(path)).ToList();
         }
     }
 }
