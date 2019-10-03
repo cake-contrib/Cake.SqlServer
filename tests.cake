@@ -152,7 +152,7 @@ Task("Restore-Database")
     .Does(() => {
         var connString = @"data source=(localdb)\MSSqlLocalDb";
 
-        var backupFilePath = new FilePath(@".\src\Tests\multiFileBackup.bak");
+        var backupFilePath = new FilePath(@".\src\Tests\TestData\multiFileBackup.bak");
         backupFilePath = backupFilePath.MakeAbsolute(Context.Environment);
 
         RestoreSqlBackup(connString, backupFilePath); 
@@ -174,7 +174,7 @@ Task("Backup-Database")
     .Does(() => {
 		var connString = @"data source=(localdb)\MSSqlLocalDb";
 		
-        var backupFilePath = new FilePath(@".\src\Tests\multiFileBackup.bak");
+        var backupFilePath = new FilePath(@".\src\Tests\TestData\multiFileBackup.bak");
         backupFilePath = backupFilePath.MakeAbsolute(Context.Environment);
 
         RestoreSqlBackup(connString, backupFilePath); 
@@ -220,7 +220,7 @@ Task("Restore-From-Bacpac")
 
         var dbName = "FromBacpac";
 
-        var file = new FilePath(@".\src\Tests\Nsaga.bacpac");
+        var file = new FilePath(@".\src\Tests\TestData\Nsaga.bacpac");
         RestoreBacpac(connString, dbName, file);
     })
     .Finally(() =>
@@ -235,7 +235,7 @@ Task("Dacpac-Publish")
     {
         var connectionString = @"data source=(localdb)\MSSqlLocalDb";
         var dbName = "DacpacTestDb";
-        var dacpacFile = new FilePath(@".\src\Tests\Nsaga.dacpac");
+        var dacpacFile = new FilePath(@".\src\Tests\TestData\Nsaga.dacpac");
 
         CreateDatabase(connectionString, dbName);
 

@@ -67,7 +67,7 @@ namespace Cake.SqlServer
         ///     
         ///     		var dbName = "FromBacpac";
         ///     
-        ///     		var file = new FilePath(@".\src\Tests\Nsaga.bacpac");
+        ///     		var file = new FilePath(@".\src\Tests\TestData\Nsaga.bacpac");
         ///     
         ///     		RestoreBacpac(connString, dbName, file);
         ///     	});
@@ -105,7 +105,7 @@ namespace Cake.SqlServer
         ///     		CreateDatabase(connString, dbName);
         /// 
         ///     		var settings = new ExtractDacpacSettings("MyAppName", "2.0.0.0") { 
-        ///     			OutputFile = new FilePath(@".\Nsaga.dacpac")
+        ///     			OutputFile = new FilePath(@".\TestData\Nsaga.dacpac")
         /// 			};
         ///     
         ///     		ExtractDacpacFile(connString, dbName, settings);
@@ -143,7 +143,7 @@ namespace Cake.SqlServer
         ///     
         ///     		var dbName = "ForDacpac";
         ///     
-        ///     		var file = new FilePath(@".\src\Tests\Nsaga.dacpac");
+        ///     		var file = new FilePath(@".\src\Tests\TestData\Nsaga.dacpac");
         ///     
         ///     		var settings = new PublishDacpacSettings { 
         ///     			GenerateDeploymentScript = true

@@ -109,31 +109,31 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="differentialMultiFilesBackup1.bak">
+    <None Include="TestData\differentialMultiFilesBackup1.bak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="differentialMultiFilesBackup2.bak">
+    <None Include="TestData\differentialMultiFilesBackup2.bak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="differentialMultiFilesBackup3.bak">
+    <None Include="TestData\differentialMultiFilesBackup3.bak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="multiFileBackup.bak">
+    <None Include="TestData\multiFileBackup.bak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="multiFilesBackup1.bak">
+    <None Include="TestData\multiFilesBackup1.bak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="multiFilesBackup2.bak">
+    <None Include="TestData\multiFilesBackup2.bak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="multiFilesBackup3.bak">
+    <None Include="TestData\multiFilesBackup3.bak">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Nsaga.bacpac">
+    <None Include="TestData\Nsaga.bacpac">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Nsaga.dacpac">
+    <None Include="TestData\Nsaga.dacpac">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config">
@@ -147,9 +147,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Script.sql">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <None Include="TestData\Script.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

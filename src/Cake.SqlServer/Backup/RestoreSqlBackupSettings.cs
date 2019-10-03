@@ -14,8 +14,6 @@ namespace Cake.SqlServer
         public RestoreSqlBackupSettings()
         {
             SwitchToSingleUserMode = true;
-            BackupSetFile = 1;
-            DifferentialBackupSetFile = 1;
         }
 
         /// <summary>
@@ -52,14 +50,14 @@ namespace Cake.SqlServer
         public bool SwitchToSingleUserMode { get; set; }
 
         /// <summary>
-        /// Specifies which BackupSet should be used when restoring the main backup files.
+        /// If set this specifies which BackupSet should be used when restoring the main backup files.
         /// </summary>
-        public int BackupSetFile { get; set; }
+        public int? BackupSetFile { get; set; }
 
         /// <summary>
-        /// Specifies which BackupSet should be used when restoring the differential backup files.
+        /// If set this specifies which BackupSet should be used when restoring the differential backup files.
         /// </summary>
-        public int DifferentialBackupSetFile { get; set; }
+        public int? DifferentialBackupSetFile { get; set; }
 
     }
 }

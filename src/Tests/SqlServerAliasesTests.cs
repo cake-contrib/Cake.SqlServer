@@ -254,7 +254,8 @@ namespace Tests
 
         private static string GetSqlFilePath()
         {
-            return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "Script.sql", SearchOption.AllDirectories).FirstOrDefault();
+            var testDataDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData");
+            return Directory.GetFiles(testDataDirectory, "Script.sql", SearchOption.AllDirectories).FirstOrDefault();
         }
 
         [Test]

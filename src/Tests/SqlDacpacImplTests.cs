@@ -92,7 +92,8 @@ namespace Tests
 
         private static string GetDacpacFilePath()
         {
-            return Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "Nsaga.dacpac", SearchOption.AllDirectories).FirstOrDefault();
+            var testDataDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData");
+            return Directory.GetFiles(testDataDirectory, "Nsaga.dacpac", SearchOption.AllDirectories).FirstOrDefault();
         }
     }
 }
