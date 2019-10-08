@@ -144,33 +144,5 @@ namespace Cake.SqlServer
         {
             BackupDatabaseImpl.Execute(context, connectionString, databaseName, settings);
         }
-
-        /// <summary>
-        /// Sets single/multi user mode for a database. If the database doesn't exist nothing is done.'
-        /// </summary>
-        /// <param name="context">The Cake context.</param>
-        /// <param name="connectionString">The connection string. Regardless of the database specified, the connection will switch to master database for this operation.</param>
-        /// <param name="databaseName">Database to set single/multi user mode on.</param>
-        /// <param name="singleUserMode">Whether to set single or multi user mode</param>
-        /// <example>
-        /// <code>
-        ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
-        ///     Task("SomeTask")
-        ///         .Does(() =>
-        ///         {
-        ///             var connString = @"data source=(localdb)\MSSqlLocalDb";
-        ///             var databaseName = "MyDatabase";
-        ///             SetDatabaseSingleUserMode(connString, databaseName, true);
-        ///             // SomeTask requiring single user mode
-        ///             SetDatabaseSingleUserMode(connString, databaseName, false);
-        ///         });
-        /// </code>
-        /// </example>
-        [CakeMethodAlias]
-        public static void SetDatabaseSingleUserMode(this ICakeContext context, String connectionString, String databaseName, bool singleUserMode)
-        {
-            RestoreSqlBackupImpl.SetDatabaseSingleUserMode(context, connectionString, databaseName, singleUserMode);
-        }
     }
 }

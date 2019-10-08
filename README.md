@@ -186,27 +186,6 @@ Task("Restore-Split-Database")
     });
 ```
 
-### Set Database to SingleUserMode or MultiUserMode
-```c#
-SetDatabaseSingleUserMode(String connectionString, String databaseName, bool singleUserMode)
-```
-
-Sets single/multi user mode for a database. If the database doesn't exist nothing is done.
-
-Example:
-
-```c#
-Task("SomeTask")
-    .Does(() =>
-    {
-        var connString = @"data source=(localdb)\MSSqlLocalDb";
-        var databaseName = "MyDatabase";
-        SetDatabaseSingleUserMode(connString, databaseName, true);
-        // SomeTask requiring single user mode
-        SetDatabaseSingleUserMode(connString, databaseName, false);
-    });
-```
-
 ### Backup Database
 ```c#
 BackupDatabase(string connectionString, string databaseName, BackupDatabaseSettings settings)

@@ -68,53 +68,6 @@ namespace Tests
         }
 
         [Test]
-        public void SetSingleUserMode_DoesNotThrow()
-        {
-            var originalDbName = "CakeRestoreTest";
-            try
-            {
-                //Arrange
-                var path = GetBackupFilePath();
-                var settings = new RestoreSqlBackupSettings() { SwitchToSingleUserMode = false };
-                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, settings, new List<FilePath> { new FilePath(path) });
-
-                try
-                {
-                    // Act
-                    RestoreSqlBackupImpl.SetDatabaseSingleUserMode(_context, ConnectionString, originalDbName, true);
-                    RestoreSqlBackupImpl.SetDatabaseSingleUserMode(_context, ConnectionString, originalDbName, false);
-                }
-                catch (Exception e)
-                {
-                    // Assert
-                    Assert.Fail(e.Message);
-                }
-            }
-            finally
-            {
-                // Cleanup
-                SqlHelpers.DropDatabase(ConnectionString, originalDbName);
-            }
-        }
-
-        [Test]
-        public void SetSingleUserMode_NonExistingDb_DoesNotThrow()
-        {
-            try
-            {
-                // Act
-                var nonExistingDbName = "NonExistingDbName";
-                RestoreSqlBackupImpl.SetDatabaseSingleUserMode(_context, ConnectionString, nonExistingDbName, true);
-                RestoreSqlBackupImpl.SetDatabaseSingleUserMode(_context, ConnectionString, nonExistingDbName, false);
-            }
-            catch (Exception e)
-            {
-                // Assert
-                Assert.Fail(e.Message);
-            }
-        }
-
-        [Test]
         public void RestoreDatabase_NoSingleUserModeInformation_DoesNotThrow()
         {
             var originalDbName = "CakeRestoreTest";
