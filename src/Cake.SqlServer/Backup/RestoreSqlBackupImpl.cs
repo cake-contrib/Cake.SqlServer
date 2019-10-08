@@ -1,75 +1,174 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using Cake.Core;
 using Cake.Core.IO;
 using Cake.Core.Diagnostics;
+using System.Text;
 
 namespace Cake.SqlServer
 {
     internal static class RestoreSqlBackupImpl
     {
-        // if database name is not provided, dbname from the backup is used.
-        // if newStoragePath is not provided, system defaults are used
-        internal static void RestoreSqlBackup(ICakeContext context, String connectionString, FilePath backupFile, RestoreSqlBackupSettings settings)
+        internal static void SetDatabaseSingleUserMode(ICakeContext context, String connectionString, String databaseName, bool singleUserMode)
         {
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, connectionString))
             {
-                var oldDbName = GetDatabaseName(backupFile, connection);
-                var newDatabaseName = settings.NewDatabaseName ?? oldDbName;
-                context.Log.Information($"Using database name '{newDatabaseName}' to be a name for the restored database");
-
-                var logicalNames = GetLogicalNames(backupFile, connection);
-
-                var sql = "";
-
-                if (settings.SwitchToSingleUserMode)
-                {
-                    sql += $@"
-if db_id({Sql.EscapeNameQuotes(newDatabaseName)}) is not null 
-begin
-    use master;
-    alter database {Sql.EscapeName(newDatabaseName)} set single_user with rollback immediate;
-end
-";
-                }
-
-                sql += $"Restore database {Sql.EscapeName(newDatabaseName)} from disk = @backupFile with ";
-
-                for (var i = 0; i < logicalNames.Count; i++)
-                {
-                    sql += $" move @LName{i} to @LPath{i}";
-                    if (i < logicalNames.Count - 1)
-                    {
-                        sql += ", \r\n"; // only need comma before penultimate list
-                    }
-                }
-                if (settings.WithReplace)
-                {
-                    sql += ",\r\n replace ";
-                }
-
-                sql += $";\r\n alter database {Sql.EscapeName(newDatabaseName)} set multi_user;";
-
-                context.Log.Debug($"Executing SQL : {sql}");
-
-                var pathSeparator = GetPlatformPathSeparator(connection);
-
-                var command = SqlServerAliasesImpl.CreateSqlCommand(sql, connection);
-                command.Parameters.AddWithValue("@backupFile", backupFile.ToString());
-                for (var i = 0; i < logicalNames.Count; i++)
-                {
-                    var lParameterName = "@LName" + i;
-                    context.Log.Debug($"Adding parameter '{lParameterName}' with value '{logicalNames[i].LogicalName}'");
-                    command.Parameters.AddWithValue(lParameterName, logicalNames[i].LogicalName);
-
-                    var filePath = GetFilePath(connection, oldDbName, newDatabaseName, settings.NewStorageFolder, logicalNames[i], pathSeparator);
-                    var pathParamName = "@LPath" + i;
-                    context.Log.Debug($"Adding parameter '{pathParamName}' with value '{filePath}'");
-                    command.Parameters.AddWithValue(pathParamName, filePath);
-                }
+                var command = GetSetDatabaseSingleUserModeCommand(context, connection, databaseName, singleUserMode);
                 command.ExecuteNonQuery();
             }
+        }
+
+        // if database name is not provided, dbname from the backup is used.
+        // if newStoragePath is not provided, system defaults are used
+        internal static void RestoreSqlBackup(ICakeContext context, String connectionString, RestoreSqlBackupSettings settings, IList<FilePath> backupFiles, IList<FilePath> differentialBackupFiles = null)
+        {
+            using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, connectionString))
+            {
+                var firstBackupFile = backupFiles.First();
+                var oldDbName = GetDatabaseName(firstBackupFile, connection);
+                var databaseName = settings.NewDatabaseName ?? oldDbName;
+                if (settings.SwitchToSingleUserMode)
+                {
+                    var singleModeCommand = GetSetDatabaseSingleUserModeCommand(context, connection, databaseName, true);
+                    singleModeCommand.ExecuteNonQuery();
+                }
+                var hasDifferentialBackup = differentialBackupFiles != null && differentialBackupFiles.Any();
+                var fullRestoreCommand = GetRestoreSqlBackupCommand(
+                    context,
+                    connection,
+                    settings.BackupSetFile,
+                    settings.WithReplace,
+                    hasDifferentialBackup,
+                    databaseName,
+                    settings.NewStorageFolder,
+                    backupFiles.ToArray());
+                fullRestoreCommand.ExecuteNonQuery();
+                if (hasDifferentialBackup)
+                {
+                    var differentialRestoreCommand = GetRestoreSqlBackupCommand(
+                        context,
+                        connection,
+                        settings.DifferentialBackupSetFile,
+                        false,
+                        false,
+                        databaseName,
+                        settings.NewStorageFolder,
+                        differentialBackupFiles.ToArray());
+                    differentialRestoreCommand.ExecuteNonQuery();
+                }
+                if (settings.SwitchToSingleUserMode)
+                {
+                    var singleModeCommand = GetSetDatabaseSingleUserModeCommand(context, connection, databaseName, false);
+                    singleModeCommand.ExecuteNonQuery();
+                }
+            }
+        }
+
+        // This method is used to determine one single "Restore database" command.
+        private static SqlCommand GetRestoreSqlBackupCommand(
+            ICakeContext context,
+            SqlConnection connection,
+            int? backupSetFile,
+            bool withReplace,
+            bool withNoRecovery,
+            string newDatabaseName,
+            DirectoryPath newStorageFolder,
+            params FilePath[] backupFiles)
+        {
+            var firstBackupFile = backupFiles.First();
+            var oldDbName = GetDatabaseName(firstBackupFile, connection);
+            var databaseName = newDatabaseName ?? oldDbName;
+            context.Log.Information($"Using database name '{databaseName}' to be a name for the restored database");
+
+            var logicalNames = GetLogicalNames(firstBackupFile, connection);
+
+            var sb = new StringBuilder();
+            sb.AppendLine();
+            sb.AppendLine($"Restore database {Sql.EscapeName(databaseName)}");
+			sb.AppendLine($"from");
+            for (var i = 0; i < backupFiles.Length; i++)
+            {
+				// only need comma before penultimate list
+				var trailingComma = i < backupFiles.Length - 1 ? "," : "";
+                sb.AppendLine($"  disk = @backupFile{i}{trailingComma}");
+            }
+		    sb.AppendLine($"with");
+			if (backupSetFile.HasValue)
+			{
+                sb.AppendLine($"  file = {backupSetFile.Value},");
+			}
+
+            for (var i = 0; i < logicalNames.Count; i++)
+            {
+                sb.AppendLine($"  move @LName{i} to @LPath{i},");
+            }
+
+            if (withReplace)
+            {
+                sb.AppendLine($"  replace,");
+            }
+
+            if (withNoRecovery)
+            {
+                sb.AppendLine($"  norecovery");
+            }
+			else
+			{
+                sb.AppendLine($"  recovery");
+			}
+            context.Log.Debug($"Executing SQL : {sb}");
+
+            var pathSeparator = GetPlatformPathSeparator(connection);
+            var command = SqlServerAliasesImpl.CreateSqlCommand(sb.ToString(), connection);
+            for (var i = 0; i < backupFiles.Length; i++)
+            {
+                command.Parameters.AddWithValue($"@backupFile{i}", backupFiles[i].ToString());
+            }
+            for (var i = 0; i < logicalNames.Count; i++)
+            {
+                var lParameterName = "@LName" + i;
+                context.Log.Debug($"Adding parameter '{lParameterName}' with value '{logicalNames[i].LogicalName}'");
+                command.Parameters.AddWithValue(lParameterName, logicalNames[i].LogicalName);
+
+                var filePath = GetFilePath(connection, oldDbName, databaseName, newStorageFolder, logicalNames[i], pathSeparator);
+                var pathParamName = "@LPath" + i;
+                context.Log.Debug($"Adding parameter '{pathParamName}' with value '{filePath}'");
+                command.Parameters.AddWithValue(pathParamName, filePath);
+            }
+
+            return command;
+        }
+
+        private static SqlCommand GetSetDatabaseSingleUserModeCommand(ICakeContext context, SqlConnection connection, String databaseName, bool singleUserMode)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine();
+
+            if (singleUserMode)
+            {
+                sb.AppendLine($@"if db_id({Sql.EscapeNameQuotes(databaseName)}) is not null");
+                sb.AppendLine($@"begin");
+                sb.AppendLine($@"    use master;");
+                sb.AppendLine($@"    alter database {Sql.EscapeName(databaseName)} set single_user with rollback immediate;");
+                sb.AppendLine($@"end");
+                sb.AppendLine($@";");
+            }
+            else
+            {
+                sb.AppendLine($@"if db_id({Sql.EscapeNameQuotes(databaseName)}) is not null");
+                sb.AppendLine($@"begin");
+                sb.AppendLine($@"    use master;");
+                sb.AppendLine($@"    alter database {Sql.EscapeName(databaseName)} set multi_user;");
+                sb.AppendLine($@"end");
+                sb.AppendLine($@";");
+            }
+
+            context.Log.Debug($"Executing SQL : {sb}");
+            var command = SqlServerAliasesImpl.CreateSqlCommand(sb.ToString(), connection);
+
+            return command;
         }
 
         private static char GetPlatformPathSeparator(SqlConnection connection)
@@ -129,7 +228,7 @@ end
         private static String GetFilePath(SqlConnection connection, string oldDatabaseName, string newDatabaseName, DirectoryPath newPath, LogicalNames logicalName, char pathSeparator)
         {
             var fileName = System.IO.Path.GetFileName(logicalName.PhysicalName);
-            fileName = fileName.Replace(oldDatabaseName, newDatabaseName);
+            fileName = fileName?.Replace(oldDatabaseName, newDatabaseName);
 
             var folder = newPath;
 

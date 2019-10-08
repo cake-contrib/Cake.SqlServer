@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Cake.Core;
 using Cake.Core.Annotations;
 using Cake.Core.IO;
@@ -12,6 +13,48 @@ namespace Cake.SqlServer
     [CakeAliasCategory("SqlServer")]
     public static class BackupAliases
     {
+        /// <summary>
+        /// Restores a database from multiple backup files.
+        /// </summary>
+        /// <param name="context">The Cake context.</param>
+        /// <param name="connectionString">The connection string. You may want to connect to master database for this operation.</param>
+        /// <param name="settings">Settings for restoring database</param>
+        /// <param name="backupFiles">Absolute path to (multiple) .bak files</param>
+        /// <param name="differentialBackupFiles">Absolute path to (multiple) additional differential .bak files</param>
+        /// <example>
+        /// <code>
+        ///     #addin "nuget:?package=Cake.SqlServer"
+        ///
+        ///     Task("Restore-Split-Database")
+        ///         .Does(() =>
+        ///         {
+        ///             var connString = @"data source=(localdb)\MSSqlLocalDb";
+        ///             var backupFile1 = new FilePath("C:/tmp/myBackup1.bak");
+        ///             var backupFile2 = new FilePath("C:/tmp/myBackup2.bak");
+        ///             var backupFileList = new List&lt;FilePath&gt; {backupFile1, backupFile2};
+        ///             var diffBackupFile1 = new FilePath("C:/tmp/myDiffBackup1.bak");
+        ///             var diffBackupFile2 = new FilePath("C:/tmp/myDiffBackup2.bak");
+        ///             var diffBackupFileList = new List&lt;FilePath&gt; {diffBackupFile1, diffBackupFile2};
+        ///             RestoreMultipleSqlBackup(connString, new RestoreSqlBackupSettings()
+        ///                {
+        ///                      NewDatabaseName = "RestoredFromTest.Cake",
+        ///                      NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()), // place files in Temp folder
+        ///                      WithReplace = true, // tells sql server to discard non-backed up data when overwriting existing database
+        ///                      BackupSetFile = 1, // tells which backup set file to use for backupFile*
+        ///                      DifferentialBackupSetFile = 1, // tells which backup set file to use for diffBackupFile*
+        ///                }, backupFileList, diffBackupFileList);
+        ///         });
+        /// </code>
+        /// </example>
+        [CakeMethodAlias]
+        public static void RestoreMultipleSqlBackup(this ICakeContext context, String connectionString, RestoreSqlBackupSettings settings, IList<FilePath> backupFiles, IList<FilePath> differentialBackupFiles = null)
+        {
+            Guard.ArgumentIsNotNull(context, nameof(context));
+            Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
+
+            RestoreSqlBackupImpl.RestoreSqlBackup(context, connectionString, settings, backupFiles, differentialBackupFiles:differentialBackupFiles);
+        }
+
         /// <summary>
         /// Restores a database from a backup file.
         /// </summary>
@@ -44,7 +87,7 @@ namespace Cake.SqlServer
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
             Guard.ArgumentIsNotNull(backupFile, nameof(backupFile));
 
-            RestoreSqlBackupImpl.RestoreSqlBackup(context, connectionString, backupFile, settings);
+            RestoreSqlBackupImpl.RestoreSqlBackup(context, connectionString, settings, new List<FilePath> {backupFile});
         }
 
         /// <summary>

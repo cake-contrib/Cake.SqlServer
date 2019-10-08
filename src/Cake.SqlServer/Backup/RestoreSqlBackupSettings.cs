@@ -42,12 +42,22 @@ namespace Cake.SqlServer
         /// </summary>
         public bool WithReplace { get; set; }
 
-
         /// <summary>
         /// Before restoring backup, database will be switched to a single user mode. 
         /// Default operation is to go into single user mode. However in some situation this might not work.
         /// Use this switch to bypass single user mode and restore the DB as it is
         /// </summary>
         public bool SwitchToSingleUserMode { get; set; }
+
+        /// <summary>
+        /// If set this specifies which BackupSet should be used when restoring the main backup files.
+        /// </summary>
+        public int? BackupSetFile { get; set; }
+
+        /// <summary>
+        /// If set this specifies which BackupSet should be used when restoring the differential backup files.
+        /// </summary>
+        public int? DifferentialBackupSetFile { get; set; }
+
     }
 }

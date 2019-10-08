@@ -142,7 +142,7 @@ Task("Restore-Database")
 	.Does(() => {
 		var connString = @"data source=(localdb)\MSSqlLocalDb";
 
-		var backupFilePath = new FilePath(@".\src\Tests\multiFileBackup.bak");
+		var backupFilePath = new FilePath(@".\src\Tests\TestData\multiFileBackup.bak");
 		backupFilePath = backupFilePath.MakeAbsolute(Context.Environment);
 
 		RestoreSqlBackup(connString, backupFilePath, new RestoreSqlBackupSettings() 
@@ -151,6 +151,39 @@ Task("Restore-Database")
 				NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()), // place files in special location
 			}); 
 	});
+```
+
+### Restore split Database backups and split differential backups
+```c#
+RestoreMultipleSqlBackup(String connectionString, RestoreSqlBackupSettings settings, IList<FilePath> backupFiles, IList<FilePath> differentialBackupFiles = null)
+```
+
+Restores from a list of `.bak` files. The options and behavior are the same as for RestoreSqlBackup.
+If a set of differential backup files are specified the task will first restore the full backup and then restore the differential backup files with appropriate restore settings for the two steps.
+The option BackupSetFile and DifferentialBackupSetFile (both are null by default) can be used to explicitely specify the desired backup set for the full backups and the differential backups.
+
+Example:
+
+```c#
+Task("Restore-Split-Database")
+    .Does(() =>
+    {
+        var connString = @"data source=(localdb)\MSSqlLocalDb";
+        var backupFile1 = new FilePath("C:/tmp/myBackup1.bak");
+        var backupFile2 = new FilePath("C:/tmp/myBackup2.bak");
+        var backupFileList = new List<FilePath> {backupFile1, backupFile2};
+        var diffBackupFile1 = new FilePath("C:/tmp/myDiffBackup1.bak");
+        var diffBackupFile2 = new FilePath("C:/tmp/myDiffBackup2.bak");
+        var diffBackupFileList = new List<FilePath> {diffBackupFile1, diffBackupFile2};
+        RestoreMultipleSqlBackup(connString, new RestoreSqlBackupSettings()
+           {
+                 NewDatabaseName = "RestoredFromTest.Cake",
+                 NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()), // place files in Temp folder
+                 WithReplace = true, // tells sql server to discard non-backed up data when overwriting existing database
+                 BackupSetFile = 1, // tells which backup set file to use for backupFile*
+                 DifferentialBackupSetFile = 1, // tells which backup set file to use for diffBackupFile*
+           }, backupFileList, diffBackupFileList);
+    });
 ```
 
 ### Backup Database
@@ -227,7 +260,7 @@ Task("Extract-Dacpac")
 		CreateDatabase(connString, dbName);
  
 		var settings = new ExtractDacpacSettings("MyAppName", "2.0.0.0") { 
-			OutputFile = new FilePath(@".\Nsaga.dacpac")
+			OutputFile = new FilePath(@".\TestData\Nsaga.dacpac")
 		};
      
 		ExtractDacpacFile(connString, dbName, settings);
@@ -244,7 +277,7 @@ Task("Create-Bacpac")
 
 		var dbName = "ForDacpac";
 
-		var file = new FilePath(@".\src\Tests\Nsaga.dacpac");
+		var file = new FilePath(@".\src\Tests\TestData\Nsaga.dacpac");
 
 		var settings = new PublishDacpacSettings { 
 			GenerateDeploymentScript = true
