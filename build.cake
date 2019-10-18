@@ -74,7 +74,7 @@ Task("Build")
 });
 
 Task("Start-LocalDB")
-    .Description(@"Starts LocalDB - executes the following: C:\Program Files\Microsoft SQL Server\120\Tools\Binn\SqlLocalDB.exe create v12.0 -s")
+    .Description(@"Starts LocalDB - executes the following: C:\Program Files\Microsoft SQL Server\120\Tools\Binn\SqlLocalDB.exe create -s")
     .WithCriteria(() => !parameters.SkipTests)
     .Does(() => 
     {
