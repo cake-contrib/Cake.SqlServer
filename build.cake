@@ -84,19 +84,19 @@ Task("Start-LocalDB")
 
         if(FileExists(sqlLocalDbPath14))
         {
-            StartProcess(sqlLocalDbPath14, new ProcessSettings(){ Arguments="create MSSqlLocalDb -s" });    
+            StartProcess(sqlLocalDbPath14, new ProcessSettings(){ Arguments="create MSSqlLocalDb 13.0 -s" });    
             return;
         }
 
         if(FileExists(sqlLocalDbPath13))
         {
-            StartProcess(sqlLocalDbPath13, new ProcessSettings(){ Arguments="create MSSqlLocalDb -s" });    
+            StartProcess(sqlLocalDbPath13, new ProcessSettings(){ Arguments="create MSSqlLocalDb 13.0 -s" });    
             return;
         }
 
         if(FileExists(sqlLocalDbPath12))
         {
-            StartProcess(sqlLocalDbPath12, new ProcessSettings(){ Arguments="create MSSqlLocalDb -s" });    
+            StartProcess(sqlLocalDbPath12, new ProcessSettings(){ Arguments="create MSSqlLocalDb 13.0 -s" });    
             return;
         }
 
