@@ -1,5 +1,6 @@
-### New in 2.1.0
+### New in 2.1.2
 * Support for restoring multiple separate backup files and differential backup files
+* Update of Cake to v0.35.0
 
 ### New in 2.0.0
 * Update to DacFx 15. This brings in support for BACPAC and DACPAC in Sql Server 2017 and Sql Azure
