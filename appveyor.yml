@@ -5,7 +5,8 @@ environment:
   MYGET_API_KEY:
     secure: jrnvIAlH4mF14CcASaWmRQzqXWvZw4KlSCl3u6z8NqOjW4iz5FA8SabxXPvFgdD4
   MYGET_API_URL: https://www.myget.org/F/cake-sqlserver/api/v2
-services: mssql2017
+services:
+  - mssql2017
 install:
 - ps: ''
 nuget:
