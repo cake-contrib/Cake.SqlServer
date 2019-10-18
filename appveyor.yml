@@ -9,6 +9,7 @@ nuget:
   project_feed: true
 build_script:
 - ps: >-
+    choco install sqllocaldb -version 14.0.1000.169
     .\build.ps1 -Target "AppVeyor" -Verbosity Diagnostic  -experimental
 
 
