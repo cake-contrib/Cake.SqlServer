@@ -9,14 +9,6 @@ namespace Cake.SqlServer
     public class RestoreSqlBackupSettings
     {
         /// <summary>
-        /// Default constructor for settings object. Sets SwitchToSingleUserMode to true.
-        /// </summary>
-        public RestoreSqlBackupSettings()
-        {
-            SwitchToSingleUserMode = true;
-        }
-
-        /// <summary>
         /// Gets or sets the new name of the database.
         /// Name of the database where to restore. If this is not specified, database name is taken from the backup file
         /// </summary>
@@ -46,8 +38,29 @@ namespace Cake.SqlServer
         /// Before restoring backup, database will be switched to a single user mode. 
         /// Default operation is to go into single user mode. However in some situation this might not work.
         /// Use this switch to bypass single user mode and restore the DB as it is
+        /// 
+        /// This property has been obsoleted by SwitchToUserMode which allows for a third option
         /// </summary>
-        public bool SwitchToSingleUserMode { get; set; }
+        [Obsolete("Use SwitchToUserMode instead")]
+        public bool SwitchToSingleUserMode
+        {
+            get => SwitchToUserMode == DbUserMode.SingleUser;
+            set => SwitchToUserMode = value ? DbUserMode.SingleUser : DbUserMode.MultiUser;
+        }
+
+        /// <summary>
+        /// Before restoring backup, database will be switched to the user mode selected
+        /// Default operation is to go into single user mode. However in some situation this might not work.
+        /// Use this switch to bypass single user mode and restore the DB as it is, or your can use restricted mode instead.
+        /// </summary>
+        public DbUserMode SwitchToUserMode { get; set; } = DbUserMode.SingleUser;
+
+        /// <summary>
+        /// Before restoring backup, database will be switched to a single user mode. 
+        /// Default operation is to go into single user mode. However in some situation this might not work.
+        /// Use this switch to bypass single user mode and restore the DB as it is
+        /// </summary>
+        public bool SwitchToRestrictedUserMode { get; set; }
 
         /// <summary>
         /// If set this specifies which BackupSet should be used when restoring the main backup files.
@@ -59,5 +72,13 @@ namespace Cake.SqlServer
         /// </summary>
         public int? DifferentialBackupSetFile { get; set; }
 
+        
+    }
+
+    public enum DbUserMode
+    {
+        MultiUser,
+        SingleUser,
+        RestrictedUser
     }
 }

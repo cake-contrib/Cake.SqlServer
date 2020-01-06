@@ -11,15 +11,6 @@ namespace Cake.SqlServer
 {
     internal static class RestoreSqlBackupImpl
     {
-        internal static void SetDatabaseSingleUserMode(ICakeContext context, String connectionString, String databaseName, bool singleUserMode)
-        {
-            using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, connectionString))
-            {
-                var command = GetSetDatabaseSingleUserModeCommand(context, connection, databaseName, singleUserMode);
-                command.ExecuteNonQuery();
-            }
-        }
-
         // if database name is not provided, dbname from the backup is used.
         // if newStoragePath is not provided, system defaults are used
         internal static void RestoreSqlBackup(ICakeContext context, String connectionString, RestoreSqlBackupSettings settings, IList<FilePath> backupFiles, IList<FilePath> differentialBackupFiles = null)
@@ -29,9 +20,9 @@ namespace Cake.SqlServer
                 var firstBackupFile = backupFiles.First();
                 var oldDbName = GetDatabaseName(firstBackupFile, connection);
                 var databaseName = settings.NewDatabaseName ?? oldDbName;
-                if (settings.SwitchToSingleUserMode)
+                if (settings.SwitchToUserMode != DbUserMode.MultiUser)
                 {
-                    var singleModeCommand = GetSetDatabaseSingleUserModeCommand(context, connection, databaseName, true);
+                    var singleModeCommand = GetSetDatabaseUserModeCommand(context, connection, databaseName, settings.SwitchToUserMode);
                     singleModeCommand.ExecuteNonQuery();
                 }
                 var hasDifferentialBackup = differentialBackupFiles != null && differentialBackupFiles.Any();
@@ -58,9 +49,9 @@ namespace Cake.SqlServer
                         differentialBackupFiles.ToArray());
                     differentialRestoreCommand.ExecuteNonQuery();
                 }
-                if (settings.SwitchToSingleUserMode)
+                if (settings.SwitchToUserMode != DbUserMode.MultiUser)
                 {
-                    var singleModeCommand = GetSetDatabaseSingleUserModeCommand(context, connection, databaseName, false);
+                    var singleModeCommand = GetSetDatabaseUserModeCommand(context, connection, databaseName, DbUserMode.MultiUser);
                     singleModeCommand.ExecuteNonQuery();
                 }
             }
@@ -87,18 +78,18 @@ namespace Cake.SqlServer
             var sb = new StringBuilder();
             sb.AppendLine();
             sb.AppendLine($"Restore database {Sql.EscapeName(databaseName)}");
-			sb.AppendLine($"from");
+            sb.AppendLine($"from");
             for (var i = 0; i < backupFiles.Length; i++)
             {
-				// only need comma before penultimate list
-				var trailingComma = i < backupFiles.Length - 1 ? "," : "";
+                // only need comma before penultimate list
+                var trailingComma = i < backupFiles.Length - 1 ? "," : "";
                 sb.AppendLine($"  disk = @backupFile{i}{trailingComma}");
             }
-		    sb.AppendLine($"with");
-			if (backupSetFile.HasValue)
-			{
+            sb.AppendLine($"with");
+            if (backupSetFile.HasValue)
+            {
                 sb.AppendLine($"  file = {backupSetFile.Value},");
-			}
+            }
 
             for (var i = 0; i < logicalNames.Count; i++)
             {
@@ -114,10 +105,10 @@ namespace Cake.SqlServer
             {
                 sb.AppendLine($"  norecovery");
             }
-			else
-			{
+            else
+            {
                 sb.AppendLine($"  recovery");
-			}
+            }
             context.Log.Debug($"Executing SQL : {sb}");
 
             var pathSeparator = GetPlatformPathSeparator(connection);
@@ -141,28 +132,37 @@ namespace Cake.SqlServer
             return command;
         }
 
-        private static SqlCommand GetSetDatabaseSingleUserModeCommand(ICakeContext context, SqlConnection connection, String databaseName, bool singleUserMode)
+        private static SqlCommand GetSetDatabaseUserModeCommand(ICakeContext context, SqlConnection connection, String databaseName, DbUserMode userMode)
         {
             var sb = new StringBuilder();
             sb.AppendLine();
 
-            if (singleUserMode)
+            switch (userMode)
             {
-                sb.AppendLine($@"if db_id({Sql.EscapeNameQuotes(databaseName)}) is not null");
-                sb.AppendLine($@"begin");
-                sb.AppendLine($@"    use master;");
-                sb.AppendLine($@"    alter database {Sql.EscapeName(databaseName)} set single_user with rollback immediate;");
-                sb.AppendLine($@"end");
-                sb.AppendLine($@";");
-            }
-            else
-            {
-                sb.AppendLine($@"if db_id({Sql.EscapeNameQuotes(databaseName)}) is not null");
-                sb.AppendLine($@"begin");
-                sb.AppendLine($@"    use master;");
-                sb.AppendLine($@"    alter database {Sql.EscapeName(databaseName)} set multi_user;");
-                sb.AppendLine($@"end");
-                sb.AppendLine($@";");
+                case DbUserMode.SingleUser:
+                    sb.AppendLine($@"if db_id({Sql.EscapeNameQuotes(databaseName)}) is not null");
+                    sb.AppendLine($@"begin");
+                    sb.AppendLine($@"    use master;");
+                    sb.AppendLine($@"    alter database {Sql.EscapeName(databaseName)} set single_user with rollback immediate;");
+                    sb.AppendLine($@"end");
+                    sb.AppendLine($@";");
+                    break;
+                case DbUserMode.RestrictedUser:
+                    sb.AppendLine($@"if db_id({Sql.EscapeNameQuotes(databaseName)}) is not null");
+                    sb.AppendLine($@"begin");
+                    sb.AppendLine($@"    use master;");
+                    sb.AppendLine($@"    alter database {Sql.EscapeName(databaseName)} set restricted_user with rollback immediate;");
+                    sb.AppendLine($@"end");
+                    sb.AppendLine($@";");
+                    break;
+                default:
+                    sb.AppendLine($@"if db_id({Sql.EscapeNameQuotes(databaseName)}) is not null");
+                    sb.AppendLine($@"begin");
+                    sb.AppendLine($@"    use master;");
+                    sb.AppendLine($@"    alter database {Sql.EscapeName(databaseName)} set multi_user;");
+                    sb.AppendLine($@"end");
+                    sb.AppendLine($@";");
+                    break;
             }
 
             context.Log.Debug($"Executing SQL : {sb}");
@@ -240,7 +240,7 @@ namespace Cake.SqlServer
             {
                 folder = folder ?? GetDefaultDataPath(connection);
             }
-            
+
             var fullPath = folder.FullPath + pathSeparator + fileName;
 
             if (pathSeparator == '\\')
@@ -251,7 +251,7 @@ namespace Cake.SqlServer
             {
                 return fullPath.Replace("\\", "/");
             }
-            
+
         }
 
 
