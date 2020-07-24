@@ -687,7 +687,7 @@ namespace Cake.SqlServer
         /// True to specify files for filegroups; otherwise false.
         /// Default is true.
         /// </value>
-        public bool PopulateFilesOnFileGroups { get; set; }
+        public bool PopulateFilesOnFileGroups { get; set; } = true;
 
         /// <summary>
         /// Get or set boolean that specifies whether the database will be registered as a Data-Tier Application.
