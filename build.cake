@@ -76,34 +76,34 @@ Task("Build")
 Task("Start-LocalDB")
     .Description(@"Starts LocalDB - executes the following: C:\Program Files\Microsoft SQL Server\120\Tools\Binn\SqlLocalDB.exe create -s")
     .WithCriteria(() => !parameters.SkipTests)
-    .Does(() => 
+    .Does(() =>
     {
-        var sqlLocalDbPath14 = @"c:\Program Files\Microsoft SQL Server\150\Tools\Binn\SqlLocalDB.exe";
+        var sqlLocalDbPath15 = @"c:\Program Files\Microsoft SQL Server\150\Tools\Binn\SqlLocalDB.exe";
         var sqlLocalDbPath14 = @"c:\Program Files\Microsoft SQL Server\140\Tools\Binn\SqlLocalDB.exe";
         var sqlLocalDbPath13 = @"c:\Program Files\Microsoft SQL Server\130\Tools\Binn\SqlLocalDB.exe";
         var sqlLocalDbPath12 = @"C:\Program Files\Microsoft SQL Server\120\Tools\Binn\SqlLocalDB.exe";
 
         if(FileExists(sqlLocalDbPath15))
         {
-            StartProcess(sqlLocalDbPath15, new ProcessSettings(){ Arguments=@"create ""MSSqlLocalDb"" -s" });    
+            StartProcess(sqlLocalDbPath15, new ProcessSettings(){ Arguments=@"create ""MSSqlLocalDb"" -s" });
             return;
         }
 
         if(FileExists(sqlLocalDbPath14))
         {
-            StartProcess(sqlLocalDbPath14, new ProcessSettings(){ Arguments=@"create ""MSSqlLocalDb"" -s" });    
+            StartProcess(sqlLocalDbPath14, new ProcessSettings(){ Arguments=@"create ""MSSqlLocalDb"" -s" });
             return;
         }
 
         if(FileExists(sqlLocalDbPath13))
         {
-            StartProcess(sqlLocalDbPath13, new ProcessSettings(){ Arguments=@"create ""MSSqlLocalDb"" -s" });    
+            StartProcess(sqlLocalDbPath13, new ProcessSettings(){ Arguments=@"create ""MSSqlLocalDb"" -s" });
             return;
         }
 
         if(FileExists(sqlLocalDbPath12))
         {
-            StartProcess(sqlLocalDbPath12, new ProcessSettings(){ Arguments=@"create ""MSSqlLocalDb"" -s" });    
+            StartProcess(sqlLocalDbPath12, new ProcessSettings(){ Arguments=@"create ""MSSqlLocalDb"" -s" });
             return;
         }
 
@@ -126,11 +126,11 @@ Task("Run-Unit-Tests")
                 new NUnit3Result(){
                     FileName = parameters.TestResultsFile,
                 }
-            } 
+            }
 		});
     })
     .Finally(() =>
-    {  
+    {
         if(FileExists(parameters.TestResultsFile) && parameters.IsRunningOnAppVeyor)
         {
             Information("File {0} Exists!", parameters.TestResultsFile);
