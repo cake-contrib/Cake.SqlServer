@@ -54,7 +54,7 @@ Task("Restore-Nuget-Packages")
 {
     Information("Restoring packages in {0}", BuildParameters.Solution);
 
-    NuGetRestore(BuildParameters.Solution);
+    DotNetCoreRestore(BuildParameters.Solution);
 });
 
 
@@ -67,10 +67,11 @@ Task("Build")
 {
     Information("Building {0}", BuildParameters.Solution);
 
-    MSBuild(BuildParameters.Solution, settings =>
-        settings.SetPlatformTarget(PlatformTarget.MSIL)
-                .WithTarget("Build")
-                .SetConfiguration(configuration));
+    DotNetCoreMSBuild(
+        BuildParameters.Solution,
+        new DotNetCoreMSBuildSettings()
+            .WithTarget("Build")
+            .SetConfiguration(configuration));
 });
 
 Task("Start-LocalDB")
@@ -145,6 +146,9 @@ Task("Copy-Files")
     .Does(() =>
 	{
         EnsureDirectoryExists(parameters.ResultBinDir);
+        EnsureDirectoryExists(parameters.ResultBinDir + "/net46");
+        EnsureDirectoryExists(parameters.ResultBinDir + "/netstandard2.0");
+        EnsureDirectoryExists(parameters.ResultBinDir + "/net5.0");
 
         CopyFileToDirectory(parameters.BuildDir + "/net46/Cake.SqlServer.dll", parameters.ResultBinDir + "/net46");
         CopyFileToDirectory(parameters.BuildDir + "/net46/Cake.SqlServer.pdb", parameters.ResultBinDir + "/net46");
