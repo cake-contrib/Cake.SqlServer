@@ -1,5 +1,5 @@
-#tool "nuget:?package=NUnit.ConsoleRunner&version=3.10.0"
-#tool "nuget:?package=GitVersion.CommandLine&version=4.0.0"
+#tool "nuget:?package=NUnit.ConsoleRunner&version=3.12.0"
+#tool "nuget:?package=GitVersion.CommandLine&version=5.6.6"
 #load "./parameters.cake"
 
 
@@ -78,9 +78,16 @@ Task("Start-LocalDB")
     .WithCriteria(() => !parameters.SkipTests)
     .Does(() => 
     {
+        var sqlLocalDbPath14 = @"c:\Program Files\Microsoft SQL Server\150\Tools\Binn\SqlLocalDB.exe";
         var sqlLocalDbPath14 = @"c:\Program Files\Microsoft SQL Server\140\Tools\Binn\SqlLocalDB.exe";
         var sqlLocalDbPath13 = @"c:\Program Files\Microsoft SQL Server\130\Tools\Binn\SqlLocalDB.exe";
         var sqlLocalDbPath12 = @"C:\Program Files\Microsoft SQL Server\120\Tools\Binn\SqlLocalDB.exe";
+
+        if(FileExists(sqlLocalDbPath15))
+        {
+            StartProcess(sqlLocalDbPath15, new ProcessSettings(){ Arguments=@"create ""MSSqlLocalDb"" -s" });    
+            return;
+        }
 
         if(FileExists(sqlLocalDbPath14))
         {

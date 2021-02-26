@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using Cake.Core;
 using Cake.Core.Annotations;
 using Cake.Core.IO;

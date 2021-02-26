@@ -11,6 +11,7 @@ install:
 nuget:
   project_feed: true
 build_script:
+- cmd: powershell -NoProfile -ExecutionPolicy unrestricted -Command .\appveyor.ps1
 - ps: >-
     .\build.ps1 -Target "AppVeyor" -Verbosity Diagnostic  -experimental
 
