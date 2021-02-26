@@ -144,15 +144,23 @@ Task("Copy-Files")
     .IsDependentOn("Run-Unit-Tests")
     .Does(() =>
 	{
-		EnsureDirectoryExists(parameters.ResultBinDir);
+        EnsureDirectoryExists(parameters.ResultBinDir);
 
-		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.dll", parameters.ResultBinDir);
-		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.pdb", parameters.ResultBinDir);
-		CopyFileToDirectory(parameters.BuildDir + "/Cake.SqlServer.xml", parameters.ResultBinDir);
+        CopyFileToDirectory(parameters.BuildDir + "/net46/Cake.SqlServer.dll", parameters.ResultBinDir + "/net46");
+        CopyFileToDirectory(parameters.BuildDir + "/net46/Cake.SqlServer.pdb", parameters.ResultBinDir + "/net46");
+        CopyFileToDirectory(parameters.BuildDir + "/net46/Cake.SqlServer.xml", parameters.ResultBinDir + "/net46");
 
-		CopyFiles(parameters.BuildDir + "/Microsoft.*.dll", parameters.ResultBinDir);
+        CopyFileToDirectory(parameters.BuildDir + "/netstandard2.0/Cake.SqlServer.dll", parameters.ResultBinDir + "/netstandard2.0");
+        CopyFileToDirectory(parameters.BuildDir + "/netstandard2.0/Cake.SqlServer.pdb", parameters.ResultBinDir + "/netstandard2.0");
+        CopyFileToDirectory(parameters.BuildDir + "/netstandard2.0/Cake.SqlServer.xml", parameters.ResultBinDir + "/netstandard2.0");
+        CopyFileToDirectory(parameters.BuildDir + "/netstandard2.0/Cake.SqlServer.deps.json", parameters.ResultBinDir + "/netstandard2.0");
 
-		CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, parameters.ResultBinDir);
+        CopyFileToDirectory(parameters.BuildDir + "/net5.0/Cake.SqlServer.dll", parameters.ResultBinDir + "/net5.0");
+        CopyFileToDirectory(parameters.BuildDir + "/net5.0/Cake.SqlServer.pdb", parameters.ResultBinDir + "/net5.0");
+        CopyFileToDirectory(parameters.BuildDir + "/net5.0/Cake.SqlServer.xml", parameters.ResultBinDir + "/net5.0");
+        CopyFileToDirectory(parameters.BuildDir + "/net5.0/Cake.SqlServer.deps.json", parameters.ResultBinDir + "/net5.0");
+
+        CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, parameters.ResultBinDir);
 	});
 
 
