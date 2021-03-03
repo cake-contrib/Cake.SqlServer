@@ -153,6 +153,8 @@ Task("Copy-Files")
         CopyFileToDirectory(parameters.BuildDir + "/net46/Cake.SqlServer.dll", parameters.ResultBinDir + "/net46");
         CopyFileToDirectory(parameters.BuildDir + "/net46/Cake.SqlServer.pdb", parameters.ResultBinDir + "/net46");
         CopyFileToDirectory(parameters.BuildDir + "/net46/Cake.SqlServer.xml", parameters.ResultBinDir + "/net46");
+        CopyFiles(parameters.BuildDir + "/net46/Microsoft.Data.*.dll", parameters.ResultBinDir + "/net46");
+        CopyFiles(parameters.BuildDir + "/net46/Microsoft.SqlServer.*.dll", parameters.ResultBinDir + "/net46");
 
         CopyFileToDirectory(parameters.BuildDir + "/netstandard2.0/Cake.SqlServer.dll", parameters.ResultBinDir + "/netstandard2.0");
         CopyFileToDirectory(parameters.BuildDir + "/netstandard2.0/Cake.SqlServer.pdb", parameters.ResultBinDir + "/netstandard2.0");
