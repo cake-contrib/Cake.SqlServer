@@ -1,5 +1,5 @@
-// #addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer
-#r "src/Cake.SqlServer/bin/release/Cake.SqlServer.dll"
+#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer&loaddependencies=true
+// #r "src/Cake.SqlServer/bin/release/Cake.SqlServer.dll"
 
 var target = Argument("target", "Default");
 
