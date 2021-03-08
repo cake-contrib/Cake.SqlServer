@@ -119,7 +119,7 @@ Task("Run-Unit-Tests")
     .WithCriteria(() => !parameters.SkipTests)
     .Does(() =>
 	{
-		var testsFile ="./src/**/bin/" + configuration + "/Tests.dll";
+		var testsFile ="./src/**/bin/" + configuration + "/**/Tests.dll";
 		Information(testsFile);
 
 		NUnit3(testsFile, new NUnit3Settings {
