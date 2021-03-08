@@ -1,4 +1,4 @@
-#addin nuget:http://localhost/LocalNuget/nuget/?package=Cake.SqlServer&loaddependencies=true
+#addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer&loaddependencies=true
 // #r "src/Cake.SqlServer/bin/release/Cake.SqlServer.dll"
 
 var target = Argument("target", "Default");
