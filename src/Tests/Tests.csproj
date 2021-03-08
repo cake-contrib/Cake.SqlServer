@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net46;netcoreapp3.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp3.1;net5.0</TargetFrameworks>
     <NoWarn>CS1591</NoWarn>
   </PropertyGroup>
 
@@ -9,11 +9,10 @@
     <ProjectReference Include="..\Cake.SqlServer\Cake.SqlServer.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Cake.Common" Version="1.0.0" />
-    <PackageReference Include="Cake.Core" Version="1.0.0" />
-    <PackageReference Include="Cake.Testing" Version="1.0.0" />
-    <PackageReference Include="Dapper" Version="1.60.6" Condition="'$(TargetFramework)' == 'net46'" />
-    <PackageReference Include="Dapper" Version="2.0.78" Condition="'$(TargetFramework)' != 'net46'" />
+    <PackageReference Include="Cake.Common" Version="1.1.0" />
+    <PackageReference Include="Cake.Core" Version="1.1.0" />
+    <PackageReference Include="Cake.Testing" Version="1.1.0" />
+    <PackageReference Include="Dapper" Version="2.0.78" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="2.1.2" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
