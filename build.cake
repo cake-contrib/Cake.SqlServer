@@ -119,16 +119,16 @@ Task("Run-Unit-Tests")
     .WithCriteria(() => !parameters.SkipTests)
     .Does(() =>
 	{
-		var testsFile ="./src/**/bin/" + configuration + "/[!ref]*/Tests.dll";
-		Information(testsFile);
+        var testProject = "./src/Tests/Tests.csproj";
+        Information(testProject);       
 
-		NUnit3(testsFile, new NUnit3Settings {
-            Results = new List<NUnit3Result>(){
-                new NUnit3Result(){
-                    FileName = parameters.TestResultsFile,
-                }
-            }
-		});
+        var settings = new DotNetCoreTestSettings
+        {
+            Configuration = "Release",
+            Loggers = new List<string> { $"nunit;LogFilePath={parameters.TestResultsFile}" },
+        };
+
+        DotNetCoreTest(testProject, settings);
     })
     .Finally(() =>
     {
