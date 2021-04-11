@@ -1,11 +1,25 @@
+//#tool nuget:?package=Microsoft.Data.SqlClient.SNI&loaddependencies=true
 #addin nuget:https://myget.org/f/cake-sqlserver/?package=Cake.SqlServer&loaddependencies=true
 // #r "src/Cake.SqlServer/bin/release/Cake.SqlServer.dll"
 
 var target = Argument("target", "Default");
 
+public static class NativeMethods
+{
+    public const uint LOAD_LIBRARY_SEARCH_DEFAULT_DIRS = 0x00001000;
+	
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto, SetLastError = true)]
+    public static extern bool SetDefaultDllDirectories(uint DirectoryFlags);
+
+    [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
+    public static extern int AddDllDirectory(string NewDirectory);
+}
 
 Setup(context =>
 {
+    var res = context.Tools.Resolve("Microsoft.Data.SqlClient.SNI.x64.dll").GetDirectory().FullPath;
+    NativeMethods.SetDefaultDllDirectories(NativeMethods.LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
+    NativeMethods.AddDllDirectory(res);
     Information("Starting integration tests");
 });
 
@@ -47,14 +61,14 @@ Task("Delete-LocalDB")
     });
 
 Task("Debug")
-    .Does(() => 
+    .Does(() =>
     {
         Information("Welcome to debug");
     });
 
 
 Task("Database-Operations")
-    .Does(() => 
+    .Does(() =>
     {
         var masterConnectionString = @"data source=(localdb)\MSSqlLocalDb;";
         var connectionString = @"data source=(localdb)\MSSqlLocalDb;Database=OpsCakeTest";
@@ -63,20 +77,20 @@ Task("Database-Operations")
 
         // drop the db to be sure
         DropDatabase(masterConnectionString, dbName);
-            
+
         // first create database
         CreateDatabase(masterConnectionString, dbName);
 
         // try the database again
         CreateDatabaseIfNotExists(masterConnectionString, dbName);
-            
+
         // and recreate the db again
         DropAndCreateDatabase(masterConnectionString, dbName);
 
         // and create some tables
         ExecuteSqlCommand(connectionString, "create table dbo.Products(id int null)");
-            
-        // and execute sql from a file 
+
+        // and execute sql from a file
         ExecuteSqlFile(connectionString, "install.sql");
 
         // then drop the database
@@ -94,7 +108,7 @@ Task("Create-With-Parameters")
         var logFilePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "MyCakeTest.ldf");
 
         var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath).WithLogFile(logFilePath);
-        
+
         // making sure we use DatabaseExists feature here
         if(DatabaseExists(masterConnectionString, dbName))
         {
@@ -108,7 +122,7 @@ Task("Create-With-Parameters")
         CreateDatabaseIfNotExists(masterConnectionString, dbName, createSettings);
     })
     .Finally(() =>
-    {  
+    {
         // Cleanup
         DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "CreateCakeTest");
     });
@@ -126,13 +140,13 @@ Task("SqlConnection")
         using (var connection = OpenSqlConnection(connectionString))
         {
             ExecuteSqlCommand(connection, "create table dbo.Products(id int null)");
-            
-            ExecuteSqlFile(connection, "install.sql");        
+
+            ExecuteSqlFile(connection, "install.sql");
         }
 
     })
     .Finally(() =>
-    {  
+    {
         // Cleanup
         DropDatabase(@"data source=(localdb)\MSSqlLocalDb;", "OpenConnection");
     });
@@ -155,16 +169,16 @@ Task("Restore-Database")
         var backupFilePath = new FilePath(@".\src\Tests\TestData\multiFileBackup.bak");
         backupFilePath = backupFilePath.MakeAbsolute(Context.Environment);
 
-        RestoreSqlBackup(connString, backupFilePath); 
-    
-        RestoreSqlBackup(connString, backupFilePath, new RestoreSqlBackupSettings() 
+        RestoreSqlBackup(connString, backupFilePath);
+
+        RestoreSqlBackup(connString, backupFilePath, new RestoreSqlBackupSettings()
             {
                 NewDatabaseName = "RestoredFromTest.Cake",
                 NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()), // place files in special location
-            }); 
+            });
     })
     .Finally(() =>
-    {  
+    {
         // Cleanup
         DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "RestoredFromTest.Cake");
         DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "CakeRestoreTest");
@@ -173,22 +187,22 @@ Task("Restore-Database")
 Task("Backup-Database")
     .Does(() => {
 		var connString = @"data source=(localdb)\MSSqlLocalDb";
-		
+
         var backupFilePath = new FilePath(@".\src\Tests\TestData\multiFileBackup.bak");
         backupFilePath = backupFilePath.MakeAbsolute(Context.Environment);
 
-        RestoreSqlBackup(connString, backupFilePath); 
-	
+        RestoreSqlBackup(connString, backupFilePath);
+
 		var databaseName = "CakeRestoreTest";
-		BackupDatabase(connString, databaseName, new BackupDatabaseSettings() 
+		BackupDatabase(connString, databaseName, new BackupDatabaseSettings()
 		{
 			Compress = false,
 			// you can specify a folder or a file
 			Path = System.IO.Path.GetTempPath()
-		}); 
+		});
 	})
     .Finally(() =>
-    {  
+    {
         DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "CakeRestoreTest");
     });
 
@@ -204,7 +218,7 @@ Task("Create-Bacpac")
         CreateBacpacFile(connString, dbName, new FilePath(@".\ForBacpac.bacpac"));
     })
     .Finally(() =>
-    {  
+    {
         // Cleanup
         DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "ForBacpac");
         if(FileExists(@".\ForBacpac.bacpac"))
@@ -224,14 +238,14 @@ Task("Restore-From-Bacpac")
         RestoreBacpac(connString, dbName, file);
     })
     .Finally(() =>
-    {  
+    {
         // Cleanup
         DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "FromBacpac");
     });
 
 
 Task("Dacpac-Publish")
-    .Does(() => 
+    .Does(() =>
     {
         var connectionString = @"data source=(localdb)\MSSqlLocalDb";
         var dbName = "DacpacTestDb";
@@ -241,7 +255,7 @@ Task("Dacpac-Publish")
 
         PublishDacpacFile(connectionString, dbName, dacpacFile);
     })
-    .Finally(() => 
+    .Finally(() =>
     {
         // Cleanup
         DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "DacpacTestDb");
@@ -249,7 +263,7 @@ Task("Dacpac-Publish")
 
 
 Task("Dacpac-Extract")
-    .Does(() => 
+    .Does(() =>
     {
         var dbName = "DacpacTestDb";
         var connectionString = @"data source=(localdb)\MSSqlLocalDb";
@@ -266,14 +280,14 @@ Task("Dacpac-Extract")
 
         ExtractDacpacFile(connectionString, dbName, settings);
     })
-    .Finally(() => 
+    .Finally(() =>
     {
         DropDatabase(@"data source=(localdb)\MSSqlLocalDb", "DacpacTestDb");
         //if(FileExists(@".\NsagaCreated.dacpac"))
         {
             DeleteFile(@".\NsagaCreated.dacpac");
         }
-    
+
     });
 
 
@@ -286,12 +300,12 @@ Task("Default")
     .IsDependentOn("SqlConnection")
     .IsDependentOn("SqlTimeout")
     .IsDependentOn("Restore-Database")
-    .IsDependentOn("Backup-Database")	
+    .IsDependentOn("Backup-Database")
     .IsDependentOn("Create-Bacpac")
     .IsDependentOn("Restore-From-Bacpac")
     .IsDependentOn("Dacpac-Extract")
     .IsDependentOn("Dacpac-Publish")
     .IsDependentOn("Create-With-Parameters")
-    ;    
+    ;
 
 RunTarget(target);
