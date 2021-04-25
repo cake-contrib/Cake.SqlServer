@@ -2,6 +2,7 @@
 
 namespace Cake.SqlServer
 {
+#if NET461
     public static class NativeMethods
     {
         public const uint LOAD_LIBRARY_SEARCH_DEFAULT_DIRS = 0x00001000;
@@ -12,4 +13,5 @@ namespace Cake.SqlServer
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
         public static extern int AddDllDirectory(string newDirectory);
     }
+#endif
 }

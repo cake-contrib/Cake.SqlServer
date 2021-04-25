@@ -1,8 +1,6 @@
-﻿#if NET461
-using System;
-#else
-using System.Runtime.InteropServices;
-#endif
+﻿using System;
+using System.IO;
+using System.Reflection;
 using Cake.Core;
 
 namespace Cake.SqlServer
@@ -15,8 +13,6 @@ namespace Cake.SqlServer
         {
 #if NET461
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-#else
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 #endif
             {
                 if (_initialized)
@@ -24,10 +20,14 @@ namespace Cake.SqlServer
                     return;
                 }
 
-                var res = context.Tools.Resolve("Microsoft.Data.SqlClient.SNI.x64.dll").GetDirectory().FullPath;
+#if NET461
+                var codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                var uri = new UriBuilder(codeBase);
+                var path = Uri.UnescapeDataString(uri.Path);
+                var addinFolder = Path.GetDirectoryName(path);
                 NativeMethods.SetDefaultDllDirectories(NativeMethods.LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
-                NativeMethods.AddDllDirectory(res);
-
+                NativeMethods.AddDllDirectory(addinFolder);
+#endif
                 _initialized = true;
             }
         }

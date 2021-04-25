@@ -18,7 +18,7 @@
 	<dependencies>
 		<group>
 			<dependency id="Microsoft.Data.SqlClient" version="2.1.2" />
-			<dependency id="Microsoft.SqlServer.DACFx" version="150.4897.1" />
+			<dependency id="Microsoft.SqlServer.DACFx" version="150.5084.2" />
 		</group>
 	</dependencies>
   </metadata>
