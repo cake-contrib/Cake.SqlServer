@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Cake.Core;
 using Cake.Core.Diagnostics;
 
@@ -9,6 +8,7 @@ namespace Cake.SqlServer
     {
         internal static void Execute(ICakeContext context, string connectionString, string databaseName, BackupDatabaseSettings settings)
         {
+            Initializer.InitializeNativeSearchPath(context);
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
             Guard.ArgumentIsNotNull(settings, nameof(settings));

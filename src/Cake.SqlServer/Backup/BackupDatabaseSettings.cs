@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using Cake.Core.IO;
-
-namespace Cake.SqlServer
+﻿namespace Cake.SqlServer
 {
     /// <summary>
     /// Settings for backing up database to a file

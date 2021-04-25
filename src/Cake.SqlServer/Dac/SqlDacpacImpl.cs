@@ -1,5 +1,4 @@
-﻿using System;
-using Cake.Core;
+﻿using Cake.Core;
 using Cake.Core.Diagnostics;
 using Microsoft.SqlServer.Dac;
 
@@ -9,6 +8,7 @@ namespace Cake.SqlServer
     {
         internal static void ExtractDacpacFile(ICakeContext context, string connectionString, string targetDatabaseName, ExtractDacpacSettings settings)
         {
+            Initializer.InitializeNativeSearchPath(context);
             context.Log.Information($"About to extract a dacpac file from database {targetDatabaseName}");
 
             var service = new DacServices(connectionString);
@@ -21,6 +21,7 @@ namespace Cake.SqlServer
 
         internal static void PublishDacpacFile(ICakeContext context, string connectionString, string targetDatabaseName, string dacpacFilePath, PublishDacpacSettings settings = null)
         {
+            Initializer.InitializeNativeSearchPath(context);
             context.Log.Information($"About to publish dacpac from {dacpacFilePath} into database {targetDatabaseName}");
 
             var dacPackage = DacPackage.Load(dacpacFilePath);
