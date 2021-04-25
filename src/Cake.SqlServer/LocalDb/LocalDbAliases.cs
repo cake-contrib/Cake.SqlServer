@@ -167,7 +167,7 @@ namespace Cake.SqlServer
 
         private static void ExecuteRunner(this ICakeContext context, LocalDbSettings settings)
         {
-            Initializer.InitializeNativeSearchPath(context);
+            Initializer.InitializeNativeSearchPath();
             context.Log.Information(Verbosity.Normal, "Executing SQLLocalDB.exe with action {0} on instance {1}", settings.Action, settings.InstanceName);
             var localDbRunner = new LocalDbToolRunner(context.FileSystem, context.Environment, context.ProcessRunner, context.Tools, context.Log);
             localDbRunner.Run(settings);

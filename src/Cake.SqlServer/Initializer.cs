@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Reflection;
-using Cake.Core;
 
 namespace Cake.SqlServer
 {
@@ -9,7 +8,7 @@ namespace Cake.SqlServer
     {
         private static bool _initialized;
 
-        internal static void InitializeNativeSearchPath(ICakeContext context)
+        internal static void InitializeNativeSearchPath()
         {
 #if NET461
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
