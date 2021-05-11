@@ -1,104 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{98FC2609-EABB-45F4-A3E0-A25E9F5B0584}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cake.SqlServer</RootNamespace>
-    <AssemblyName>Cake.SqlServer</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
+    <TargetFrameworks>net461;netstandard2.0;net5.0</TargetFrameworks>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>CS1591</NoWarn>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <ContentSNIFiles>true</ContentSNIFiles>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>bin\Debug\Cake.SqlServer.XML</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-    <DocumentationFile>bin\Release\Cake.SqlServer.XML</DocumentationFile>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Cake.Core, Version=0.35.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Cake.Core.0.35.0\lib\net46\Cake.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Data.Tools.Schema.Sql, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.SqlServer.DacFx.x64.150.4538.1\lib\net46\Microsoft.Data.Tools.Schema.Sql.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Data.Tools.Utilities, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.SqlServer.DacFx.x64.150.4538.1\lib\net46\Microsoft.Data.Tools.Utilities.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Dac, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.SqlServer.DacFx.x64.150.4538.1\lib\net46\Microsoft.SqlServer.Dac.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Dac.Extensions, Version=15.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.SqlServer.DacFx.x64.150.4538.1\lib\net46\Microsoft.SqlServer.Dac.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.TransactSql.ScriptDom, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.SqlServer.DacFx.x64.150.4538.1\lib\net46\Microsoft.SqlServer.TransactSql.ScriptDom.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Types, Version=15.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.SqlServer.DacFx.x64.150.4538.1\lib\net46\Microsoft.SqlServer.Types.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="Cake.Core" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SqlServer.DACFx" Version="150.5084.2" PrivateAssets="All" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Backup\BackupAliases.cs" />
-    <Compile Include="Backup\BackupDatabaseImpl.cs" />
-    <Compile Include="Backup\BackupDatabaseSettings.cs" />
-    <Compile Include="CreateDatabaseSettings.cs" />
-    <Compile Include="Dac\DacAliases.cs" />
-    <Compile Include="Dac\ExtractDacpacSettings.cs" />
-    <Compile Include="Dac\PublishDacpacSettings.cs" />
-    <Compile Include="Backup\RestoreSqlBackupSettings.cs" />
-    <Compile Include="Backup\RestoreSqlBackupImpl.cs" />
-    <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Sql.cs" />
-    <Compile Include="Guard.cs" />
-    <Compile Include="LocalDb\LocalDbAliases.cs" />
-    <Compile Include="LocalDb\LocalDbSettings.cs" />
-    <Compile Include="LocalDb\LocalDbToolRunner.cs" />
-    <Compile Include="Dac\SqlBacpacImpl.cs" />
-    <Compile Include="Dac\SqlDacpacImpl.cs" />
-    <Compile Include="SqlServerAliases.cs" />
-    <Compile Include="SqlServerAliasesImpl.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Cake.SqlServer.nuspec" />
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>

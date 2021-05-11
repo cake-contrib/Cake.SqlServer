@@ -1,11 +1,11 @@
 # Cake.SqlServer
- 
+
 Cake Build addin for working with SqlServer and LocalDb.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/wgbuq8pw180w42t2/branch/master?svg=true)](https://ci.appveyor.com/project/trailmax/cake-sqlserver/branch/master)
 [![NuGet version](https://badge.fury.io/nu/cake.sqlserver.svg)](https://badge.fury.io/nu/cake.sqlserver)
 
-Show me the codez: [integration tests](https://github.com/AMVSoftware/Cake.SqlServer/blob/master/tests.cake) for live up to date examples.  
+Show me the codez: [integration tests](https://github.com/AMVSoftware/Cake.SqlServer/blob/master/tests.cake) for live up to date examples.
 Or look through XML-generated documentation on [Cakebuild.net site](http://cakebuild.net/dsl/sqlserver/).
 
 * [General Functionality](#general-functionality)
@@ -28,7 +28,7 @@ Return true if the database exists, false otherwise.
 ```c#
 CreateDatabase(string connectionString, string databaseName)
 ```
-Creates database. If database with this name exists - SqlException is thrown. 
+Creates database. If database with this name exists - SqlException is thrown.
 
 ```c#
 var createSettings = new CreateDatabaseSettings()
@@ -59,15 +59,15 @@ This will check if database does not yet exist and will create a new one. And wi
 DropDatabase(string connectionString, string databaseName)
 ```
 
-Basically executes `Drop Database databasename` with some fail-safes. Actually it sets the database into offline mode - to cut off all existing connections. Then sets the database back online and then drops it. 
-Reason for this dance - you can't drop a database if there are existing connections to the database.  
+Basically executes `Drop Database databasename` with some fail-safes. Actually it sets the database into offline mode - to cut off all existing connections. Then sets the database back online and then drops it.
+Reason for this dance - you can't drop a database if there are existing connections to the database.
 
 ### Drop and Create Database
 ```c#
 DropAndCreateDatabase(String connectionString, String databaseName)
 ```
 
-Simply a short-hand for `DropDatabase(); CreateDatabase();`. I found these calls frequently together to create a short-hand. 
+Simply a short-hand for `DropDatabase(); CreateDatabase();`. I found these calls frequently together to create a short-hand.
 
 ```c#
 var createSettings = new CreateDatabaseSettings()
@@ -87,17 +87,17 @@ Does what it says on the tin: executes the sql query. But this method accommodat
 
 ### Execute Command from SQL File
 ```c#
-ExecuteSqlFile(String connectionString, string sqlFile);  
+ExecuteSqlFile(String connectionString, string sqlFile);
 ExecuteSqlFile(SqlConnection connection, string sqlFile);
 ```
-Reads sql file and executes commands from it. Executes parts of scripts separated by `GO` as a separate command executions. 
+Reads sql file and executes commands from it. Executes parts of scripts separated by `GO` as a separate command executions.
 
 ### Open Connection for Use in Multiple Operations
 ```c#
 OpenSqlConnection(String connectionString)
 ```
 
-Allows you to use the same connection for multiple SQL commands. Close the connection (by disposing) once you're finished with it.  
+Allows you to use the same connection for multiple SQL commands. Close the connection (by disposing) once you're finished with it.
 Example:
 
 ```c#
@@ -131,7 +131,7 @@ RestoreSqlBackup(String connectionString, FilePath backupFile, RestoreSqlBackupS
 RestoreSqlBackup(String connectionString, FilePath backupFile)
 ```
 
-Restores the database from a `.bak` file. Options include to rename the target database, specify path where the data/log files are stored and ability to replace existing database. 
+Restores the database from a `.bak` file. Options include to rename the target database, specify path where the data/log files are stored and ability to replace existing database.
 
 If new database name is not provided, db-name is extracted from the backup file; if new storage location for data files is not provided, system default folder is used.
 
@@ -145,11 +145,11 @@ Task("Restore-Database")
 		var backupFilePath = new FilePath(@".\src\Tests\TestData\multiFileBackup.bak");
 		backupFilePath = backupFilePath.MakeAbsolute(Context.Environment);
 
-		RestoreSqlBackup(connString, backupFilePath, new RestoreSqlBackupSettings() 
+		RestoreSqlBackup(connString, backupFilePath, new RestoreSqlBackupSettings()
 			{
 				NewDatabaseName = "RestoredFromTest.Cake",
 				NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()), // place files in special location
-			}); 
+			});
 	});
 ```
 
@@ -191,9 +191,9 @@ Task("Restore-Split-Database")
 BackupDatabase(string connectionString, string databaseName, BackupDatabaseSettings settings)
 ```
 
-Backup a database to a `.bak` file. Options all you to compress the backup file and specify the path (or the specific filename). 
+Backup a database to a `.bak` file. Options all you to compress the backup file and specify the path (or the specific filename).
 
-Example: 
+Example:
 
 ```c#
 Task("Backup-Database")
@@ -201,16 +201,16 @@ Task("Backup-Database")
     {
         var connString = @"data source=(localdb)\MSSqlLocalDb";
         var databaseName = "MyDatabase";
-        BackupDatabase(connString, databaseName, new BackupDatabaseSettings() 
+        BackupDatabase(connString, databaseName, new BackupDatabaseSettings()
            {
                  Compress = false,
 				 // you can specify either a folder or a file
                  Path = System.IO.Path.GetTempPath()
-           }); 
+           });
     });
 ```
 
-# Working with BACPAC and DACPAC 
+# Working with BACPAC and DACPAC
 
 This addin includes a thin wrapper around `Microsoft.SqlServer.DacFx` to provide ability to work with BACPAC and DACPAC files
 
@@ -254,15 +254,15 @@ To extract a dacpac file from a database call:
 Task("Extract-Dacpac")
 	.Does(() =>{
 		var connString = @"data source=(localdb)\MSSqlLocalDb";
-     
+
 		var dbName = "ForDacpac";
-     
+
 		CreateDatabase(connString, dbName);
- 
-		var settings = new ExtractDacpacSettings("MyAppName", "2.0.0.0") { 
+
+		var settings = new ExtractDacpacSettings("MyAppName", "2.0.0.0") {
 			OutputFile = new FilePath(@".\TestData\Nsaga.dacpac")
 		};
-     
+
 		ExtractDacpacFile(connString, dbName, settings);
 	});
 });
@@ -279,19 +279,19 @@ Task("Create-Bacpac")
 
 		var file = new FilePath(@".\src\Tests\TestData\Nsaga.dacpac");
 
-		var settings = new PublishDacpacSettings { 
+		var settings = new PublishDacpacSettings {
 			GenerateDeploymentScript = true
 		};
 
 		PublishDacpacFile(connString, dbName, file, settings);
 	});
-});       
+});
 ```
 
-# Working with LocalDB 
-Samples show here are using `LocalDb\v12.0`. This used to be default name for LocalDB instance when installed with SQL Server 2012. Since Sql Server 2014 the default name for LocalDB instance is `MSSQLLocalDB`, making the default instance name for LocalDB looking like this: `(LocalDB)\MSSQLLocalDB`. So before using `v12.0` double check what instance you have installed and go from there. 
+# Working with LocalDB
+Samples show here are using `LocalDb\v12.0`. This used to be default name for LocalDB instance when installed with SQL Server 2012. Since Sql Server 2014 the default name for LocalDB instance is `MSSQLLocalDB`, making the default instance name for LocalDB looking like this: `(LocalDB)\MSSQLLocalDB`. So before using `v12.0` double check what instance you have installed and go from there.
 
-This package includes a wrapper for working with LocalDB. LocalDB is a lightweight SQL Server version that is great for running tests against. 
+This package includes a wrapper for working with LocalDB. LocalDB is a lightweight SQL Server version that is great for running tests against.
 
 Also please don't be alarmed that all the examples are using LocalDB. The plugin is capable of working with any SQL Server installation. This package includes commands to `Create`, `Start`, `Stop` and `Delete` instances of LocalDB. To be used like this:
 
@@ -345,13 +345,13 @@ If you have complex connection strings, please consider using [SqlConnectionStri
 for creating your connection strings:
 
 ```c#
- var connectionString = new SqlConnectionStringBuilder 
- { 
-    DataSource = @"(LocalDb)\MSSQLLocalDB", 
+ var connectionString = new SqlConnectionStringBuilder
+ {
+    DataSource = @"(LocalDb)\MSSQLLocalDB",
     InitialCatalog = databaseName,
  }.ToString();
 ```
-This class adds a lot of sugar around creating a connection string. 
+This class adds a lot of sugar around creating a connection string.
 
 ### Creating Temp Database and Clean Up
 
@@ -435,7 +435,7 @@ powershell Get-ExecutionPolicy -List
 
 ```
 # compile and run unit tests
-powershell .\build.ps1 -target run-unit-tests
+powershell .\build.ps1 --target run-unit-tests
 
 # publish NUGET package
 powershell .\build.ps1

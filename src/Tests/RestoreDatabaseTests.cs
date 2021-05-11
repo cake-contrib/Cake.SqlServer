@@ -75,7 +75,7 @@ namespace Tests
             {
                 //Arrange
                 var path = GetBackupFilePath();
-                var settings = new RestoreSqlBackupSettings() { SwitchToSingleUserMode = false };
+                var settings = new RestoreSqlBackupSettings { SwitchToUserMode = DbUserMode.MultiUser };
 
                 // Act
                 RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, settings, new List<FilePath> { new FilePath(path) });
@@ -99,7 +99,7 @@ namespace Tests
                 //Arrange
                 var pathList = GetMultipleBackupFilePaths();
                 var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
-                var settings = new RestoreSqlBackupSettings() { SwitchToSingleUserMode = false };
+                var settings = new RestoreSqlBackupSettings { SwitchToUserMode = DbUserMode.MultiUser };
 
                 // Act
                 RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, settings, pathList, differentialBackupFiles:differentialPathList);
@@ -323,7 +323,7 @@ namespace Tests
                     NewDatabaseName = newDatabaseName,
                     NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()),
                     WithReplace = true,
-                    SwitchToSingleUserMode = false,
+                    SwitchToUserMode = DbUserMode.MultiUser,
                 };
 
                 // Act
@@ -353,7 +353,7 @@ namespace Tests
                     NewDatabaseName = newDatabaseName,
                     NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()),
                     WithReplace = true,
-                    SwitchToSingleUserMode = false,
+                    SwitchToUserMode = DbUserMode.MultiUser,
                     BackupSetFile = 1,
                     DifferentialBackupSetFile = 1
                 };

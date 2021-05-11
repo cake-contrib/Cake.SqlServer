@@ -45,6 +45,7 @@ namespace Cake.SqlServer
 
             return new List<FilePath>()
             {
+                @"C:\Program Files\Microsoft SQL Server\150\Tools\Binn\",
                 @"C:\Program Files\Microsoft SQL Server\140\Tools\Binn\",
                 @"c:\Program Files\Microsoft SQL Server\130\Tools\Binn\",
                 @"c:\Program Files\Microsoft SQL Server\120\Tools\Binn\",

@@ -1,18 +1,19 @@
-version: '{build}'
+version: "{build}"
 image: Visual Studio 2019
 environment:
-  NUGET_API_KEY:
-    secure: 8qBLJ+Nj3wkgj/DZEtGYQK21clewDLJ5vPwf3XMgVyPn8jl5WRzzee3mc0WqEHi+
-  MYGET_API_KEY:
-    secure: jrnvIAlH4mF14CcASaWmRQzqXWvZw4KlSCl3u6z8NqOjW4iz5FA8SabxXPvFgdD4
-  MYGET_API_URL: https://www.myget.org/F/cake-sqlserver/api/v2
+    NUGET_API_KEY:
+        secure: 8qBLJ+Nj3wkgj/DZEtGYQK21clewDLJ5vPwf3XMgVyPn8jl5WRzzee3mc0WqEHi+
+    MYGET_API_KEY:
+        secure: jrnvIAlH4mF14CcASaWmRQzqXWvZw4KlSCl3u6z8NqOjW4iz5FA8SabxXPvFgdD4
+    MYGET_API_URL: https://www.myget.org/F/cake-sqlserver/api/v2
 install:
-- ps: ''
+    - ps: ""
 nuget:
-  project_feed: true
+    project_feed: true
 build_script:
-- ps: >-
-    .\build.ps1 -Target "AppVeyor" -Verbosity Diagnostic  -experimental
+    - cmd: powershell -NoProfile -ExecutionPolicy unrestricted -Command .\appveyor.ps1
+    - ps: >-
+          .\build.ps1 --target "AppVeyor" --verbosity Diagnostic  --experimental
 
-    .\build.ps1 -Script "tests.cake" -Verbosity Diagnostic  -experimental
+          .\build.ps1 --script "tests.cake" --verbosity Diagnostic  --experimental
 test: off

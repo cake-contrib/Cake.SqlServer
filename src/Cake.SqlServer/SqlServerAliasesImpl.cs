@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.IO;
 using System.Text.RegularExpressions;
 using Cake.Core;
@@ -16,6 +15,7 @@ namespace Cake.SqlServer
 
         internal static void DropDatabase(ICakeContext context, String connectionString, String databaseName)
         {
+            Initializer.InitializeNativeSearchPath();
             var dropDatabaseSql =
                 $@"if (select DB_ID(@DatabaseName)) is not null
                begin
@@ -49,6 +49,7 @@ namespace Cake.SqlServer
 
         internal static bool DatabaseExists(ICakeContext context, String connectionString, String databaseName)
         {
+            Initializer.InitializeNativeSearchPath();
             var databaseExistsSql = "select DB_ID(@DatabaseName) as Id";
 
             using (var connection = OpenSqlConnection(context, connectionString))
@@ -64,6 +65,7 @@ namespace Cake.SqlServer
 
         internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName)
         {
+            Initializer.InitializeNativeSearchPath();
             var createDbSql = $"if (select DB_ID(@DatabaseName)) is null create database {Sql.EscapeName(databaseName)}";
 
             using (var connection = OpenSqlConnection(context, connectionString))
@@ -81,6 +83,7 @@ namespace Cake.SqlServer
 
         internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
         {
+            Initializer.InitializeNativeSearchPath();
             settings.AssignNames(databaseName);
 
             var sql = GenerateCreateDbSql(databaseName, settings);
@@ -102,6 +105,7 @@ namespace Cake.SqlServer
 
         internal static void CreateDatabase(ICakeContext context, String connectionString, String databaseName)
         {
+            Initializer.InitializeNativeSearchPath();
             var createDbSql = $"create database {Sql.EscapeName(databaseName)}";
 
             using (var connection = OpenSqlConnection(context, connectionString))
@@ -118,6 +122,7 @@ namespace Cake.SqlServer
 
         internal static void CreateDatabase(ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
         {
+            Initializer.InitializeNativeSearchPath();
             settings.AssignNames(databaseName);
 
             var sql = GenerateCreateDbSql(databaseName, settings);
@@ -154,18 +159,21 @@ namespace Cake.SqlServer
 
         internal static void DropAndCreateDatabase(ICakeContext context, String connectionString, String databaseName)
         {
+            Initializer.InitializeNativeSearchPath();
             DropDatabase(context, connectionString, databaseName);
             CreateDatabase(context, connectionString, databaseName);
         }
 
         internal static void DropAndCreateDatabase(ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
         {
+            Initializer.InitializeNativeSearchPath();
             DropDatabase(context, connectionString, databaseName);
             CreateDatabase(context, connectionString, databaseName, settings);
         }
 
         internal static void ExecuteSqlCommand(ICakeContext context, String connectionString, string sqlCommands)
         {
+            Initializer.InitializeNativeSearchPath();
             using (var connection = OpenSqlConnection(context, connectionString))
             {
                 ExecuteSqlCommand(context, connection, sqlCommands);
@@ -175,6 +183,7 @@ namespace Cake.SqlServer
 
         internal static void ExecuteSqlCommand(ICakeContext context, SqlConnection connection, string sqlCommands)
         {
+            Initializer.InitializeNativeSearchPath();
             var commandStrings = Regex.Split(sqlCommands, @"^\s*GO\s*$",
                 RegexOptions.Multiline | RegexOptions.IgnoreCase);
 
@@ -200,6 +209,7 @@ namespace Cake.SqlServer
 
         internal static void ExecuteSqlFile(ICakeContext context, String connectionString, FilePath sqlFile)
         {
+            Initializer.InitializeNativeSearchPath();
             using (var connection = OpenSqlConnection(context, connectionString))
             {
                 ExecuteSqlFile(context, connection, sqlFile);
@@ -209,6 +219,7 @@ namespace Cake.SqlServer
 
         internal static void ExecuteSqlFile(ICakeContext context, SqlConnection connection, FilePath sqlFile)
         {
+            Initializer.InitializeNativeSearchPath();
             var sqlFilePath = sqlFile.FullPath;
 
             context.Log.Information($"Executing sql file {sqlFilePath}");
@@ -223,6 +234,7 @@ namespace Cake.SqlServer
 
         internal static SqlConnection OpenSqlConnection(ICakeContext context, String connectionString)
         {
+            Initializer.InitializeNativeSearchPath();
             try
             {
                 var connection = new SqlConnection(connectionString);

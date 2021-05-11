@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Linq;
 using Cake.Core;
 using Cake.Core.IO;
@@ -15,6 +15,7 @@ namespace Cake.SqlServer
         // if newStoragePath is not provided, system defaults are used
         internal static void RestoreSqlBackup(ICakeContext context, String connectionString, RestoreSqlBackupSettings settings, IList<FilePath> backupFiles, IList<FilePath> differentialBackupFiles = null)
         {
+            Initializer.InitializeNativeSearchPath();
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, connectionString))
             {
                 var firstBackupFile = backupFiles.First();

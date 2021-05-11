@@ -15,12 +15,48 @@
     <copyright>Copyright (c) AMV Software 2015</copyright>
     <releaseNotes></releaseNotes>
     <tags>Cake Script Build SQLServer </tags>
+	<dependencies>
+		<group>
+			<dependency id="Microsoft.Data.SqlClient" version="2.1.2" />
+			<dependency id="Microsoft.SqlServer.DACFx" version="150.5084.2" />
+		</group>
+	</dependencies>
   </metadata>
   <files>
-    <file src="Cake.SqlServer.dll" target="lib/net45" />
-    <file src="Cake.SqlServer.pdb" target="lib/net45" />
-    <file src="Cake.SqlServer.xml" target="lib/net45"/>
-    <file src="Microsoft.*.dll" target="lib/net45"/>
+    <file src="net461/Cake.SqlServer.dll" target="lib/net461" />
+    <file src="net461/Cake.SqlServer.pdb" target="lib/net461" />
+    <file src="net461/Cake.SqlServer.xml" target="lib/net461" />
+
+    <file src="net461/Microsoft.Data.SqlClient.dll" target="lib/net461" />
+    <file src="net461/Microsoft.Data.SqlClient.SNI.x64.dll" target="lib/net461" />
+    <file src="net461/Microsoft.Data.SqlClient.SNI.x64.pdb" target="lib/net461" />
+    <file src="net461/Microsoft.Data.SqlClient.SNI.x86.dll" target="lib/net461" />
+    <file src="net461/Microsoft.Data.SqlClient.SNI.x86.pdb" target="lib/net461" />
+    <file src="net461/Microsoft.Data.Tools.Schema.Sql.dll" target="lib/net461" />
+    <file src="net461/Microsoft.Data.Tools.Utilities.dll" target="lib/net461" />
+    <file src="net461/Microsoft.Identity.Client.dll" target="lib/net461" />
+    <file src="net461/Microsoft.IdentityModel.JsonWebTokens.dll" target="lib/net461" />
+    <file src="net461/Microsoft.IdentityModel.Logging.dll" target="lib/net461" />
+    <file src="net461/Microsoft.IdentityModel.Protocols.dll" target="lib/net461" />
+    <file src="net461/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll" target="lib/net461" />
+    <file src="net461/Microsoft.IdentityModel.Tokens.dll" target="lib/net461" />
+    <file src="net461/Microsoft.SqlServer.Dac.dll" target="lib/net461" />
+    <file src="net461/Microsoft.SqlServer.Dac.Extensions.dll" target="lib/net461" />
+    <file src="net461/Microsoft.SqlServer.TransactSql.ScriptDom.dll" target="lib/net461" />
+    <file src="net461/Microsoft.SqlServer.Types.dll" target="lib/net461" />
+    <file src="net461/System.IdentityModel.Tokens.Jwt.dll" target="lib/net461" />
+
+    <file src="netstandard2.0/Cake.SqlServer.dll" target="lib/netstandard2.0" />
+    <file src="netstandard2.0/Cake.SqlServer.pdb" target="lib/netstandard2.0" />
+    <file src="netstandard2.0/Cake.SqlServer.xml" target="lib/netstandard2.0" />
+    <file src="netstandard2.0/Cake.SqlServer.deps.json" target="lib/netstandard2.0" />
+
+    <file src="net5.0/Cake.SqlServer.dll" target="lib/net5.0" />
+    <file src="net5.0/ref/Cake.SqlServer.dll" target="lib/net5.0/ref" />
+    <file src="net5.0/Cake.SqlServer.pdb" target="lib/net5.0" />
+    <file src="net5.0/Cake.SqlServer.xml" target="lib/net5.0" />
+    <file src="net5.0/Cake.SqlServer.deps.json" target="lib/net5.0" />
+
     <file src="LICENSE" />
   </files>
 </package>
