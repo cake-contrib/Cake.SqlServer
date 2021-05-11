@@ -1,3 +1,7 @@
+### New in 3.0.0
+* Updating to netstandard 2.0
+* Using Cake 1.0.0
+
 ### New in 2.1.2
 * Support for restoring multiple separate backup files and differential backup files
 * Update of Cake to v0.35.0
