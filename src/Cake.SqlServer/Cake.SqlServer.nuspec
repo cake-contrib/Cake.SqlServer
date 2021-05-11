@@ -10,11 +10,11 @@
     <summary>SqlServer tools addon for Cake Build.</summary>
     <licenseUrl>https://github.com/AMVSoftware/Cake.SqlServer/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/AMVSoftware/Cake.SqlServer</projectUrl>
-    <iconUrl>https://cdn.jsdelivr.net/gh/cake-contrib/graphics/png/cake-contrib-medium.png</iconUrl>
+    <iconUrl>https://cdn.jsdelivr.net/gh/cake-contrib/graphics/png/addin/cake-contrib-addin-medium.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <copyright>Copyright (c) AMV Software 2015</copyright>
     <releaseNotes></releaseNotes>
-    <tags>Cake Script Build SQLServer </tags>
+    <tags>Cake Script Build SQLServer cake-addin</tags>
 	<dependencies>
 		<group>
 			<dependency id="Microsoft.Data.SqlClient" version="2.1.2" />
