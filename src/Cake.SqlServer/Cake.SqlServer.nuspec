@@ -8,8 +8,9 @@
     <title>Cake.SqlServer</title>
     <description>Cake Build addon for executing some operations in MS Sql Server.</description>
     <summary>SqlServer tools addon for Cake Build.</summary>
-    <licenseUrl>https://github.com/AMVSoftware/Cake.SqlServer/blob/master/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/AMVSoftware/Cake.SqlServer</projectUrl>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/cake-contrib/Cake.SqlServer</projectUrl>
+    <repository type="git" url="https://github.com/cake-contrib/Cake.SqlServer.git" />
     <iconUrl>https://cdn.jsdelivr.net/gh/cake-contrib/graphics/png/addin/cake-contrib-addin-medium.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <copyright>Copyright (c) AMV Software 2015</copyright>
