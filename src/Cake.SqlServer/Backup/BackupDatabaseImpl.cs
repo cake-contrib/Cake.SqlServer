@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿#if NET5_0
+using System;
+#endif
+using System.IO;
 using Cake.Core;
 using Cake.Core.Diagnostics;
 
@@ -28,21 +31,31 @@ namespace Cake.SqlServer
 
                 context.Log.Information(sql);
 
-                var command = SqlServerAliasesImpl.CreateSqlCommand(sql, connection);
-                command.Parameters.AddWithValue("@backupFile", backupFile);
-                command.ExecuteNonQuery();
+                using (var command = SqlServerAliasesImpl.CreateSqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@backupFile", backupFile);
+                    command.ExecuteNonQuery();
+                }
             }
         }
 
-        private static string GetBackupFileName(string databaseName, string path)
+        private static string GetBackupFileName(string databaseName, string? path)
         {
-            var fileName = databaseName.Replace("[", string.Empty).Replace("]", string.Empty) + ".bak";
+#if NET5_0
+            var fileName = databaseName
+                .Replace("[", string.Empty, StringComparison.OrdinalIgnoreCase)
+                .Replace("]", string.Empty, StringComparison.OrdinalIgnoreCase) + ".bak";
+#else
+            var fileName = databaseName
+                .Replace("[", string.Empty)
+                .Replace("]", string.Empty) + ".bak";
+#endif
             if (string.IsNullOrWhiteSpace(path))
                 return fileName;
 
-            return Directory.Exists(path)
-                ? Path.Combine(path, fileName)
-                : path;
+            return Directory.Exists(path!)
+                ? Path.Combine(path!, fileName)
+                : path!;
         }
     }
 }

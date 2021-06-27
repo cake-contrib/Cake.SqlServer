@@ -1,4 +1,5 @@
-﻿using Cake.Core;
+﻿using System;
+using Cake.Core;
 using Cake.Core.Diagnostics;
 using Microsoft.SqlServer.Dac;
 
@@ -6,7 +7,11 @@ namespace Cake.SqlServer
 {
     internal static class SqlDacpacImpl
     {
-        internal static void ExtractDacpacFile(ICakeContext context, string connectionString, string targetDatabaseName, ExtractDacpacSettings settings)
+        internal static void ExtractDacpacFile(
+            ICakeContext context,
+            string connectionString,
+            string targetDatabaseName,
+            ExtractDacpacSettings settings)
         {
             Initializer.InitializeNativeSearchPath();
             context.Log.Information($"About to extract a dacpac file from database {targetDatabaseName}");
@@ -19,25 +24,38 @@ namespace Cake.SqlServer
         }
 
 
-        internal static void PublishDacpacFile(ICakeContext context, string connectionString, string targetDatabaseName, string dacpacFilePath, PublishDacpacSettings settings = null)
+        internal static void PublishDacpacFile(
+            ICakeContext context,
+            string connectionString,
+            string targetDatabaseName,
+            string? dacpacFilePath,
+            PublishDacpacSettings? settings = null)
         {
+            if (string.IsNullOrEmpty(dacpacFilePath))
+            {
+                throw new ArgumentNullException(nameof(dacpacFilePath));
+            }
+
             Initializer.InitializeNativeSearchPath();
             context.Log.Information($"About to publish dacpac from {dacpacFilePath} into database {targetDatabaseName}");
 
-            var dacPackage = DacPackage.Load(dacpacFilePath);
+            using (var dacPackage = DacPackage.Load(dacpacFilePath))
+            {
+                context.Log.Debug($"Loaded dacpac file {dacpacFilePath}");
 
-            context.Log.Debug($"Loaded dacpac file {dacpacFilePath}");
+                var service = new DacServices(connectionString);
 
-            var service = new DacServices(connectionString);
+                var options = GetPublishOptions(settings);
 
-            var options = GetPublishOptions(settings);
-
-            service.Publish(dacPackage, targetDatabaseName, options);
+                service.Publish(dacPackage, targetDatabaseName, options);
+            }
 
             context.Log.Information($"Finished restoring dacpac file into database {targetDatabaseName}");
         }
 
-        internal static PublishOptions GetPublishOptions(PublishDacpacSettings settings)
+#pragma warning disable MA0051 // Method is too long
+        internal static PublishOptions GetPublishOptions(PublishDacpacSettings? settings)
+#pragma warning restore MA0051 // Method is too long
         {
             var options = new PublishOptions();
             if (settings == null)

@@ -7,14 +7,12 @@ using Cake.SqlServer;
 using FluentAssertions;
 using NSubstitute;
 
-
 namespace Tests
 {
     public class SqlDacpacImplTests
     {
-        private const String ConnectionString = @"data source=(localdb)\MSSqlLocalDb";
+        private const string ConnectionString = @"data source=(localdb)\MSSqlLocalDb";
         private readonly ICakeContext context;
-
 
         public SqlDacpacImplTests()
         {
@@ -24,7 +22,7 @@ namespace Tests
         [Test]
         public void Try_Publish_Dacpac()
         {
-            var dbName = "DacpacTestDb";
+            const string dbName = "DacpacTestDb";
             try
             {
                 // Arrange 
@@ -42,13 +40,11 @@ namespace Tests
             }
         }
 
-
-
         [Test]
         public void Try_Extract_Dacpac()
         {
-            var dbName = "DacpacTestDb";
-            var resultingFilePath = "NsagaCreated.dacpac";
+            const string dbName = "DacpacTestDb";
+            const string resultingFilePath = "NsagaCreated.dacpac";
             var settings = new ExtractDacpacSettings("TestApp", "1.0.0.0") { OutputFile = resultingFilePath };
             try
             {
@@ -90,9 +86,9 @@ namespace Tests
             result["31Oct"].Should().Be("25Dec");
         }
 
-        private static string GetDacpacFilePath()
+        private static string? GetDacpacFilePath()
         {
-            var testDataDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData");
+            var testDataDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory!, "TestData");
             return Directory.GetFiles(testDataDirectory, "Nsaga.dacpac", SearchOption.AllDirectories).FirstOrDefault();
         }
     }

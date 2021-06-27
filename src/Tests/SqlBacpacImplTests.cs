@@ -7,14 +7,12 @@ using Cake.SqlServer;
 using FluentAssertions;
 using NSubstitute;
 
-
 namespace Tests
 {
     public class SqlBacpacImplTests
     {
-        private const String ConnectionString = @"data source=(localdb)\MSSqlLocalDb";
+        private const string ConnectionString = @"data source=(localdb)\MSSqlLocalDb";
         private readonly ICakeContext context;
-
 
         public SqlBacpacImplTests()
         {
@@ -35,13 +33,11 @@ namespace Tests
             }
         }
 
-
-
         [Test]
         public void Try_Create_Bacpac()
         {
-            var dbName = "BacpacTestDb";
-            var resultingFilePath = "NsagaCreated.bacpac";
+            const string dbName = "BacpacTestDb";
+            const string resultingFilePath = "NsagaCreated.bacpac";
             try
             {
                 // Arrange
@@ -67,12 +63,9 @@ namespace Tests
             }
         }
 
-
-
-
-        private static string GetBacpacFilePath()
+        private static string? GetBacpacFilePath()
         {
-            var testDataDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData");
+            var testDataDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory!, "TestData");
             return Directory.GetFiles(testDataDirectory, "Nsaga.bacpac", SearchOption.AllDirectories).FirstOrDefault();
         }
     }

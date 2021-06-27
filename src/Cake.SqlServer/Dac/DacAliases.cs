@@ -1,19 +1,18 @@
-﻿using System;
-using Cake.Core;
+﻿using Cake.Core;
 using Cake.Core.Annotations;
 using Cake.Core.IO;
 
 namespace Cake.SqlServer
 {
     /// <summary>
-    /// Contains functionality to deal with DAC functionality from SQL Server: create and restore BACPAC files; 
+    /// Contains functionality to deal with DAC functionality from SQL Server: create and restore BACPAC files;
     /// create and restore DACPAC files
     /// </summary>
-    [CakeAliasCategory("SqlServer")]
+    [CakeAliasCategory(nameof(SqlServer))]
     public static class DacAliases
     {
         /// <summary>
-        /// Creates a bacpac file for easy database backuping. 
+        /// Creates a bacpac file for easy database backuping.
         /// </summary>
         /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">The connection string. You may want to connect to master database for this operation.</param>
@@ -22,22 +21,22 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Create-Bacpac")
         ///     	.Does(() =>{
         ///     		var connString = @"data source=(localdb)\MSSqlLocalDb";
-        ///     
+        ///
         ///     		var dbName = "ForBacpac";
-        ///     
+        ///
         ///     		CreateDatabase(connString, dbName);
-        ///     
+        ///
         ///     		CreateBacpacFile(connString, dbName, new FilePath(@".\ForBacpac.bacpac"));
         ///     	});
-        ///     });        
+        ///     });
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static void CreateBacpacFile(this ICakeContext context, String connectionString, String databaseName, FilePath resultingFilePath)
+        public static void CreateBacpacFile(this ICakeContext context, string connectionString, string databaseName, FilePath resultingFilePath)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
@@ -60,22 +59,22 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Create-Bacpac")
         ///     	.Does(() =>{
         ///     		var connString = @"data source=(localdb)\MSSqlLocalDb";
-        ///     
+        ///
         ///     		var dbName = "FromBacpac";
-        ///     
+        ///
         ///     		var file = new FilePath(@".\src\Tests\TestData\Nsaga.bacpac");
-        ///     
+        ///
         ///     		RestoreBacpac(connString, dbName, file);
         ///     	});
-        ///     });        
+        ///     });
         /// </code>
-        /// </example>        
+        /// </example>
         [CakeMethodAlias]
-        public static void RestoreBacpac(this ICakeContext context, String connectionString, String databaseName, FilePath bacpacFilePath)
+        public static void RestoreBacpac(this ICakeContext context, string connectionString, string databaseName, FilePath bacpacFilePath)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
@@ -86,7 +85,7 @@ namespace Cake.SqlServer
 
 
         /// <summary>
-        /// Extracts a dacpac file to a database package. 
+        /// Extracts a dacpac file to a database package.
         /// </summary>
         /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">The connection string.</param>
@@ -95,26 +94,26 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Extract-Dacpac")
         ///     	.Does(() =>{
         ///     		var connString = @"data source=(localdb)\MSSqlLocalDb";
-        ///     
+        ///
         ///     		var dbName = "ForDacpac";
-        ///     
+        ///
         ///     		CreateDatabase(connString, dbName);
-        /// 
-        ///     		var settings = new ExtractDacpacSettings("MyAppName", "2.0.0.0") { 
+        ///
+        ///     		var settings = new ExtractDacpacSettings("MyAppName", "2.0.0.0") {
         ///     			OutputFile = new FilePath(@".\TestData\Nsaga.dacpac")
         /// 			};
-        ///     
+        ///
         ///     		ExtractDacpacFile(connString, dbName, settings);
         ///     	});
-        ///     });        
+        ///     });
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static void ExtractDacpacFile(this ICakeContext context, String connectionString, String targetDatabaseName, ExtractDacpacSettings settings)
+        public static void ExtractDacpacFile(this ICakeContext context, string connectionString, string targetDatabaseName, ExtractDacpacSettings settings)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
@@ -136,26 +135,31 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Create-Bacpac")
         ///     	.Does(() =>{
         ///     		var connString = @"data source=(localdb)\MSSqlLocalDb";
-        ///     
+        ///
         ///     		var dbName = "ForDacpac";
-        ///     
+        ///
         ///     		var file = new FilePath(@".\src\Tests\TestData\Nsaga.dacpac");
-        ///     
-        ///     		var settings = new PublishDacpacSettings { 
+        ///
+        ///     		var settings = new PublishDacpacSettings {
         ///     			GenerateDeploymentScript = true
         /// 			};
-        /// 
+        ///
         ///     		PublishDacpacFile(connString, dbName, file, settings);
         ///     	});
-        ///     });        
+        ///     });
         /// </code>
-        /// </example>        
+        /// </example>
         [CakeMethodAlias]
-        public static void PublishDacpacFile(this ICakeContext context, String connectionString, String targetDatabaseName, FilePath dacpacFilePath, PublishDacpacSettings settings = null)
+        public static void PublishDacpacFile(
+            this ICakeContext context,
+            string connectionString,
+            string targetDatabaseName,
+            FilePath dacpacFilePath,
+            PublishDacpacSettings? settings = null)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));

@@ -11,7 +11,7 @@ namespace Cake.SqlServer
     /// <summary>
     /// <para>
     /// Contains functionality to deal with SQL Server: DropDatabase, CreateDatabase, execute SQL, execute SQL from files, etc.
-    /// Provides functionality to manage LocalDb instances: Create, Start, Stop, Delete instances; 
+    /// Provides functionality to manage LocalDb instances: Create, Start, Stop, Delete instances;
     /// </para>
     /// <para>
     /// In order to use the commands for this addin, include the following in your build.cake file to download and
@@ -21,7 +21,7 @@ namespace Cake.SqlServer
     /// </code>
     /// </para>
     /// </summary>
-    [CakeAliasCategory("SqlServer")]
+    [CakeAliasCategory(nameof(SqlServer))]
     public static class SqlServerAliases
     {
         /// <summary>
@@ -33,13 +33,13 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Deploy-Database")
         ///          .Does(() =>
         ///          {
         ///             var connectionString = @"Server=(localdb)\MSSqlLocalDb";
         ///             var dbName = "CakeTest";
-        /// 
+        ///
         ///             if (DatabaseExists(connectionString, dbName))
         ///             {
         ///                 throw new Exception("A database with the same name already exists");
@@ -49,7 +49,7 @@ namespace Cake.SqlServer
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static bool DatabaseExists(this ICakeContext context, String connectionString, String databaseName)
+        public static bool DatabaseExists(this ICakeContext context, string connectionString, string databaseName)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
@@ -69,7 +69,7 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Drop-Database")
         ///          .Does(() =>
         ///          {
@@ -80,7 +80,7 @@ namespace Cake.SqlServer
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static void DropDatabase(this ICakeContext context, String connectionString, String databaseName)
+        public static void DropDatabase(this ICakeContext context, string connectionString, string databaseName)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
@@ -101,7 +101,7 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Create-Database")
         ///          .Does(() =>
         ///          {
@@ -112,7 +112,7 @@ namespace Cake.SqlServer
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static void CreateDatabase(this ICakeContext context, String connectionString, String databaseName)
+        public static void CreateDatabase(this ICakeContext context, string connectionString, string databaseName)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
@@ -133,7 +133,7 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Create-Database")
         ///          .Does(() =>
         ///          {
@@ -145,9 +145,9 @@ namespace Cake.SqlServer
         ///             CreateDatabase(connectionString, dbName, createSettings);
         ///         });
         /// </code>
-        /// </example>        
+        /// </example>
         [CakeMethodAlias]
-        public static void CreateDatabase(this ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        public static void CreateDatabase(this ICakeContext context, string connectionString, string databaseName, CreateDatabaseSettings settings)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
@@ -167,7 +167,7 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Create-Database-If-Not-Exists")
         ///          .Does(() =>
         ///          {
@@ -178,7 +178,7 @@ namespace Cake.SqlServer
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static void CreateDatabaseIfNotExists(this ICakeContext context, String connectionString, String databaseName)
+        public static void CreateDatabaseIfNotExists(this ICakeContext context, string connectionString, string databaseName)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
@@ -197,7 +197,7 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Create-Database-If-Not-Exists")
         ///          .Does(() =>
         ///          {
@@ -211,7 +211,7 @@ namespace Cake.SqlServer
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static void CreateDatabaseIfNotExists(this ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        public static void CreateDatabaseIfNotExists(this ICakeContext context, string connectionString, string databaseName, CreateDatabaseSettings settings)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
@@ -244,7 +244,7 @@ namespace Cake.SqlServer
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static void DropAndCreateDatabase(this ICakeContext context, String connectionString, String databaseName)
+        public static void DropAndCreateDatabase(this ICakeContext context, string connectionString, string databaseName)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
@@ -279,7 +279,7 @@ namespace Cake.SqlServer
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static void DropAndCreateDatabase(this ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        public static void DropAndCreateDatabase(this ICakeContext context, string connectionString, string databaseName, CreateDatabaseSettings settings)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
@@ -300,7 +300,7 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Sql-Operations")
         ///         .Does(() =>
         ///         {
@@ -311,7 +311,7 @@ namespace Cake.SqlServer
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static void ExecuteSqlCommand(this ICakeContext context, String connectionString, string sqlCommands)
+        public static void ExecuteSqlCommand(this ICakeContext context, string connectionString, string sqlCommands)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
@@ -330,7 +330,7 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Sql-Operations")
         ///         .Does(() =>
         ///         {
@@ -362,7 +362,7 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Sql-Operations")
         ///         .Does(() =>
         ///         {
@@ -373,7 +373,7 @@ namespace Cake.SqlServer
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static void ExecuteSqlFile(this ICakeContext context, String connectionString, FilePath sqlFile)
+        public static void ExecuteSqlFile(this ICakeContext context, string connectionString, FilePath sqlFile)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
@@ -436,7 +436,7 @@ namespace Cake.SqlServer
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static SqlConnection OpenSqlConnection(this ICakeContext context, String connectionString)
+        public static SqlConnection OpenSqlConnection(this ICakeContext context, string connectionString)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));

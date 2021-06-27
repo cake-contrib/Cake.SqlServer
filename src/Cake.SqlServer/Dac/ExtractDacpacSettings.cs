@@ -10,7 +10,7 @@ namespace Cake.SqlServer
     public class ExtractDacpacSettings
     {
         private readonly List<Tuple<string, string>> tables = new List<Tuple<string, string>>();
-        private string outputFile;
+        private string? outputFile;
 
         /// <summary>
         /// String identifier for the DAC application.
@@ -25,7 +25,7 @@ namespace Cake.SqlServer
         /// <summary>
         /// Optional string summary of the DAC application.
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// Path to the package file to be created.

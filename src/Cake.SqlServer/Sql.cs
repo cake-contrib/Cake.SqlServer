@@ -1,4 +1,6 @@
-﻿using System;
+﻿#if NET5_0
+using System;
+#endif
 using System.Text;
 
 namespace Cake.SqlServer
@@ -9,12 +11,17 @@ namespace Cake.SqlServer
         /// <summary>
         /// Performance-optimized SQL-safe name.
         /// </summary>
-        internal static String EscapeName(string name)
+        /// <param name="name">Name to escape.</param>
+        internal static string EscapeName(string? name)
         {
             var sb = new StringBuilder();
             sb.Append('[');
 
-            var lastQuote = name.IndexOf(']');
+#if NET5_0
+            var lastQuote = name?.IndexOf(']', StringComparison.OrdinalIgnoreCase) ?? -1;
+#else
+            var lastQuote = name?.IndexOf(']') ?? -1;
+#endif
             if (lastQuote == -1)
             {
                 return sb.Append(name).Append(']').ToString();
@@ -24,7 +31,7 @@ namespace Cake.SqlServer
 
             while (true)
             {
-                var nextQuote = name.IndexOf(']', lastQuote + 1);
+                var nextQuote = name?.IndexOf(']', lastQuote + 1) ?? -1;
                 if (nextQuote == -1)
                 {
                     break;
@@ -33,17 +40,20 @@ namespace Cake.SqlServer
                 lastQuote = nextQuote;
             }
 
-            return sb.Append(name, lastQuote, name.Length - lastQuote).Append(']').ToString();
+            return sb.Append(name, lastQuote, (name?.Length ?? 0) - lastQuote).Append(']').ToString();
         }
 
 
 
-        internal static String EscapeNameQuotes(string name)
+        internal static string EscapeNameQuotes(string name)
         {
+#if NET5_0
+            var result = name.Replace("'", "''", StringComparison.OrdinalIgnoreCase);
+#else
             var result = name.Replace("'", "''");
+#endif
 
-            result = "'" + result + "'";
-            return result;
+            return $"'{result}'";
         }
     }
 }

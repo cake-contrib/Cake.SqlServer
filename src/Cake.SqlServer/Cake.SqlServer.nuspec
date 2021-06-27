@@ -18,8 +18,8 @@
     <tags>Cake Script Build SQLServer cake-addin</tags>
 	<dependencies>
 		<group>
-			<dependency id="Microsoft.Data.SqlClient" version="2.1.2" />
-			<dependency id="Microsoft.SqlServer.DACFx" version="150.5084.2" />
+			<dependency id="Microsoft.Data.SqlClient" version="3.0.0" />
+			<dependency id="Microsoft.SqlServer.DACFx" version="150.5164.1" />
 		</group>
 	</dependencies>
   </metadata>
@@ -28,6 +28,8 @@
     <file src="net461/Cake.SqlServer.pdb" target="lib/net461" />
     <file src="net461/Cake.SqlServer.xml" target="lib/net461" />
 
+    <file src="net461/Azure.Core.dll" target="lib/net461" />
+    <file src="net461/Azure.Identity.dll" target="lib/net461" />
     <file src="net461/Microsoft.Data.SqlClient.dll" target="lib/net461" />
     <file src="net461/Microsoft.Data.SqlClient.SNI.x64.dll" target="lib/net461" />
     <file src="net461/Microsoft.Data.SqlClient.SNI.x64.pdb" target="lib/net461" />
@@ -36,6 +38,7 @@
     <file src="net461/Microsoft.Data.Tools.Schema.Sql.dll" target="lib/net461" />
     <file src="net461/Microsoft.Data.Tools.Utilities.dll" target="lib/net461" />
     <file src="net461/Microsoft.Identity.Client.dll" target="lib/net461" />
+    <file src="net461/Microsoft.Identity.Client.Extensions.Msal.dll" target="lib/net461" />
     <file src="net461/Microsoft.IdentityModel.JsonWebTokens.dll" target="lib/net461" />
     <file src="net461/Microsoft.IdentityModel.Logging.dll" target="lib/net461" />
     <file src="net461/Microsoft.IdentityModel.Protocols.dll" target="lib/net461" />

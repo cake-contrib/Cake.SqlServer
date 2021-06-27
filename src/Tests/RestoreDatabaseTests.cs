@@ -9,12 +9,11 @@ using Cake.SqlServer;
 using FluentAssertions;
 using NSubstitute;
 
-
 namespace Tests
 {
     public class RestoreDatabaseTests
     {
-        private const String ConnectionString = @"data source=(localdb)\MSSqlLocalDb";
+        private const string ConnectionString = @"data source=(localdb)\MSSqlLocalDb";
         private readonly ICakeContext _context;
 
         public RestoreDatabaseTests()
@@ -25,17 +24,17 @@ namespace Tests
         [Test]
         public void RestoreDatabase_MinimalInformation_DoesNotThrow()
         {
-            var originalDbName = "CakeRestoreTest";
+            const string originalDbName = "CakeRestoreTest";
             try
             {
                 //Arrange
                 var path = GetBackupFilePath();
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, new RestoreSqlBackupSettings(), new List<FilePath> {new FilePath(path)});
+                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, new RestoreSqlBackupSettings(), new List<FilePath> { new FilePath(path) });
 
                 // Assert
-                SqlHelpers.DbExists(ConnectionString, originalDbName);
+                SqlHelpers.DbExists(ConnectionString, originalDbName).Should().BeTrue();
             }
             finally
             {
@@ -47,7 +46,7 @@ namespace Tests
         [Test]
         public void RestoreMultipleDatabase_MinimalInformation_DoesNotThrow()
         {
-            var originalDbName = "CakeRestoreTest";
+            const string originalDbName = "CakeRestoreTest";
             try
             {
                 //Arrange
@@ -55,10 +54,10 @@ namespace Tests
                 var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, new RestoreSqlBackupSettings(), pathList, differentialBackupFiles:differentialPathList);
+                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, new RestoreSqlBackupSettings(), pathList, differentialBackupFiles: differentialPathList);
 
                 // Assert
-                SqlHelpers.DbExists(ConnectionString, originalDbName);
+                SqlHelpers.DbExists(ConnectionString, originalDbName).Should().BeTrue();
             }
             finally
             {
@@ -70,7 +69,7 @@ namespace Tests
         [Test]
         public void RestoreDatabase_NoSingleUserModeInformation_DoesNotThrow()
         {
-            var originalDbName = "CakeRestoreTest";
+            const string originalDbName = "CakeRestoreTest";
             try
             {
                 //Arrange
@@ -81,7 +80,7 @@ namespace Tests
                 RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, settings, new List<FilePath> { new FilePath(path) });
 
                 // Assert
-                SqlHelpers.DbExists(ConnectionString, originalDbName);
+                SqlHelpers.DbExists(ConnectionString, originalDbName).Should().BeTrue();
             }
             finally
             {
@@ -93,7 +92,7 @@ namespace Tests
         [Test]
         public void RestoreMultipleDatabase_NoSingleUserModeInformation_DoesNotThrow()
         {
-            var originalDbName = "CakeRestoreTest";
+            const string originalDbName = "CakeRestoreTest";
             try
             {
                 //Arrange
@@ -102,10 +101,10 @@ namespace Tests
                 var settings = new RestoreSqlBackupSettings { SwitchToUserMode = DbUserMode.MultiUser };
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, settings, pathList, differentialBackupFiles:differentialPathList);
+                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, settings, pathList, differentialBackupFiles: differentialPathList);
 
                 // Assert
-                SqlHelpers.DbExists(ConnectionString, originalDbName);
+                SqlHelpers.DbExists(ConnectionString, originalDbName).Should().BeTrue();
             }
             finally
             {
@@ -117,16 +116,16 @@ namespace Tests
         [Test]
         public void RestoreDatabase_DatabaseRename_DoesNotThrow()
         {
-            var databaseName = "NewRandomDatabase";
+            const string databaseName = "NewRandomDatabase";
             try
             {
                 //Arrange
                 var path = GetBackupFilePath();
 
-                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, new RestoreSqlBackupSettings() { NewDatabaseName = databaseName }, new List<FilePath> { new FilePath(path) });
+                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, new RestoreSqlBackupSettings { NewDatabaseName = databaseName }, new List<FilePath> { new FilePath(path) });
 
                 // Assert
-                SqlHelpers.DbExists(ConnectionString, databaseName);
+                SqlHelpers.DbExists(ConnectionString, databaseName).Should().BeTrue();
             }
             finally
             {
@@ -138,17 +137,17 @@ namespace Tests
         [Test]
         public void RestoreMultipleDatabase_DatabaseRename_DoesNotThrow()
         {
-            var databaseName = "NewRandomDatabase";
+            const string databaseName = "NewRandomDatabase";
             try
             {
                 //Arrange
                 var pathList = GetMultipleBackupFilePaths();
                 var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
 
-                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, new RestoreSqlBackupSettings() { NewDatabaseName = databaseName }, pathList, differentialBackupFiles:differentialPathList);
+                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, new RestoreSqlBackupSettings { NewDatabaseName = databaseName }, pathList, differentialBackupFiles: differentialPathList);
 
                 // Assert
-                SqlHelpers.DbExists(ConnectionString, databaseName);
+                SqlHelpers.DbExists(ConnectionString, databaseName).Should().BeTrue();
             }
             finally
             {
@@ -160,18 +159,18 @@ namespace Tests
         [Test]
         public void RestoreDatabase_MoveLocation_DoesNotThrow()
         {
-            var newDatabaseName = "RestoredFromTest.Cake";
+            const string newDatabaseName = "RestoredFromTest.Cake";
             try
             {
                 //Arrange
                 var path = GetBackupFilePath();
-                var settings = new RestoreSqlBackupSettings() { NewDatabaseName = newDatabaseName, NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()) };
+                var settings = new RestoreSqlBackupSettings { NewDatabaseName = newDatabaseName, NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()) };
 
                 // Act
                 RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, settings, new List<FilePath> { new FilePath(path) });
 
                 // Assert
-                SqlHelpers.DbExists(ConnectionString, newDatabaseName);
+                SqlHelpers.DbExists(ConnectionString, newDatabaseName).Should().BeTrue();
             }
             finally
             {
@@ -183,19 +182,19 @@ namespace Tests
         [Test]
         public void RestoreMultipleDatabase_MoveLocation_DoesNotThrow()
         {
-            var newDatabaseName = "RestoredFromTest.Cake";
+            const string newDatabaseName = "RestoredFromTest.Cake";
             try
             {
                 //Arrange
                 var pathList = GetMultipleBackupFilePaths();
                 var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
-                var settings = new RestoreSqlBackupSettings() { NewDatabaseName = newDatabaseName, NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()) };
+                var settings = new RestoreSqlBackupSettings { NewDatabaseName = newDatabaseName, NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()) };
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, settings, pathList, differentialBackupFiles:differentialPathList);
+                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, settings, pathList, differentialBackupFiles: differentialPathList);
 
                 // Assert
-                SqlHelpers.DbExists(ConnectionString, newDatabaseName);
+                SqlHelpers.DbExists(ConnectionString, newDatabaseName).Should().BeTrue();
             }
             finally
             {
@@ -207,17 +206,17 @@ namespace Tests
         [Test]
         public void RestoreDatabase_WithReplace_DoesNotThrow()
         {
-            var originalDbName = "CakeRestoreTest";
+            const string originalDbName = "CakeRestoreTest";
             try
             {
                 //Arrange
                 var path = GetBackupFilePath();
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, new RestoreSqlBackupSettings() { WithReplace = true }, new List<FilePath> { new FilePath(path) });
+                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, new RestoreSqlBackupSettings { WithReplace = true }, new List<FilePath> { new FilePath(path) });
 
                 // Assert
-                SqlHelpers.DbExists(ConnectionString, originalDbName);
+                SqlHelpers.DbExists(ConnectionString, originalDbName).Should().BeTrue();
             }
             finally
             {
@@ -229,7 +228,7 @@ namespace Tests
         [Test]
         public void RestoreMultipleDatabase_WithReplace_DoesNotThrow()
         {
-            var originalDbName = "CakeRestoreTest";
+            const string originalDbName = "CakeRestoreTest";
             try
             {
                 //Arrange
@@ -237,10 +236,10 @@ namespace Tests
                 var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, new RestoreSqlBackupSettings() { WithReplace = true }, pathList, differentialBackupFiles:differentialPathList);
+                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, new RestoreSqlBackupSettings { WithReplace = true }, pathList, differentialBackupFiles: differentialPathList);
 
                 // Assert
-                SqlHelpers.DbExists(ConnectionString, originalDbName);
+                SqlHelpers.DbExists(ConnectionString, originalDbName).Should().BeTrue();
             }
             finally
             {
@@ -277,7 +276,6 @@ namespace Tests
             }
         }
 
-
         [Test]
         public void Can_Read_LogicalNames()
         {
@@ -313,12 +311,12 @@ namespace Tests
         [Test]
         public void RestoreDatabase_AllOptionsToggled_DoesNotThrow()
         {
-            var newDatabaseName = "RestoredFromTest.Cake";
+            const string newDatabaseName = "RestoredFromTest.Cake";
             try
             {
                 //Arrange
                 var path = GetBackupFilePath();
-                var settings = new RestoreSqlBackupSettings()
+                var settings = new RestoreSqlBackupSettings
                 {
                     NewDatabaseName = newDatabaseName,
                     NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()),
@@ -330,7 +328,7 @@ namespace Tests
                 RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, settings, new List<FilePath> { new FilePath(path) });
 
                 // Assert
-                SqlHelpers.DbExists(ConnectionString, newDatabaseName);
+                SqlHelpers.DbExists(ConnectionString, newDatabaseName).Should().BeTrue();
             }
             finally
             {
@@ -342,13 +340,13 @@ namespace Tests
         [Test]
         public void RestoreMultipleDatabase_AllOptionsToggled_DoesNotThrow()
         {
-            var newDatabaseName = "RestoredFromTest.Cake";
+            const string newDatabaseName = "RestoredFromTest.Cake";
             try
             {
                 //Arrange
                 var pathList = GetMultipleBackupFilePaths();
                 var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
-                var settings = new RestoreSqlBackupSettings()
+                var settings = new RestoreSqlBackupSettings
                 {
                     NewDatabaseName = newDatabaseName,
                     NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()),
@@ -359,10 +357,10 @@ namespace Tests
                 };
 
                 // Act
-                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, settings, pathList, differentialBackupFiles:differentialPathList);
+                RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, settings, pathList, differentialBackupFiles: differentialPathList);
 
                 // Assert
-                SqlHelpers.DbExists(ConnectionString, newDatabaseName);
+                SqlHelpers.DbExists(ConnectionString, newDatabaseName).Should().BeTrue();
             }
             finally
             {
@@ -371,16 +369,15 @@ namespace Tests
             }
         }
 
-
-        private static string GetBackupFilePath(String filename = "multiFileBackup.bak")
+        private static string? GetBackupFilePath(string filename = "multiFileBackup.bak")
         {
-            var testDataDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData");
+            var testDataDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory!, "TestData");
             return Directory.GetFiles(testDataDirectory, filename, SearchOption.AllDirectories).FirstOrDefault();
         }
 
         private static IList<FilePath> GetMultipleBackupFilePaths(string searchPattern = "multiFilesBackup*.bak")
         {
-            var testDataDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData");
+            var testDataDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory!, "TestData");
             var fileList = Directory.GetFiles(testDataDirectory, searchPattern, SearchOption.AllDirectories);
             return fileList.Select(path => new FilePath(path)).ToList();
         }

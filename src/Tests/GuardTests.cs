@@ -7,15 +7,15 @@ namespace Tests
 {
     public class GuardTests
     {
-        [TestCase((String)null)]
+        [TestCase((string?)null)]
         [TestCase("")]
         [TestCase(" ")]
         [TestCase("\t")]
         [TestCase("\r\n")]
-        public void String_Empty_ThrowsException(String value)
+        public void String_Empty_ThrowsException(string? value)
         {
             // Act
-            Action act = () => Guard.ArgumentIsNotNull(value, "value");
+            Action act = () => Guard.ArgumentIsNotNull(value!, nameof(value));
 
             // Assert
             act.Should().Throw<ArgumentNullException>();
@@ -25,9 +25,9 @@ namespace Tests
         public void NullObject_Throws_Exception()
         {
             //Arrange
-            object value = null;
+            const object? value = null;
 
-            Action act = () => Guard.ArgumentIsNotNull(value, "value");
+            Action act = () => Guard.ArgumentIsNotNull(value!, "value");
 
             // Assert
             act.Should().Throw<ArgumentNullException>();

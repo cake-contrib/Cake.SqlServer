@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Cake.Core;
 using Cake.Core.Diagnostics;
 using Cake.Core.IO;
@@ -22,7 +23,7 @@ namespace Cake.SqlServer
             this.fileSystem = fileSystem;
             this.environment = environment;
             this.processRunner = processRunner;
-            this.toolsLocator = tools;
+            toolsLocator = tools;
             this.contextLog = contextLog;
         }
 
@@ -38,12 +39,10 @@ namespace Cake.SqlServer
 
         protected override IEnumerable<FilePath> GetAlternativeToolPaths(LocalDbSettings settings)
         {
-            //http://forum.ai-dot.net/viewtopic.php?t=4966
-            //HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MicrosoftSQL Server Local DB\Installed Version
-            // var sqlLocalDbPath = @"c:\Program Files\Microsoft SQL Server\130\Tools\Binn\SqlLocalDB.exe";
-            //var sqlLocalDbPath = @"C:\Program Files\Microsoft SQL Server\120\Tools\Binn\SqlLocalDB.exe";
+            // http://forum.ai-dot.net/viewtopic.php?t=4966
+            // HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MicrosoftSQL Server Local DB\Installed Version
 
-            return new List<FilePath>()
+            return new List<FilePath>
             {
                 @"C:\Program Files\Microsoft SQL Server\150\Tools\Binn\",
                 @"C:\Program Files\Microsoft SQL Server\140\Tools\Binn\",
@@ -55,13 +54,13 @@ namespace Cake.SqlServer
 
         internal void Run(LocalDbSettings settings)
         {
-            if (String.IsNullOrEmpty(settings.InstanceName))
+            if (string.IsNullOrEmpty(settings.InstanceName))
             {
-                throw new ArgumentNullException("settings.InstanceName");
+                throw new InstanceNameEmptyException("settings.InstanceName");
             }
             var argumentBuilder = new ProcessArgumentBuilder();
 
-            argumentBuilder.Append(settings.Action.ToString().ToLower());
+            argumentBuilder.Append(settings.Action.ToString().ToLower(CultureInfo.InvariantCulture));
 
             argumentBuilder.AppendQuoted(settings.InstanceName);
 
@@ -78,9 +77,12 @@ namespace Cake.SqlServer
                     case LocalDbVersion.V13:
                         argumentBuilder.Append("13.0");
                         break;
+                    default:
+                        throw new InstanceVersionUnknownException();
                 }
 
-                argumentBuilder.Append("-s"); // start the instance;
+                // start the instance
+                argumentBuilder.Append("-s");
             }
 
             var arguments = argumentBuilder.Render();
@@ -89,17 +91,17 @@ namespace Cake.SqlServer
             var exitCode = 0;
             var output = string.Empty;
 
-            Run(new LocalDbSettings(), argumentBuilder, new ProcessSettings() { RedirectStandardOutput = true,  }, process =>
-            {
-                exitCode = process.GetExitCode();
-                output = string.Join("\n", process.GetStandardOutput() ?? new List<string>());
-                contextLog.Information(Verbosity.Diagnostic, "Process output: {0}", output);
-                contextLog.Information(Verbosity.Diagnostic, "Process Exit Code: {0}", exitCode);
-            });
+            Run(new LocalDbSettings(), argumentBuilder, new ProcessSettings { RedirectStandardOutput = true, }, process =>
+           {
+               exitCode = process.GetExitCode();
+               output = string.Join("\n", process.GetStandardOutput() ?? new List<string>());
+               contextLog.Information(Verbosity.Diagnostic, "Process output: {0}", output);
+               contextLog.Information(Verbosity.Diagnostic, "Process Exit Code: {0}", exitCode);
+           });
 
-            if (exitCode != 0 || String.IsNullOrWhiteSpace(output))
+            if (exitCode != 0 || string.IsNullOrWhiteSpace(output))
             {
-                throw new Exception("LocalDB execution failed. Please see message above.");
+                throw new LocalDBExecutionFailedException("LocalDB execution failed. Please see message above.");
             }
         }
     }

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Globalization;
 using Microsoft.Data.SqlClient;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using Cake.Core;
 using Cake.Core.Diagnostics;
@@ -13,7 +15,7 @@ namespace Cake.SqlServer
     {
         private static int? commandTimeout;
 
-        internal static void DropDatabase(ICakeContext context, String connectionString, String databaseName)
+        internal static void DropDatabase(ICakeContext context, string connectionString, string databaseName)
         {
             Initializer.InitializeNativeSearchPath();
             var dropDatabaseSql =
@@ -28,17 +30,20 @@ namespace Cake.SqlServer
             {
                 using (var connection = OpenSqlConnection(context, connectionString))
                 {
-                    var command = CreateSqlCommand(dropDatabaseSql, connection);
-                    command.Parameters.AddWithValue("@DatabaseName", databaseName);
+                    using (var command = CreateSqlCommand(dropDatabaseSql, connection))
+                    {
+                        command.Parameters.AddWithValue("@DatabaseName", databaseName);
 
-                    context.Log.Information($"About to drop database {databaseName}");
-                    command.ExecuteNonQuery();
+                        context.Log.Information($"About to drop database {databaseName}");
+                        command.ExecuteNonQuery();
+                    }
+
                     context.Log.Information($"Database {databaseName} is dropped");
                 }
             }
             catch (SqlException sqlException)
             {
-                if (sqlException.Message.StartsWith("Cannot open database"))
+                if (sqlException.Message.StartsWith("Cannot open database", StringComparison.OrdinalIgnoreCase))
                 {
                     context.Log.Error($"Database {databaseName} does not exits");
                     return;
@@ -47,10 +52,10 @@ namespace Cake.SqlServer
             }
         }
 
-        internal static bool DatabaseExists(ICakeContext context, String connectionString, String databaseName)
+        internal static bool DatabaseExists(ICakeContext context, string connectionString, string databaseName)
         {
             Initializer.InitializeNativeSearchPath();
-            var databaseExistsSql = "select DB_ID(@DatabaseName) as Id";
+            const string databaseExistsSql = "select DB_ID(@DatabaseName) as Id";
 
             using (var connection = OpenSqlConnection(context, connectionString))
             {
@@ -63,25 +68,27 @@ namespace Cake.SqlServer
             }
         }
 
-        internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName)
+        internal static void CreateDatabaseIfNotExists(ICakeContext context, string connectionString, string databaseName)
         {
             Initializer.InitializeNativeSearchPath();
             var createDbSql = $"if (select DB_ID(@DatabaseName)) is null create database {Sql.EscapeName(databaseName)}";
 
             using (var connection = OpenSqlConnection(context, connectionString))
             {
-                var sqlToExecute = String.Format(createDbSql, connection.Database);
-                context.Log.Debug($"Executing SQL : {sqlToExecute}");
+                context.Log.Debug($"Executing SQL : {createDbSql}");
 
-                var command = CreateSqlCommand(sqlToExecute, connection);
-                command.Parameters.AddWithValue("@DatabaseName", databaseName);
+                using (var command = CreateSqlCommand(createDbSql, connection))
+                {
+                    command.Parameters.AddWithValue("@DatabaseName", databaseName);
 
-                command.ExecuteNonQuery();
+                    command.ExecuteNonQuery();
+                }
+
                 context.Log.Information($"Database {databaseName} is created if it was not there");
             }
         }
 
-        internal static void CreateDatabaseIfNotExists(ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        internal static void CreateDatabaseIfNotExists(ICakeContext context, string connectionString, string databaseName, CreateDatabaseSettings settings)
         {
             Initializer.InitializeNativeSearchPath();
             settings.AssignNames(databaseName);
@@ -94,33 +101,36 @@ namespace Cake.SqlServer
             {
                 context.Log.Debug($"Executing SQL : {sql}");
 
-                var command = CreateSqlCommand(sql, connection);
-                command.Parameters.AddWithValue("@DatabaseName", databaseName);
-                
-                command.ExecuteNonQuery();
+                using (var command = CreateSqlCommand(sql, connection))
+                {
+                    command.Parameters.AddWithValue("@DatabaseName", databaseName);
+                    command.ExecuteNonQuery();
+                }
+
                 context.Log.Information($"Database {databaseName} is created if it was not there");
             }
         }
 
 
-        internal static void CreateDatabase(ICakeContext context, String connectionString, String databaseName)
+        internal static void CreateDatabase(ICakeContext context, string connectionString, string databaseName)
         {
             Initializer.InitializeNativeSearchPath();
             var createDbSql = $"create database {Sql.EscapeName(databaseName)}";
 
             using (var connection = OpenSqlConnection(context, connectionString))
             {
-                var sqlToExecute = String.Format(createDbSql, connection.Database);
-                context.Log.Debug($"Executing SQL : {sqlToExecute}");
+                context.Log.Debug($"Executing SQL : {createDbSql}");
 
-                var command = CreateSqlCommand(sqlToExecute, connection);
+                using (var command = CreateSqlCommand(createDbSql, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
 
-                command.ExecuteNonQuery();
                 context.Log.Information($"Database {databaseName} is created");
             }
         }
 
-        internal static void CreateDatabase(ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        internal static void CreateDatabase(ICakeContext context, string connectionString, string databaseName, CreateDatabaseSettings settings)
         {
             Initializer.InitializeNativeSearchPath();
             settings.AssignNames(databaseName);
@@ -131,47 +141,55 @@ namespace Cake.SqlServer
             {
                 context.Log.Debug($"Executing SQL : {sql}");
 
-                var command = CreateSqlCommand(sql, connection);
+                using (var command = CreateSqlCommand(sql, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
 
-                command.ExecuteNonQuery();
                 context.Log.Information($"Database {databaseName} is created if it was not there");
             }
         }
 
-        private static string GenerateCreateDbSql(String databaseName, CreateDatabaseSettings settings)
+        private static string GenerateCreateDbSql(string databaseName, CreateDatabaseSettings settings)
         {
-            var createDbSql = $" create database {Sql.EscapeName(databaseName)}";
+            var sb = new StringBuilder($" create database {Sql.EscapeName(databaseName)}");
             if (settings.PrimaryFile != null || settings.LogFile != null)
             {
-                createDbSql += " ON ";
+                sb.Append(" ON ");
             }
             if (settings.PrimaryFile != null)
             {
-                createDbSql += $" PRIMARY (Name = {Sql.EscapeName(settings.PrimaryFile.Name)}, FILENAME = '{settings.PrimaryFile.FileName}') "; // TODO replace with param
+
+#pragma warning disable S1135 // Track uses of "TODO" tags
+#pragma warning disable MA0026 // Fix TODO comment
+                // TODO replace with param
+                sb.Append($" PRIMARY (Name = {Sql.EscapeName(settings.PrimaryFile.Name)}, FILENAME = '{settings.PrimaryFile.FileName}') ");
+#pragma warning restore MA0026 // Fix TODO comment
+#pragma warning restore S1135 // Track uses of "TODO" tags
             }
             if (settings.LogFile != null)
             {
-                createDbSql += $" LOG ON (NAME = {Sql.EscapeName(settings.LogFile.Name)}, FILENAME = '{settings.LogFile.FileName}') ";
+                sb.Append($" LOG ON (NAME = {Sql.EscapeName(settings.LogFile.Name)}, FILENAME = '{settings.LogFile.FileName}') ");
             }
-            return createDbSql;
+            return sb.ToString();
         }
 
 
-        internal static void DropAndCreateDatabase(ICakeContext context, String connectionString, String databaseName)
+        internal static void DropAndCreateDatabase(ICakeContext context, string connectionString, string databaseName)
         {
             Initializer.InitializeNativeSearchPath();
             DropDatabase(context, connectionString, databaseName);
             CreateDatabase(context, connectionString, databaseName);
         }
 
-        internal static void DropAndCreateDatabase(ICakeContext context, String connectionString, String databaseName, CreateDatabaseSettings settings)
+        internal static void DropAndCreateDatabase(ICakeContext context, string connectionString, string databaseName, CreateDatabaseSettings settings)
         {
             Initializer.InitializeNativeSearchPath();
             DropDatabase(context, connectionString, databaseName);
             CreateDatabase(context, connectionString, databaseName, settings);
         }
 
-        internal static void ExecuteSqlCommand(ICakeContext context, String connectionString, string sqlCommands)
+        internal static void ExecuteSqlCommand(ICakeContext context, string connectionString, string sqlCommands)
         {
             Initializer.InitializeNativeSearchPath();
             using (var connection = OpenSqlConnection(context, connectionString))
@@ -184,8 +202,12 @@ namespace Cake.SqlServer
         internal static void ExecuteSqlCommand(ICakeContext context, SqlConnection connection, string sqlCommands)
         {
             Initializer.InitializeNativeSearchPath();
-            var commandStrings = Regex.Split(sqlCommands, @"^\s*GO\s*$",
-                RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            var commandStrings = Regex.Split(
+                sqlCommands,
+                @"^\s*GO\s*$",
+                RegexOptions.Multiline | RegexOptions.IgnoreCase,
+                TimeSpan.FromSeconds(5));
+
 
             foreach (var sqlCommand in commandStrings)
             {
@@ -194,8 +216,10 @@ namespace Cake.SqlServer
                     context.Log.Debug($"Executing SQL : {sqlCommand}");
                     try
                     {
-                        var command = CreateSqlCommand(sqlCommand, connection);
-                        command.ExecuteNonQuery();
+                        using (var command = CreateSqlCommand(sqlCommand, connection))
+                        {
+                            command.ExecuteNonQuery();
+                        }
                     }
                     catch (Exception)
                     {
@@ -207,7 +231,7 @@ namespace Cake.SqlServer
         }
 
 
-        internal static void ExecuteSqlFile(ICakeContext context, String connectionString, FilePath sqlFile)
+        internal static void ExecuteSqlFile(ICakeContext context, string connectionString, FilePath sqlFile)
         {
             Initializer.InitializeNativeSearchPath();
             using (var connection = OpenSqlConnection(context, connectionString))
@@ -232,7 +256,7 @@ namespace Cake.SqlServer
         }
 
 
-        internal static SqlConnection OpenSqlConnection(ICakeContext context, String connectionString)
+        internal static SqlConnection OpenSqlConnection(ICakeContext context, string connectionString)
         {
             Initializer.InitializeNativeSearchPath();
             try
@@ -244,10 +268,17 @@ namespace Cake.SqlServer
             }
             catch (SqlException exception)
             {
+#if NET5_0
                 if (exception.Message.StartsWith("A network-related or instance-specific error", StringComparison.InvariantCultureIgnoreCase)
-                        && (connectionString.ToLower().Contains("localdb") || connectionString.ToLower().Contains("\v")))
+                    && (connectionString.ToLower(CultureInfo.InvariantCulture).Contains("localdb", StringComparison.OrdinalIgnoreCase)
+                    || connectionString.ToLower(CultureInfo.InvariantCulture).Contains("\v", StringComparison.OrdinalIgnoreCase)))
+#else
+                if (exception.Message.StartsWith("A network-related or instance-specific error", StringComparison.InvariantCultureIgnoreCase)
+                    && (connectionString.ToLower(CultureInfo.InvariantCulture).Contains("localdb")
+                        || connectionString.ToLower(CultureInfo.InvariantCulture).Contains("\v")))
+#endif
                 {
-                    var errorMessage = "Looks like you are trying to connect to LocalDb. Have you correctly escaped your connection string with '@'? It should look like 'var connString = @\"(localDb)\\v12.0\"'";
+                    const string errorMessage = "Looks like you are trying to connect to LocalDb. Have you correctly escaped your connection string with '@'? It should look like 'var connString = @\"(localDb)\\v12.0\"'";
                     context.Log.Error(errorMessage);
                     var newException = new Exception(errorMessage, exception);
                     throw newException;

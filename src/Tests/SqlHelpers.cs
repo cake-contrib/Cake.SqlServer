@@ -1,12 +1,11 @@
-﻿using System;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Dapper;
 
 namespace Tests
 {
-    public class SqlHelpers
+    public static class SqlHelpers
     {
-        public static void ExecuteSql(String connectionString, String sql)
+        public static void ExecuteSql(string connectionString, string sql)
         {
             using (var connection = new SqlConnection(connectionString))
             {
@@ -15,7 +14,7 @@ namespace Tests
             }
         }
 
-        public static bool DbExists(String connectionString, String dbName)
+        public static bool DbExists(string connectionString, string dbName)
         {
             using (var connection = new SqlConnection(connectionString))
             {
@@ -27,7 +26,7 @@ namespace Tests
         }
 
 
-        public static bool TableExists(String connectionString, string dbName, string tableName)
+        public static bool TableExists(string connectionString, string dbName, string tableName)
         {
             using (var connection = new SqlConnection(connectionString))
             {
@@ -39,14 +38,9 @@ namespace Tests
         }
 
 
-        public static void DropDatabase(String connectionString, string databaseName)
+        public static void DropDatabase(string connectionString, string databaseName)
         {
             ExecuteSql(connectionString, $"if (select DB_ID('{databaseName}')) is not null drop database [{databaseName}]");
         }
-
-    }
-    public class SqlObject
-    {
-        public int? Id { get; set; }
     }
 }

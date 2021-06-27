@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Cake.Core;
 using Cake.Core.Annotations;
 using Cake.Core.IO;
@@ -10,7 +9,7 @@ namespace Cake.SqlServer
     /// <summary>
     /// Contains functionality to backup and restore SQL Server database
     /// </summary>
-    [CakeAliasCategory("SqlServer")]
+    [CakeAliasCategory(nameof(SqlServer))]
     public static class BackupAliases
     {
         /// <summary>
@@ -47,12 +46,17 @@ namespace Cake.SqlServer
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static void RestoreMultipleSqlBackup(this ICakeContext context, String connectionString, RestoreSqlBackupSettings settings, IList<FilePath> backupFiles, IList<FilePath> differentialBackupFiles = null)
+        public static void RestoreMultipleSqlBackup(
+            this ICakeContext context,
+            string connectionString,
+            RestoreSqlBackupSettings settings,
+            IList<FilePath> backupFiles,
+            IList<FilePath>? differentialBackupFiles = null)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
 
-            RestoreSqlBackupImpl.RestoreSqlBackup(context, connectionString, settings, backupFiles, differentialBackupFiles:differentialBackupFiles);
+            RestoreSqlBackupImpl.RestoreSqlBackup(context, connectionString, settings, backupFiles, differentialBackupFiles: differentialBackupFiles);
         }
 
         /// <summary>
@@ -65,29 +69,29 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Restore-Database")
         ///         .Does(() =>
         ///         {
         ///             var connString = @"data source=(localdb)\MSSqlLocalDb";
         ///             var backupFile = new FilePath("C:/tmp/myBackup.bak");
-        ///             RestoreSqlBackup(connString, backupFile, new RestoreSqlBackupSettings() 
+        ///             RestoreSqlBackup(connString, backupFile, new RestoreSqlBackupSettings()
         ///                {
         ///                      NewDatabaseName = "RestoredFromTest.Cake",
         ///                      NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()), // place files in Temp folder
         ///                      WithReplace = true, // tells sql server to discard non-backed up data when overwriting existing database
-        ///                }); 
+        ///                });
         ///         });
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static void RestoreSqlBackup(this ICakeContext context, String connectionString, FilePath backupFile, RestoreSqlBackupSettings settings)
+        public static void RestoreSqlBackup(this ICakeContext context, string connectionString, FilePath backupFile, RestoreSqlBackupSettings settings)
         {
             Guard.ArgumentIsNotNull(context, nameof(context));
             Guard.ArgumentIsNotNull(connectionString, nameof(connectionString));
             Guard.ArgumentIsNotNull(backupFile, nameof(backupFile));
 
-            RestoreSqlBackupImpl.RestoreSqlBackup(context, connectionString, settings, new List<FilePath> {backupFile});
+            RestoreSqlBackupImpl.RestoreSqlBackup(context, connectionString, settings, new List<FilePath> { backupFile });
         }
 
         /// <summary>
@@ -99,18 +103,18 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Restore-Database")
         ///         .Does(() =>
         ///         {
         ///             var connString = @"data source=(localdb)\MSSqlLocalDb";
         ///             var backupFile = new FilePath("C:/tmp/myBackup.bak");
-        ///             RestoreSqlBackup(connString, backupFile); 
+        ///             RestoreSqlBackup(connString, backupFile);
         ///         });
         /// </code>
         /// </example>
         [CakeMethodAlias]
-        public static void RestoreSqlBackup(this ICakeContext context, String connectionString, FilePath backupFile)
+        public static void RestoreSqlBackup(this ICakeContext context, string connectionString, FilePath backupFile)
         {
             RestoreSqlBackup(context, connectionString, backupFile, new RestoreSqlBackupSettings());
         }
@@ -125,17 +129,17 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Backup-Database")
         ///         .Does(() =>
         ///         {
         ///             var connString = @"data source=(localdb)\MSSqlLocalDb";
         ///             var databaseName = "MyDatabase";
-        ///             BackupDatabase(connString, databaseName, new BackupDatabaseSettings() 
+        ///             BackupDatabase(connString, databaseName, new BackupDatabaseSettings()
         ///                {
         ///                      Compress = false,
         ///                      Path = System.IO.Path.GetTempPath() // place files in Temp folder
-        ///                }); 
+        ///                });
         ///         });
         /// </code>
         /// </example>

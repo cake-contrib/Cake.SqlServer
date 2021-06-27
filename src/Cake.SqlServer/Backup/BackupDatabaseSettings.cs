@@ -17,7 +17,7 @@
         /// Gets or sets the backup file path.
         /// This can either be a file or a folder
         /// </summary>
-        public string Path { get; set; }
+        public string? Path { get; set; }
 
         /// <summary>
         /// Sets the flag to execute backup and create a compressed file
