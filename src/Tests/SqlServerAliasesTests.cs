@@ -9,12 +9,11 @@ using FluentAssertions;
 using NUnit.Framework;
 using NSubstitute;
 
-
 namespace Tests
 {
-    public class SqlServerAliasesTests : IDisposable
+    public sealed class SqlServerAliasesTests : IDisposable
     {
-        private const String ConnectionString = @"data source=(localdb)\MSSqlLocalDb";
+        private const string ConnectionString = @"data source=(localdb)\MSSqlLocalDb";
         private readonly ICakeContext context;
 
         public SqlServerAliasesTests()
@@ -33,7 +32,7 @@ namespace Tests
         public void DatabaseExists_DoesExist_ReturnTrue()
         {
             // Arrange
-            var dbName = "WillExists";
+            const string dbName = "WillExists";
             SqlHelpers.ExecuteSql(ConnectionString, $"Create database {dbName}");
 
             // Act
@@ -51,12 +50,11 @@ namespace Tests
             act.Should().NotThrow();
         }
 
-
         [Test]
         public void DropDatabase_ActuallyDrops()
         {
             //Arrange
-            var dbName = "WillBeDropped";
+            const string dbName = "WillBeDropped";
             SqlHelpers.ExecuteSql(ConnectionString, $"Create database {dbName}");
 
             // Act
@@ -66,12 +64,11 @@ namespace Tests
             SqlHelpers.DbExists(ConnectionString, dbName).Should().BeFalse();
         }
 
-
         [Test]
         public void CreateDatabaseIfNotExists()
         {
             // Act
-            var dbName = "CakeTest";
+            const string dbName = "CakeTest";
             SqlServerAliases.CreateDatabaseIfNotExists(context, ConnectionString, dbName);
 
             // Assert
@@ -85,7 +82,7 @@ namespace Tests
         public void CreateDatabaseIfNotExists_WithPrimaryFile()
         {
             // Act
-            var dbName = "CakeTest";
+            const string dbName = "CakeTest";
             var mdfFilePath = Path.Combine(Path.GetTempPath(), "MyCakeTest.mdf");
             var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath);
             SqlServerAliases.CreateDatabaseIfNotExists(context, ConnectionString, dbName, createSettings);
@@ -102,7 +99,7 @@ namespace Tests
         public void CreateDatabaseIfNotExists_WithPrimaryAndLogFile()
         {
             // Act
-            var dbName = "CakeTest";
+            const string dbName = "CakeTest";
             var mdfFilePath = Path.Combine(Path.GetTempPath(), "MyCakeTest.mdf");
             var logFilePath = Path.Combine(Path.GetTempPath(), "MyCakeTest.ldf");
             var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath).WithLogFile(logFilePath);
@@ -117,13 +114,12 @@ namespace Tests
             SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
         }
 
-
         [Test]
         public void DropAndCreateDatabase_Always_RemovesTable()
         {
             //Arrange
-            var dbName = "ToBeRecreated";
-            var tableName = "WillNotExist";
+            const string dbName = "ToBeRecreated";
+            const string tableName = "WillNotExist";
             SqlHelpers.ExecuteSql(ConnectionString, $"create database {dbName}");
             SqlHelpers.ExecuteSql(ConnectionString, $"create table [{dbName}].dbo.{tableName} (id int null)");
             SqlHelpers.TableExists(ConnectionString, dbName, tableName).Should().BeTrue();
@@ -136,13 +132,12 @@ namespace Tests
             SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
         }
 
-
         [Test]
         public void DropAndCreateDatabase_WithCreateParams()
         {
             //Arrange
-            var dbName = "ToBeRecreated";
-            var tableName = "WillNotExist";
+            const string dbName = "ToBeRecreated";
+            const string tableName = "WillNotExist";
             SqlHelpers.ExecuteSql(ConnectionString, $"create database {dbName}");
             SqlHelpers.ExecuteSql(ConnectionString, $"create table [{dbName}].dbo.{tableName} (id int null)");
             SqlHelpers.TableExists(ConnectionString, dbName, tableName).Should().BeTrue();
@@ -158,8 +153,6 @@ namespace Tests
             File.Exists(logFilePath).Should().BeTrue();
         }
 
-
-
         [Test]
         public void OpenSqlConnection_returns_open_connection()
         {
@@ -168,8 +161,6 @@ namespace Tests
                 connection.State.Should().Be(ConnectionState.Open);
             }
         }
-
-
 
         [Test]
         public void ExecuteSqlCommand_does_not_change_connection_state()
@@ -204,15 +195,13 @@ namespace Tests
             }
         }
 
-
-
         [Test]
         public void ExecuteSqlCommand_CreatesTables()
         {
             //Arrange
-            var dbName = "ForSqlExecution";
-            var tableName1 = "WillExist1";
-            var tableName2 = "WillExist2";
+            const string dbName = "ForSqlExecution";
+            const string tableName1 = "WillExist1";
+            const string tableName2 = "WillExist2";
             SqlHelpers.ExecuteSql(ConnectionString, $"create database {dbName}");
             var sql = $@"
             create table [{dbName}].dbo.{tableName1} (id int null);
@@ -230,16 +219,14 @@ namespace Tests
             SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
         }
 
-
-
         [Test]
         public void ExecuteSqlFile_Executes_Successfuly()
         {
             //Arrange
-            var connectionString = @"data source=(localdb)\MSSqlLocalDb;Database=ForFileExecution";
-            var dbName = "ForFileExecution";
-            var tableName1 = "WillExist1";
-            var tableName2 = "WillExist2";
+            const string connectionString = @"data source=(localdb)\MSSqlLocalDb;Database=ForFileExecution";
+            const string dbName = "ForFileExecution";
+            const string tableName1 = "WillExist1";
+            const string tableName2 = "WillExist2";
             SqlHelpers.ExecuteSql(ConnectionString, $"create database {dbName}");
             var sqlFilePath = GetSqlFilePath();
 
@@ -252,28 +239,27 @@ namespace Tests
             SqlServerAliases.DropDatabase(context, ConnectionString, dbName);
         }
 
-        private static string GetSqlFilePath()
+        private static string? GetSqlFilePath()
         {
-            var testDataDirectory = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "TestData");
+            var testDataDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory!, "TestData");
             return Directory.GetFiles(testDataDirectory, "Script.sql", SearchOption.AllDirectories).FirstOrDefault();
         }
 
         [Test]
-        public void Trying_To_Connect_WithBadConnString_ThowsMeaningful_Exception()
+        public void Trying_To_Connect_WithBadConnString_ThrowsMeaningful_Exception()
         {
-            var connString = "data source=(localdb)\v12.0";
+            const string connString = "data source=(localdb)\v12.0";
             Action act = () => SqlServerAliases.CreateDatabaseIfNotExists(context, connString, "ShouldThrow");
 
             act.Should().Throw<Exception>()
                .WithMessage("Looks like you are trying to connect to LocalDb. Have you correctly escaped your connection string with '@'? It should look like 'var connString = @\"(localDb)\\v12.0\"'");
         }
 
-
         [Test]
         public void CreateDatabase_DbAlreadyExists_Throws()
         {
             // Act
-            var dbName = "Unknown";
+            const string dbName = "Unknown";
             SqlHelpers.ExecuteSql(ConnectionString, $"create database {dbName}");
 
             // Assert
@@ -284,12 +270,11 @@ namespace Tests
             SqlHelpers.ExecuteSql(ConnectionString, $"drop database {dbName}");
         }
 
-
         [Test]
         public void CreateDatabase_Creates_Correctly()
         {
             // Act
-            var dbName = "Unknown";
+            const string dbName = "Unknown";
             SqlServerAliases.CreateDatabase(context, ConnectionString, dbName);
 
             // Assert
@@ -303,7 +288,7 @@ namespace Tests
         public void CreateDatabaseIfNotExists_DbExists_DoesNotThrow()
         {
             // Act
-            var dbName = "ToBeRecreatedAgain";
+            const string dbName = "ToBeRecreatedAgain";
             SqlServerAliases.CreateDatabase(context, ConnectionString, dbName);
             SqlServerAliases.CreateDatabaseIfNotExists(context, ConnectionString, dbName);
 
@@ -318,7 +303,7 @@ namespace Tests
         public void CreateDatabase_WithPrimaryFile()
         {
             // Act
-            var dbName = "CakeTest";
+            const string dbName = "CakeTest";
             var mdfFilePath = Path.Combine(Path.GetTempPath(), "MyCakeTest.mdf");
             var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath);
             SqlServerAliases.CreateDatabase(context, ConnectionString, dbName, createSettings);
@@ -335,7 +320,7 @@ namespace Tests
         public void CreateDatabase_WithPrimaryAndLogFile()
         {
             // Act
-            var dbName = "CakeTest";
+            const string dbName = "CakeTest";
             var mdfFilePath = Path.Combine(Path.GetTempPath(), "MyCakeTest.mdf");
             var logFilePath = Path.Combine(Path.GetTempPath(), "MyCakeTest.ldf");
             var createSettings = new CreateDatabaseSettings().WithPrimaryFile(mdfFilePath).WithLogFile(logFilePath);
@@ -375,10 +360,12 @@ namespace Tests
             {
                 SqlServerAliases.DropDatabase(context, ConnectionString, "some')) is null create database hack--");
             }
-            catch (Exception)
+#pragma warning disable CC0004 // Catch block cannot be empty
+            catch
             {
                 // do nothing
             }
+#pragma warning restore CC0004 // Catch block cannot be empty
 
             // Assert
             SqlHelpers.DbExists(ConnectionString, "hack").Should().BeFalse();
@@ -386,7 +373,6 @@ namespace Tests
             // Cleanup
             SqlHelpers.ExecuteSql(ConnectionString, "if (select DB_ID('hack')) is not null drop database [hack]");
         }
-
 
         [Test]
         public void CreateDatabaseIfNotExists_LiteralInjection_DoesNotInject()
@@ -396,10 +382,12 @@ namespace Tests
             {
                 SqlServerAliases.CreateDatabaseIfNotExists(context, ConnectionString, "some')) is null create database hack--");
             }
-            catch (Exception)
+#pragma warning disable CC0004 // Catch block cannot be empty
+            catch
             {
                 // do nothing
             }
+#pragma warning restore CC0004 // Catch block cannot be empty
 
             // Assert
             SqlHelpers.DbExists(ConnectionString, "hack").Should().BeFalse();
@@ -429,13 +417,10 @@ namespace Tests
             act.Should().NotThrow();
         }
 
-
-
         private class SqlObject
         {
             public int? Id { get; set; }
         }
-
 
         public void Dispose()
         {

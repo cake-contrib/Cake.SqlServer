@@ -18,7 +18,6 @@ namespace Tests
             result.Should().Be(expected);
         }
 
-
         [TestCase("hello", "'hello'")]
         [TestCase("hello'", "'hello'''")]
         [TestCase("'hello'", "'''hello'''")]

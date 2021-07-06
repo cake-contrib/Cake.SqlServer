@@ -2,7 +2,6 @@
 using Cake.SqlServer;
 using FluentAssertions;
 
-
 namespace Tests
 {
     public class LocalDbToolTests
@@ -78,7 +77,6 @@ namespace Tests
             // Assert
             result.Args.Should().Be(@"start ""Cake-Test""");
         }
-
 
         [Test]
         public void Stop_Instance()

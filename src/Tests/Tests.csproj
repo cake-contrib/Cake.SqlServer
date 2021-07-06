@@ -12,15 +12,15 @@
     <PackageReference Include="Cake.Common" Version="1.1.0" />
     <PackageReference Include="Cake.Core" Version="1.1.0" />
     <PackageReference Include="Cake.Testing" Version="1.1.0" />
-    <PackageReference Include="Dapper" Version="2.0.78" />
+    <PackageReference Include="Dapper" Version="2.0.90" />
     <PackageReference Include="FluentAssertions" Version="5.10.3" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="2.1.2" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
-    <PackageReference Include="Microsoft.SqlServer.DACFx" Version="150.5084.2" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="3.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0" />
+    <PackageReference Include="Microsoft.SqlServer.DACFx" Version="150.5164.1" />
     <PackageReference Include="NSubstitute" Version="4.2.2" />
-    <PackageReference Include="NUnit" Version="3.13.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.17.0" />
-    <PackageReference Include="NunitXml.TestLogger" Version="3.0.97" />
+    <PackageReference Include="NUnit" Version="3.13.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
+    <PackageReference Include="NunitXml.TestLogger" Version="3.0.107" />
   </ItemGroup>
   <ItemGroup>
     <None Update="TestData\backupGeneration.sql">

@@ -6,7 +6,7 @@ using Cake.Core.Diagnostics;
 [assembly: InternalsVisibleTo("Tests")]
 namespace Cake.SqlServer
 {
-    #pragma warning disable 1570
+#pragma warning disable 1570
     /// <summary>
     /// <para>
     /// Contains functionality to deal with LocalDB. A wrapper for SQLLocalDb.exe. Allows to create, start, stop and delete instances in LocalDB.
@@ -20,11 +20,11 @@ namespace Cake.SqlServer
     /// </code>
     /// </summary>
     /// #pragma warning enable 1570
-    [CakeAliasCategory("SqlServer")]
+    [CakeAliasCategory(nameof(SqlServer))]
     public static class LocalDbAliases
     {
         /// <summary>
-        /// Creates a server instance and starts the server. 
+        /// Creates a server instance and starts the server.
         /// </summary>
         /// <param name="context">Cake context</param>
         /// <param name="instanceName">Name of the instance to create</param>
@@ -32,7 +32,7 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Create-LocalDB")
         ///          .Does(() =>
         ///          {
@@ -43,7 +43,7 @@ namespace Cake.SqlServer
         [CakeMethodAlias]
         public static void LocalDbCreateInstance(this ICakeContext context, string instanceName, LocalDbVersion version)
         {
-            var settings = new LocalDbSettings()
+            var settings = new LocalDbSettings
             {
                 Action = LocalDbAction.Create,
                 InstanceName = instanceName,
@@ -54,7 +54,7 @@ namespace Cake.SqlServer
 
 
         /// <summary>
-        /// Creates a server instance and starts the server. 
+        /// Creates a server instance and starts the server.
         /// The version number defaults to the version of the SqlLocalDB utility
         /// </summary>
         /// <param name="context">Cake context</param>
@@ -62,7 +62,7 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Create-LocalDB")
         ///          .Does(() =>
         ///          {
@@ -73,7 +73,7 @@ namespace Cake.SqlServer
         [CakeMethodAlias]
         public static void LocalDbCreateInstance(this ICakeContext context, string instanceName)
         {
-            var settings = new LocalDbSettings()
+            var settings = new LocalDbSettings
             {
                 Action = LocalDbAction.Create,
                 InstanceName = instanceName,
@@ -89,18 +89,18 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Delete-LocalDB")
         ///          .Does(() =>
         ///          {
         ///             LocalDbDeleteInstance("Cake-Test");
         ///         });
         /// </code>
-        /// </example>        
+        /// </example>
         [CakeMethodAlias]
         public static void LocalDbDeleteInstance(this ICakeContext context, string instanceName)
         {
-            var settings = new LocalDbSettings()
+            var settings = new LocalDbSettings
             {
                 Action = LocalDbAction.Delete,
                 InstanceName = instanceName,
@@ -117,18 +117,18 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Start-LocalDB")
         ///          .Does(() =>
         ///          {
         ///             LocalDbStartInstance("Cake-Test");
         ///         });
         /// </code>
-        /// </example>        
+        /// </example>
         [CakeMethodAlias]
         public static void LocalDbStartInstance(this ICakeContext context, string instanceName)
         {
-            var settings = new LocalDbSettings()
+            var settings = new LocalDbSettings
             {
                 Action = LocalDbAction.Start,
                 InstanceName = instanceName,
@@ -145,18 +145,18 @@ namespace Cake.SqlServer
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
-        /// 
+        ///
         ///     Task("Stop-LocalDB")
         ///          .Does(() =>
         ///          {
         ///             LocalDbStopInstance("Cake-Test");
         ///         });
         /// </code>
-        /// </example>  
+        /// </example>
         [CakeMethodAlias]
         public static void LocalDbStopInstance(this ICakeContext context, string instanceName)
         {
-            var settings = new LocalDbSettings()
+            var settings = new LocalDbSettings
             {
                 Action = LocalDbAction.Stop,
                 InstanceName = instanceName,

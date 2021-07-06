@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Cake.SqlServer
 {
@@ -27,26 +28,26 @@ namespace Cake.SqlServer
         /// Optional path to write the DB-level deployment script, if <see cref="P:Microsoft.SqlServer.Dac.PublishOptions.GenerateDeploymentScript" /> is true.
         /// This script contains all operations that must be done against the database during deployment.
         /// </summary>
-        public string DatabaseScriptPath { get; set; }
+        public string? DatabaseScriptPath { get; set; }
 
         /// <summary>
         /// Optional path to write the master database-level deployment script, if <see cref="P:Microsoft.SqlServer.Dac.PublishOptions.GenerateDeploymentScript" /> is true.
         /// This script is only created if Azure SQL DB is the target as USE statements are not supported on that platform.
         /// It contains all operations that must be done against the master database, for instance Create Database statements
         /// </summary>
-        public string MasterDbScriptPath { get; set; }
+        public string? MasterDbScriptPath { get; set; }
 
         /// <summary>
         /// Specifies additional deployment contributors which should run - in addition
         /// to those specified in the dacpac.
         /// </summary>
-        public string AdditionalDeploymentContributors { get; set; }
+        public string? AdditionalDeploymentContributors { get; set; }
 
         /// <summary>
         /// Specifies additional deployment contributor arguments in addition to those already listed
         /// in the dacpac.
         /// </summary>
-        public string AdditionalDeploymentContributorArguments { get; set; }
+        public string? AdditionalDeploymentContributorArguments { get; set; }
 
         /// <summary>
         /// Get or set boolean that specifies whether CLR deployment will cause blocking assemblies to be dropped.
@@ -825,7 +826,7 @@ namespace Cake.SqlServer
         /// <remarks>
         /// Valid values must be provided for every variable before deployment, or failures may occur during deployment.
         /// </remarks>
-        public Dictionary<string, string> SqlCommandVariableValues { get; }
+        public IDictionary<string, string> SqlCommandVariableValues { get; }
 
         /// <summary>
         /// Configures options for what will be reported when performing certain operations from <see cref="T:Microsoft.SqlServer.Dac.DacServices" />,
@@ -833,9 +834,10 @@ namespace Cake.SqlServer
         /// </summary>
         public PublishDacpacSettings()
         {
-            this.GenerateDeploymentScript = true;
-            this.GenerateDeploymentReport = false;
-            SqlCommandVariableValues = new Dictionary<string, string>();
+            GenerateDeploymentScript = true;
+            GenerateDeploymentReport = false;
+
+            SqlCommandVariableValues = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         }
     }
 }

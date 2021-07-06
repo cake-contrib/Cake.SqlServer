@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Microsoft.Data.SqlClient;
 using System.Linq;
 using Cake.Core;
@@ -13,7 +14,12 @@ namespace Cake.SqlServer
     {
         // if database name is not provided, dbname from the backup is used.
         // if newStoragePath is not provided, system defaults are used
-        internal static void RestoreSqlBackup(ICakeContext context, String connectionString, RestoreSqlBackupSettings settings, IList<FilePath> backupFiles, IList<FilePath> differentialBackupFiles = null)
+        internal static void RestoreSqlBackup(
+            ICakeContext context,
+            string connectionString,
+            RestoreSqlBackupSettings settings,
+            IList<FilePath> backupFiles,
+            IList<FilePath>? differentialBackupFiles = null)
         {
             Initializer.InitializeNativeSearchPath();
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, connectionString))
@@ -23,37 +29,51 @@ namespace Cake.SqlServer
                 var databaseName = settings.NewDatabaseName ?? oldDbName;
                 if (settings.SwitchToUserMode != DbUserMode.MultiUser)
                 {
-                    var singleModeCommand = GetSetDatabaseUserModeCommand(context, connection, databaseName, settings.SwitchToUserMode);
-                    singleModeCommand.ExecuteNonQuery();
+                    using (var singleModeCommand = GetSetDatabaseUserModeCommand(
+                        context,
+                        connection,
+                        databaseName,
+                        settings.SwitchToUserMode))
+                    {
+                        singleModeCommand.ExecuteNonQuery();
+                    }
                 }
-                var hasDifferentialBackup = differentialBackupFiles != null && differentialBackupFiles.Any();
-                var fullRestoreCommand = GetRestoreSqlBackupCommand(
+                var hasDifferentialBackup = differentialBackupFiles?.Count > 0;
+                using (var fullRestoreCommand = GetRestoreSqlBackupCommand(
                     context,
                     connection,
                     settings.BackupSetFile,
                     settings.WithReplace,
                     hasDifferentialBackup,
                     databaseName,
-                    settings.NewStorageFolder,
-                    backupFiles.ToArray());
-                fullRestoreCommand.ExecuteNonQuery();
+                    settings.NewStorageFolder ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    backupFiles.ToArray()))
+                {
+                    fullRestoreCommand.ExecuteNonQuery();
+                }
+
                 if (hasDifferentialBackup)
                 {
-                    var differentialRestoreCommand = GetRestoreSqlBackupCommand(
+                    using (var differentialRestoreCommand = GetRestoreSqlBackupCommand(
                         context,
                         connection,
                         settings.DifferentialBackupSetFile,
                         false,
                         false,
                         databaseName,
-                        settings.NewStorageFolder,
-                        differentialBackupFiles.ToArray());
-                    differentialRestoreCommand.ExecuteNonQuery();
+                        settings.NewStorageFolder ?? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                        differentialBackupFiles?.ToArray() ?? Array.Empty<FilePath>()))
+                    {
+                        differentialRestoreCommand.ExecuteNonQuery();
+                    }
                 }
                 if (settings.SwitchToUserMode != DbUserMode.MultiUser)
                 {
-                    var singleModeCommand = GetSetDatabaseUserModeCommand(context, connection, databaseName, DbUserMode.MultiUser);
-                    singleModeCommand.ExecuteNonQuery();
+                    using (var singleModeCommand =
+                        GetSetDatabaseUserModeCommand(context, connection, databaseName, DbUserMode.MultiUser))
+                    {
+                        singleModeCommand.ExecuteNonQuery();
+                    }
                 }
             }
         }
@@ -99,17 +119,10 @@ namespace Cake.SqlServer
 
             if (withReplace)
             {
-                sb.AppendLine($"  replace,");
+                sb.AppendLine("  replace,");
             }
 
-            if (withNoRecovery)
-            {
-                sb.AppendLine($"  norecovery");
-            }
-            else
-            {
-                sb.AppendLine($"  recovery");
-            }
+            sb.AppendLine(withNoRecovery ? "  norecovery" : "  recovery");
             context.Log.Debug($"Executing SQL : {sb}");
 
             var pathSeparator = GetPlatformPathSeparator(connection);
@@ -133,7 +146,7 @@ namespace Cake.SqlServer
             return command;
         }
 
-        private static SqlCommand GetSetDatabaseUserModeCommand(ICakeContext context, SqlConnection connection, String databaseName, DbUserMode userMode)
+        private static SqlCommand GetSetDatabaseUserModeCommand(ICakeContext context, SqlConnection connection, string databaseName, DbUserMode userMode)
         {
             var sb = new StringBuilder();
             sb.AppendLine();
@@ -141,28 +154,28 @@ namespace Cake.SqlServer
             switch (userMode)
             {
                 case DbUserMode.SingleUser:
-                    sb.AppendLine($@"if db_id({Sql.EscapeNameQuotes(databaseName)}) is not null");
-                    sb.AppendLine($@"begin");
-                    sb.AppendLine($@"    use master;");
-                    sb.AppendLine($@"    alter database {Sql.EscapeName(databaseName)} set single_user with rollback immediate;");
-                    sb.AppendLine($@"end");
-                    sb.AppendLine($@";");
+                    sb.AppendLine($"if db_id({Sql.EscapeNameQuotes(databaseName)}) is not null");
+                    sb.AppendLine($"begin");
+                    sb.AppendLine($"    use master;");
+                    sb.AppendLine($"    alter database {Sql.EscapeName(databaseName)} set single_user with rollback immediate;");
+                    sb.AppendLine($"end");
+                    sb.AppendLine($";");
                     break;
                 case DbUserMode.RestrictedUser:
-                    sb.AppendLine($@"if db_id({Sql.EscapeNameQuotes(databaseName)}) is not null");
-                    sb.AppendLine($@"begin");
-                    sb.AppendLine($@"    use master;");
-                    sb.AppendLine($@"    alter database {Sql.EscapeName(databaseName)} set restricted_user with rollback immediate;");
-                    sb.AppendLine($@"end");
-                    sb.AppendLine($@";");
+                    sb.AppendLine($"if db_id({Sql.EscapeNameQuotes(databaseName)}) is not null");
+                    sb.AppendLine($"begin");
+                    sb.AppendLine($"    use master;");
+                    sb.AppendLine($"    alter database {Sql.EscapeName(databaseName)} set restricted_user with rollback immediate;");
+                    sb.AppendLine($"end");
+                    sb.AppendLine($";");
                     break;
                 default:
-                    sb.AppendLine($@"if db_id({Sql.EscapeNameQuotes(databaseName)}) is not null");
-                    sb.AppendLine($@"begin");
-                    sb.AppendLine($@"    use master;");
-                    sb.AppendLine($@"    alter database {Sql.EscapeName(databaseName)} set multi_user;");
-                    sb.AppendLine($@"end");
-                    sb.AppendLine($@";");
+                    sb.AppendLine($"if db_id({Sql.EscapeNameQuotes(databaseName)}) is not null");
+                    sb.AppendLine($"begin");
+                    sb.AppendLine($"    use master;");
+                    sb.AppendLine($"    alter database {Sql.EscapeName(databaseName)} set multi_user;");
+                    sb.AppendLine($"end");
+                    sb.AppendLine($";");
                     break;
             }
 
@@ -174,11 +187,15 @@ namespace Cake.SqlServer
 
         private static char GetPlatformPathSeparator(SqlConnection connection)
         {
-            var sql = "select @@version as version";
+            const string sql = "select @@version as version";
 
-            var version = ReadSingleString(sql, "version", connection).ToLower();
+            var version = ReadSingleString(sql, "version", connection).ToLower(CultureInfo.InvariantCulture);
 
+#if NET5_0
+            if (version.Contains("linux", StringComparison.OrdinalIgnoreCase))
+#else
             if (version.Contains("linux"))
+#endif
             {
                 return '/';
             }
@@ -188,106 +205,127 @@ namespace Cake.SqlServer
 
         internal static List<LogicalNames> GetLogicalNames(FilePath backupFile, SqlConnection connection)
         {
-            var fileListSql = @"RESTORE FILELISTONLY from Disk = @backupFile";
-            var command = SqlServerAliasesImpl.CreateSqlCommand(fileListSql, connection);
-            command.Parameters.AddWithValue("@backupFile", backupFile.ToString());
-            var logicalNames = new List<LogicalNames>();
-            using (var reader = command.ExecuteReader())
+            const string fileListSql = "RESTORE FILELISTONLY from Disk = @backupFile";
+            using (var command = SqlServerAliasesImpl.CreateSqlCommand(fileListSql, connection))
             {
-                if (!reader.HasRows)
+                command.Parameters.AddWithValue("@backupFile", backupFile.ToString());
+                var logicalNames = new List<LogicalNames>();
+                using (var reader = command.ExecuteReader())
                 {
-                    throw new Exception($"Unable to read logical names from the backup at {backupFile}. Are you sure it is SQL backup file?");
-                }
-                while (reader.Read())
-                {
-                    var name = new LogicalNames()
+                    if (!reader.HasRows)
                     {
-                        LogicalName = reader.GetString(reader.GetOrdinal("LogicalName")),
-                        PhysicalName = reader.GetString(reader.GetOrdinal("PhysicalName")),
-                        Type = reader.GetString(reader.GetOrdinal("Type")),
-                    };
+                        throw new InvalidBackupFileException(
+                            $"Unable to read logical names from the backup at {backupFile}. Are you sure it is SQL backup file?");
+                    }
 
-                    logicalNames.Add(name);
+                    while (reader.Read())
+                    {
+                        var name = new LogicalNames
+                        {
+                            LogicalName = reader.GetString(reader.GetOrdinal("LogicalName")),
+                            PhysicalName = reader.GetString(reader.GetOrdinal("PhysicalName")),
+                            Type = reader.GetString(reader.GetOrdinal("Type")),
+                        };
+
+                        logicalNames.Add(name);
+                    }
                 }
+
+                return logicalNames;
             }
-            return logicalNames;
         }
 
 
-        internal static String GetDatabaseName(FilePath backupFile, SqlConnection connection)
+        internal static string GetDatabaseName(FilePath backupFile, SqlConnection connection)
         {
-            var sql = @"restore headeronly from disk = @backupFile";
-            var command = SqlServerAliasesImpl.CreateSqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@backupFile", backupFile.ToString());
+            const string sql = "restore headeronly from disk = @backupFile";
+            using (var command = SqlServerAliasesImpl.CreateSqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@backupFile", backupFile.ToString());
 
-            var dbName = ReadSingleString(command, "DatabaseName");
-
-            return dbName;
+                return ReadSingleString(command, "DatabaseName");
+            }
         }
 
 
-        private static String GetFilePath(SqlConnection connection, string oldDatabaseName, string newDatabaseName, DirectoryPath newPath, LogicalNames logicalName, char pathSeparator)
+        private static string GetFilePath(
+            SqlConnection connection,
+            string oldDatabaseName,
+            string newDatabaseName,
+            DirectoryPath newPath,
+            LogicalNames logicalName,
+            char pathSeparator)
         {
             var fileName = System.IO.Path.GetFileName(logicalName.PhysicalName);
+#if NET5_0
+            fileName = fileName?.Replace(oldDatabaseName, newDatabaseName, StringComparison.OrdinalIgnoreCase);
+#else
             fileName = fileName?.Replace(oldDatabaseName, newDatabaseName);
+#endif
 
             var folder = newPath;
 
-            if (logicalName.Type.Equals("L", StringComparison.OrdinalIgnoreCase))
+            if (logicalName.Type?.Equals("L", StringComparison.OrdinalIgnoreCase) ?? false)
             {
-                folder = folder ?? GetDefaultLogPath(connection);
+                folder ??= GetDefaultLogPath(connection);
             }
-            if (logicalName.Type.Equals("D", StringComparison.OrdinalIgnoreCase))
+            if (logicalName.Type?.Equals("D", StringComparison.OrdinalIgnoreCase) ?? false)
             {
-                folder = folder ?? GetDefaultDataPath(connection);
+                folder ??= GetDefaultDataPath(connection);
             }
 
             var fullPath = folder.FullPath + pathSeparator + fileName;
 
             if (pathSeparator == '\\')
             {
+#if NET5_0
+                return fullPath.Replace("/", "\\", StringComparison.OrdinalIgnoreCase);
+#else
                 return fullPath.Replace("/", "\\");
+#endif
             }
-            else
+#if NET5_0
+            return fullPath.Replace("\\", "/", StringComparison.OrdinalIgnoreCase);
+#else
+            return fullPath.Replace("\\", "/");
+#endif
+        }
+
+
+        internal static string GetDefaultLogPath(SqlConnection connection)
+        {
+            const string sql = "select serverproperty('instancedefaultlogpath') as defaultpath";
+
+            var defaultPath = ReadSingleString(sql, "defaultpath", connection);
+
+            return defaultPath;
+        }
+
+
+        internal static string GetDefaultDataPath(SqlConnection connection)
+        {
+            const string sql = "select serverproperty('instancedefaultdatapath') as defaultpath";
+
+            var defaultPath = ReadSingleString(sql, "defaultpath", connection);
+
+            return defaultPath;
+        }
+        private static string ReadSingleString(string sql, string columnName, SqlConnection connection)
+        {
+            using (var command = SqlServerAliasesImpl.CreateSqlCommand(sql, connection))
             {
-                return fullPath.Replace("\\", "/");
+                return ReadSingleString(command, columnName);
             }
-
         }
 
 
-        internal static String GetDefaultLogPath(SqlConnection connection)
-        {
-            var sql = "select serverproperty('instancedefaultlogpath') as defaultpath";
-
-            var defaultPath = ReadSingleString(sql, "defaultpath", connection);
-
-            return defaultPath;
-        }
-
-
-        internal static String GetDefaultDataPath(SqlConnection connection)
-        {
-            var sql = "select serverproperty('instancedefaultdatapath') as defaultpath";
-
-            var defaultPath = ReadSingleString(sql, "defaultpath", connection);
-
-            return defaultPath;
-        }
-        private static string ReadSingleString(String sql, String columnName, SqlConnection connection)
-        {
-            var command = SqlServerAliasesImpl.CreateSqlCommand(sql, connection);
-            return ReadSingleString(command, columnName);
-        }
-
-
-        private static string ReadSingleString(SqlCommand sqlCommand, String columnName)
+        private static string ReadSingleString(SqlCommand sqlCommand, string columnName)
         {
             using (var reader = sqlCommand.ExecuteReader())
             {
                 if (!reader.HasRows)
                 {
-                    throw new Exception($"Unable to read data as no raws was returned");
+                    throw new NoRowsException($"Unable to read data as no rows was returned");
                 }
                 reader.Read();
                 var value = reader.GetString(reader.GetOrdinal(columnName));
@@ -299,9 +337,9 @@ namespace Cake.SqlServer
 
         internal class LogicalNames
         {
-            public String LogicalName { get; set; }
-            public String PhysicalName { get; set; }
-            public String Type { get; set; }
+            public string? LogicalName { get; set; }
+            public string? PhysicalName { get; set; }
+            public string? Type { get; set; }
         }
     }
 }

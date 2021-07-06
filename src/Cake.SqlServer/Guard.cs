@@ -10,10 +10,10 @@ namespace Cake.SqlServer
         [DebuggerHidden]
         internal static void ArgumentIsNotNull(object value, string argumentName)
         {
-            if (value is String)
+            if (value is string)
             {
-                var stringValue = value as String;
-                if (String.IsNullOrWhiteSpace(stringValue))
+                var stringValue = value as string;
+                if (string.IsNullOrWhiteSpace(stringValue))
                 {
                     throw new ArgumentNullException(argumentName);
                 }
