@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Microsoft.Data.SqlClient;
 using System.Linq;
-using Cake.Core;
-using Cake.Core.IO;
-using Cake.Core.Diagnostics;
 using System.Text;
+using Cake.Core;
+using Cake.Core.Diagnostics;
+using Cake.Core.IO;
+using Microsoft.Data.SqlClient;
 
 namespace Cake.SqlServer
 {
@@ -38,6 +38,7 @@ namespace Cake.SqlServer
                         singleModeCommand.ExecuteNonQuery();
                     }
                 }
+
                 var hasDifferentialBackup = differentialBackupFiles?.Count > 0;
                 using (var fullRestoreCommand = GetRestoreSqlBackupCommand(
                     context,
@@ -67,6 +68,7 @@ namespace Cake.SqlServer
                         differentialRestoreCommand.ExecuteNonQuery();
                     }
                 }
+
                 if (settings.SwitchToUserMode != DbUserMode.MultiUser)
                 {
                     using (var singleModeCommand =
@@ -76,131 +78,6 @@ namespace Cake.SqlServer
                     }
                 }
             }
-        }
-
-        // This method is used to determine one single "Restore database" command.
-        private static SqlCommand GetRestoreSqlBackupCommand(
-            ICakeContext context,
-            SqlConnection connection,
-            int? backupSetFile,
-            bool withReplace,
-            bool withNoRecovery,
-            string newDatabaseName,
-            DirectoryPath newStorageFolder,
-            params FilePath[] backupFiles)
-        {
-            var firstBackupFile = backupFiles.First();
-            var oldDbName = GetDatabaseName(firstBackupFile, connection);
-            var databaseName = newDatabaseName ?? oldDbName;
-            context.Log.Information($"Using database name '{databaseName}' to be a name for the restored database");
-
-            var logicalNames = GetLogicalNames(firstBackupFile, connection);
-
-            var sb = new StringBuilder();
-            sb.AppendLine();
-            sb.AppendLine($"Restore database {Sql.EscapeName(databaseName)}");
-            sb.AppendLine($"from");
-            for (var i = 0; i < backupFiles.Length; i++)
-            {
-                // only need comma before penultimate list
-                var trailingComma = i < backupFiles.Length - 1 ? "," : "";
-                sb.AppendLine($"  disk = @backupFile{i}{trailingComma}");
-            }
-            sb.AppendLine($"with");
-            if (backupSetFile.HasValue)
-            {
-                sb.AppendLine($"  file = {backupSetFile.Value},");
-            }
-
-            for (var i = 0; i < logicalNames.Count; i++)
-            {
-                sb.AppendLine($"  move @LName{i} to @LPath{i},");
-            }
-
-            if (withReplace)
-            {
-                sb.AppendLine("  replace,");
-            }
-
-            sb.AppendLine(withNoRecovery ? "  norecovery" : "  recovery");
-            context.Log.Debug($"Executing SQL : {sb}");
-
-            var pathSeparator = GetPlatformPathSeparator(connection);
-            var command = SqlServerAliasesImpl.CreateSqlCommand(sb.ToString(), connection);
-            for (var i = 0; i < backupFiles.Length; i++)
-            {
-                command.Parameters.AddWithValue($"@backupFile{i}", backupFiles[i].ToString());
-            }
-            for (var i = 0; i < logicalNames.Count; i++)
-            {
-                var lParameterName = "@LName" + i;
-                context.Log.Debug($"Adding parameter '{lParameterName}' with value '{logicalNames[i].LogicalName}'");
-                command.Parameters.AddWithValue(lParameterName, logicalNames[i].LogicalName);
-
-                var filePath = GetFilePath(connection, oldDbName, databaseName, newStorageFolder, logicalNames[i], pathSeparator);
-                var pathParamName = "@LPath" + i;
-                context.Log.Debug($"Adding parameter '{pathParamName}' with value '{filePath}'");
-                command.Parameters.AddWithValue(pathParamName, filePath);
-            }
-
-            return command;
-        }
-
-        private static SqlCommand GetSetDatabaseUserModeCommand(ICakeContext context, SqlConnection connection, string databaseName, DbUserMode userMode)
-        {
-            var sb = new StringBuilder();
-            sb.AppendLine();
-
-            switch (userMode)
-            {
-                case DbUserMode.SingleUser:
-                    sb.AppendLine($"if db_id({Sql.EscapeNameQuotes(databaseName)}) is not null");
-                    sb.AppendLine($"begin");
-                    sb.AppendLine($"    use master;");
-                    sb.AppendLine($"    alter database {Sql.EscapeName(databaseName)} set single_user with rollback immediate;");
-                    sb.AppendLine($"end");
-                    sb.AppendLine($";");
-                    break;
-                case DbUserMode.RestrictedUser:
-                    sb.AppendLine($"if db_id({Sql.EscapeNameQuotes(databaseName)}) is not null");
-                    sb.AppendLine($"begin");
-                    sb.AppendLine($"    use master;");
-                    sb.AppendLine($"    alter database {Sql.EscapeName(databaseName)} set restricted_user with rollback immediate;");
-                    sb.AppendLine($"end");
-                    sb.AppendLine($";");
-                    break;
-                default:
-                    sb.AppendLine($"if db_id({Sql.EscapeNameQuotes(databaseName)}) is not null");
-                    sb.AppendLine($"begin");
-                    sb.AppendLine($"    use master;");
-                    sb.AppendLine($"    alter database {Sql.EscapeName(databaseName)} set multi_user;");
-                    sb.AppendLine($"end");
-                    sb.AppendLine($";");
-                    break;
-            }
-
-            context.Log.Debug($"Executing SQL : {sb}");
-            var command = SqlServerAliasesImpl.CreateSqlCommand(sb.ToString(), connection);
-
-            return command;
-        }
-
-        private static char GetPlatformPathSeparator(SqlConnection connection)
-        {
-            const string sql = "select @@version as version";
-
-            var version = ReadSingleString(sql, "version", connection).ToLower(CultureInfo.InvariantCulture);
-
-#if NET5_0
-            if (version.Contains("linux", StringComparison.OrdinalIgnoreCase))
-#else
-            if (version.Contains("linux"))
-#endif
-            {
-                return '/';
-            }
-
-            return '\\';
         }
 
         internal static List<LogicalNames> GetLogicalNames(FilePath backupFile, SqlConnection connection)
@@ -235,7 +112,6 @@ namespace Cake.SqlServer
             }
         }
 
-
         internal static string GetDatabaseName(FilePath backupFile, SqlConnection connection)
         {
             const string sql = "restore headeronly from disk = @backupFile";
@@ -247,6 +123,147 @@ namespace Cake.SqlServer
             }
         }
 
+        internal static string GetDefaultLogPath(SqlConnection connection)
+        {
+            const string sql = "select serverproperty('instancedefaultlogpath') as defaultpath";
+
+            var defaultPath = ReadSingleString(sql, "defaultpath", connection);
+
+            return defaultPath;
+        }
+
+        internal static string GetDefaultDataPath(SqlConnection connection)
+        {
+            const string sql = "select serverproperty('instancedefaultdatapath') as defaultpath";
+
+            var defaultPath = ReadSingleString(sql, "defaultpath", connection);
+
+            return defaultPath;
+        }
+
+        // This method is used to determine one single "Restore database" command.
+        private static SqlCommand GetRestoreSqlBackupCommand(
+            ICakeContext context,
+            SqlConnection connection,
+            int? backupSetFile,
+            bool withReplace,
+            bool withNoRecovery,
+            string newDatabaseName,
+            DirectoryPath newStorageFolder,
+            params FilePath[] backupFiles)
+        {
+            var firstBackupFile = backupFiles.First();
+            var oldDbName = GetDatabaseName(firstBackupFile, connection);
+            var databaseName = newDatabaseName ?? oldDbName;
+            context.Log.Information($"Using database name '{databaseName}' to be a name for the restored database");
+
+            var logicalNames = GetLogicalNames(firstBackupFile, connection);
+
+            var sb = new StringBuilder();
+            sb.AppendLine();
+            sb.Append("Restore database ").AppendLine(Sql.EscapeName(databaseName));
+            sb.AppendLine(" from");
+            for (var i = 0; i < backupFiles.Length; i++)
+            {
+                // only need comma before penultimate list
+                var trailingComma = i < backupFiles.Length - 1 ? "," : string.Empty;
+                sb.Append("  disk = @backupFile").Append(i).AppendLine(trailingComma);
+            }
+
+            sb.AppendLine("with");
+            if (backupSetFile.HasValue)
+            {
+                sb.Append("  file = ").Append(backupSetFile.Value).AppendLine(",");
+            }
+
+            for (var i = 0; i < logicalNames.Count; i++)
+            {
+                var strIndex = i.ToString(CultureInfo.InvariantCulture);
+                sb.Append("  move @LName").Append(strIndex).Append(" to @LPath").Append(strIndex).AppendLine(",");
+            }
+
+            if (withReplace)
+            {
+                sb.AppendLine("  replace,");
+            }
+
+            sb.AppendLine(withNoRecovery ? "  norecovery" : "  recovery");
+            context.Log.Debug($"Executing SQL : {sb}");
+
+            var pathSeparator = GetPlatformPathSeparator(connection);
+            var command = SqlServerAliasesImpl.CreateSqlCommand(sb.ToString(), connection);
+            for (var i = 0; i < backupFiles.Length; i++)
+            {
+                command.Parameters.AddWithValue($"@backupFile{i}", backupFiles[i].ToString());
+            }
+
+            for (var i = 0; i < logicalNames.Count; i++)
+            {
+                var lParameterName = "@LName" + i;
+                context.Log.Debug($"Adding parameter '{lParameterName}' with value '{logicalNames[i].LogicalName}'");
+                command.Parameters.AddWithValue(lParameterName, logicalNames[i].LogicalName);
+
+                var filePath = GetFilePath(connection, oldDbName, databaseName, newStorageFolder, logicalNames[i], pathSeparator);
+                var pathParamName = "@LPath" + i;
+                context.Log.Debug($"Adding parameter '{pathParamName}' with value '{filePath}'");
+                command.Parameters.AddWithValue(pathParamName, filePath);
+            }
+
+            return command;
+        }
+
+        private static SqlCommand GetSetDatabaseUserModeCommand(ICakeContext context, SqlConnection connection, string databaseName, DbUserMode userMode)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine();
+
+            switch (userMode)
+            {
+                case DbUserMode.SingleUser:
+                    sb.Append("if db_id(").Append(Sql.EscapeNameQuotes(databaseName)).AppendLine(") is not null");
+                    sb.AppendLine("begin");
+                    sb.AppendLine("    use master;");
+                    sb.Append("    alter database ").Append(Sql.EscapeName(databaseName)).AppendLine(" set single_user with rollback immediate;");
+                    sb.AppendLine("end");
+                    sb.AppendLine(";");
+                    break;
+                case DbUserMode.RestrictedUser:
+                    sb.Append("if db_id(").Append(Sql.EscapeNameQuotes(databaseName)).AppendLine(") is not null");
+                    sb.AppendLine("begin");
+                    sb.AppendLine("    use master;");
+                    sb.Append("    alter database ").Append(Sql.EscapeName(databaseName)).AppendLine(" set restricted_user with rollback immediate;");
+                    sb.AppendLine("end");
+                    sb.AppendLine(";");
+                    break;
+                default:
+                    sb.Append("if db_id(").Append(Sql.EscapeNameQuotes(databaseName)).AppendLine(") is not null");
+                    sb.AppendLine("begin");
+                    sb.AppendLine("    use master;");
+                    sb.Append("    alter database ").Append(Sql.EscapeName(databaseName)).AppendLine(" set multi_user;");
+                    sb.AppendLine("end");
+                    sb.AppendLine(";");
+                    break;
+            }
+
+            context.Log.Debug($"Executing SQL : {sb}");
+            var command = SqlServerAliasesImpl.CreateSqlCommand(sb.ToString(), connection);
+
+            return command;
+        }
+
+        private static char GetPlatformPathSeparator(SqlConnection connection)
+        {
+            const string sql = "select @@version as version";
+
+            var version = ReadSingleString(sql, "version", connection).ToLower(CultureInfo.InvariantCulture);
+
+            if (version.Contains("linux", StringComparison.OrdinalIgnoreCase))
+            {
+                return '/';
+            }
+
+            return '\\';
+        }
 
         private static string GetFilePath(
             SqlConnection connection,
@@ -257,11 +274,7 @@ namespace Cake.SqlServer
             char pathSeparator)
         {
             var fileName = System.IO.Path.GetFileName(logicalName.PhysicalName);
-#if NET5_0
             fileName = fileName?.Replace(oldDatabaseName, newDatabaseName, StringComparison.OrdinalIgnoreCase);
-#else
-            fileName = fileName?.Replace(oldDatabaseName, newDatabaseName);
-#endif
 
             var folder = newPath;
 
@@ -269,6 +282,7 @@ namespace Cake.SqlServer
             {
                 folder ??= GetDefaultLogPath(connection);
             }
+
             if (logicalName.Type?.Equals("D", StringComparison.OrdinalIgnoreCase) ?? false)
             {
                 folder ??= GetDefaultDataPath(connection);
@@ -278,38 +292,12 @@ namespace Cake.SqlServer
 
             if (pathSeparator == '\\')
             {
-#if NET5_0
                 return fullPath.Replace("/", "\\", StringComparison.OrdinalIgnoreCase);
-#else
-                return fullPath.Replace("/", "\\");
-#endif
             }
-#if NET5_0
+
             return fullPath.Replace("\\", "/", StringComparison.OrdinalIgnoreCase);
-#else
-            return fullPath.Replace("\\", "/");
-#endif
         }
 
-
-        internal static string GetDefaultLogPath(SqlConnection connection)
-        {
-            const string sql = "select serverproperty('instancedefaultlogpath') as defaultpath";
-
-            var defaultPath = ReadSingleString(sql, "defaultpath", connection);
-
-            return defaultPath;
-        }
-
-
-        internal static string GetDefaultDataPath(SqlConnection connection)
-        {
-            const string sql = "select serverproperty('instancedefaultdatapath') as defaultpath";
-
-            var defaultPath = ReadSingleString(sql, "defaultpath", connection);
-
-            return defaultPath;
-        }
         private static string ReadSingleString(string sql, string columnName, SqlConnection connection)
         {
             using (var command = SqlServerAliasesImpl.CreateSqlCommand(sql, connection))
@@ -318,27 +306,27 @@ namespace Cake.SqlServer
             }
         }
 
-
         private static string ReadSingleString(SqlCommand sqlCommand, string columnName)
         {
             using (var reader = sqlCommand.ExecuteReader())
             {
                 if (!reader.HasRows)
                 {
-                    throw new NoRowsException($"Unable to read data as no rows was returned");
+                    throw new NoRowsException("Unable to read data as no rows was returned");
                 }
+
                 reader.Read();
                 var value = reader.GetString(reader.GetOrdinal(columnName));
                 return value;
             }
         }
 
-
-
         internal class LogicalNames
         {
             public string? LogicalName { get; set; }
+
             public string? PhysicalName { get; set; }
+
             public string? Type { get; set; }
         }
     }

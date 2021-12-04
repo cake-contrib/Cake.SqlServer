@@ -2,10 +2,10 @@
 using System.IO;
 using System.Linq;
 using Cake.Core;
-using NUnit.Framework;
 using Cake.SqlServer;
 using FluentAssertions;
 using NSubstitute;
+using NUnit.Framework;
 
 namespace Tests
 {

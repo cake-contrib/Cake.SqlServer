@@ -1,5 +1,5 @@
-#tool "nuget:?package=NUnit.ConsoleRunner&version=3.12.0"
-#tool "nuget:?package=GitVersion.CommandLine&version=5.6.6"
+#tool "nuget:?package=NUnit.ConsoleRunner&version=3.13.0"
+#tool "nuget:?package=GitVersion.CommandLine&version=5.8.1"
 #load "./parameters.cake"
 
 
@@ -54,7 +54,7 @@ Task("Restore-Nuget-Packages")
 {
     Information("Restoring packages in {0}", BuildParameters.Solution);
 
-    DotNetCoreRestore(BuildParameters.Solution);
+    DotNetRestore(BuildParameters.Solution);
 });
 
 
@@ -67,9 +67,9 @@ Task("Build")
 {
     Information("Building {0}", BuildParameters.Solution);
 
-    DotNetCoreMSBuild(
+    DotNetMSBuild(
         BuildParameters.Solution,
-        new DotNetCoreMSBuildSettings()
+        new DotNetMSBuildSettings()
             .WithTarget("Build")
             .SetConfiguration(configuration));
 });
@@ -120,15 +120,15 @@ Task("Run-Unit-Tests")
     .Does(() =>
 	{
         var testProject = "./src/Tests/Tests.csproj";
-        Information(testProject);       
+        Information(testProject);
 
-        var settings = new DotNetCoreTestSettings
+        var settings = new DotNetTestSettings
         {
             Configuration = "Release",
             Loggers = new List<string> { $"nunit;LogFilePath={parameters.TestResultsFile}" },
         };
 
-        DotNetCoreTest(testProject, settings);
+        DotNetTest(testProject, settings);
     })
     .Finally(() =>
     {
@@ -146,43 +146,21 @@ Task("Copy-Files")
     .Does(() =>
 	{
         EnsureDirectoryExists(parameters.ResultBinDir);
-        EnsureDirectoryExists(parameters.ResultBinDir + "/net461");
-        EnsureDirectoryExists(parameters.ResultBinDir + "/netstandard2.0");
+        EnsureDirectoryExists(parameters.ResultBinDir + "/netcoreapp3.1");
         EnsureDirectoryExists(parameters.ResultBinDir + "/net5.0");
-        EnsureDirectoryExists(parameters.ResultBinDir + "/net5.0/ref");
+        EnsureDirectoryExists(parameters.ResultBinDir + "/net6.0");
 
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Cake.SqlServer.dll", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Cake.SqlServer.pdb", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Cake.SqlServer.xml", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.Data.SqlClient.dll", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.Data.SqlClient.SNI.x64.dll", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.Data.SqlClient.SNI.x64.pdb", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.Data.SqlClient.SNI.x86.dll", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.Data.SqlClient.SNI.x86.pdb", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.Data.Tools.Schema.Sql.dll", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.Data.Tools.Utilities.dll", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.Identity.Client.dll", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.IdentityModel.JsonWebTokens.dll", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.IdentityModel.Logging.dll", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.IdentityModel.Protocols.dll", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.IdentityModel.Tokens.dll", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.SqlServer.Dac.dll", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.SqlServer.Dac.Extensions.dll", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.SqlServer.TransactSql.ScriptDom.dll", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/Microsoft.SqlServer.Types.dll", parameters.ResultBinDir + "/net461");
-        CopyFileToDirectory(parameters.BuildDir + "/net461/System.IdentityModel.Tokens.Jwt.dll", parameters.ResultBinDir + "/net461");
-
-        CopyFileToDirectory(parameters.BuildDir + "/netstandard2.0/Cake.SqlServer.dll", parameters.ResultBinDir + "/netstandard2.0");
-        CopyFileToDirectory(parameters.BuildDir + "/netstandard2.0/Cake.SqlServer.pdb", parameters.ResultBinDir + "/netstandard2.0");
-        CopyFileToDirectory(parameters.BuildDir + "/netstandard2.0/Cake.SqlServer.xml", parameters.ResultBinDir + "/netstandard2.0");
-        CopyFileToDirectory(parameters.BuildDir + "/netstandard2.0/Cake.SqlServer.deps.json", parameters.ResultBinDir + "/netstandard2.0");
+        CopyFileToDirectory(parameters.BuildDir + "/netcoreapp3.1/Cake.SqlServer.dll", parameters.ResultBinDir + "/netcoreapp3.1");
+        CopyFileToDirectory(parameters.BuildDir + "/netcoreapp3.1/Cake.SqlServer.pdb", parameters.ResultBinDir + "/netcoreapp3.1");
+        CopyFileToDirectory(parameters.BuildDir + "/netcoreapp3.1/Cake.SqlServer.xml", parameters.ResultBinDir + "/netcoreapp3.1");
 
         CopyFileToDirectory(parameters.BuildDir + "/net5.0/Cake.SqlServer.dll", parameters.ResultBinDir + "/net5.0");
         CopyFileToDirectory(parameters.BuildDir + "/net5.0/Cake.SqlServer.pdb", parameters.ResultBinDir + "/net5.0");
         CopyFileToDirectory(parameters.BuildDir + "/net5.0/Cake.SqlServer.xml", parameters.ResultBinDir + "/net5.0");
-        CopyFileToDirectory(parameters.BuildDir + "/net5.0/Cake.SqlServer.deps.json", parameters.ResultBinDir + "/net5.0");
-        CopyFileToDirectory(parameters.BuildDir + "/net5.0/ref/Cake.SqlServer.dll", parameters.ResultBinDir + "/net5.0/ref");
+
+        CopyFileToDirectory(parameters.BuildDir + "/net6.0/Cake.SqlServer.dll", parameters.ResultBinDir + "/net6.0");
+        CopyFileToDirectory(parameters.BuildDir + "/net6.0/Cake.SqlServer.pdb", parameters.ResultBinDir + "/net6.0");
+        CopyFileToDirectory(parameters.BuildDir + "/net6.0/Cake.SqlServer.xml", parameters.ResultBinDir + "/net6.0");
 
         CopyFiles(new FilePath[] { "LICENSE", "README.md", "ReleaseNotes.md" }, parameters.ResultBinDir);
 	});

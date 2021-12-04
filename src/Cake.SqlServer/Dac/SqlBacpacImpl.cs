@@ -19,20 +19,19 @@ namespace Cake.SqlServer
             context.Log.Information($"Finished creating bacpac file from database {databaseName}. File location is {resultingFilePath}");
         }
 
-
         public static void RestoreBacpac(ICakeContext context, string connectionString, string newDatabaseName, string? bacpacFilePath)
         {
             if (string.IsNullOrEmpty(bacpacFilePath))
             {
                 throw new ArgumentNullException(nameof(bacpacFilePath));
             }
+
             Initializer.InitializeNativeSearchPath();
 
             context.Log.Information($"About to restore bacpac from {bacpacFilePath} into database {newDatabaseName}");
 
             using (var bacPackage = BacPackage.Load(bacpacFilePath))
             {
-
                 context.Log.Debug($"Loaded bacpac file {bacpacFilePath}");
 
                 var service = new DacServices(connectionString);

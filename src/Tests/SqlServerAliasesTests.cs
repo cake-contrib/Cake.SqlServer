@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Data;
-using Microsoft.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using Cake.Core;
 using Cake.SqlServer;
 using FluentAssertions;
-using NUnit.Framework;
+using Microsoft.Data.SqlClient;
 using NSubstitute;
+using NUnit.Framework;
 
 namespace Tests
 {
@@ -53,7 +53,7 @@ namespace Tests
         [Test]
         public void DropDatabase_ActuallyDrops()
         {
-            //Arrange
+            // Arrange
             const string dbName = "WillBeDropped";
             SqlHelpers.ExecuteSql(ConnectionString, $"Create database {dbName}");
 
@@ -117,7 +117,7 @@ namespace Tests
         [Test]
         public void DropAndCreateDatabase_Always_RemovesTable()
         {
-            //Arrange
+            // Arrange
             const string dbName = "ToBeRecreated";
             const string tableName = "WillNotExist";
             SqlHelpers.ExecuteSql(ConnectionString, $"create database {dbName}");
@@ -135,7 +135,7 @@ namespace Tests
         [Test]
         public void DropAndCreateDatabase_WithCreateParams()
         {
-            //Arrange
+            // Arrange
             const string dbName = "ToBeRecreated";
             const string tableName = "WillNotExist";
             SqlHelpers.ExecuteSql(ConnectionString, $"create database {dbName}");
@@ -198,7 +198,7 @@ namespace Tests
         [Test]
         public void ExecuteSqlCommand_CreatesTables()
         {
-            //Arrange
+            // Arrange
             const string dbName = "ForSqlExecution";
             const string tableName1 = "WillExist1";
             const string tableName2 = "WillExist2";
@@ -222,7 +222,7 @@ namespace Tests
         [Test]
         public void ExecuteSqlFile_Executes_Successfuly()
         {
-            //Arrange
+            // Arrange
             const string connectionString = @"data source=(localdb)\MSSqlLocalDb;Database=ForFileExecution";
             const string dbName = "ForFileExecution";
             const string tableName1 = "WillExist1";
@@ -237,12 +237,6 @@ namespace Tests
             SqlHelpers.TableExists(ConnectionString, dbName, tableName1).Should().BeTrue();
             SqlHelpers.TableExists(ConnectionString, dbName, tableName2).Should().BeTrue();
             SqlServerAliases.DropDatabase(context, ConnectionString, dbName);
-        }
-
-        private static string? GetSqlFilePath()
-        {
-            var testDataDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory!, "TestData");
-            return Directory.GetFiles(testDataDirectory, "Script.sql", SearchOption.AllDirectories).FirstOrDefault();
         }
 
         [Test]
@@ -417,11 +411,6 @@ namespace Tests
             act.Should().NotThrow();
         }
 
-        private class SqlObject
-        {
-            public int? Id { get; set; }
-        }
-
         public void Dispose()
         {
             SqlHelpers.DropDatabase(ConnectionString, "ForFileExecution");
@@ -436,6 +425,17 @@ namespace Tests
             SqlHelpers.DropDatabase(ConnectionString, "hack");
             SqlHelpers.DropDatabase(ConnectionString, "test]] create database hack--");
             SqlHelpers.ExecuteSql(ConnectionString, "if (select DB_ID('some'')) is null create database hack--')) is not null drop database [some')) is null create database hack--]");
+        }
+
+        private static string? GetSqlFilePath()
+        {
+            var testDataDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory!, "TestData");
+            return Directory.GetFiles(testDataDirectory, "Script.sql", SearchOption.AllDirectories).FirstOrDefault();
+        }
+
+        private class SqlObject
+        {
+            public int? Id { get; set; }
         }
     }
 }

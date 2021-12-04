@@ -1,17 +1,16 @@
 ﻿using System;
-using Microsoft.Data.SqlClient;
 using Cake.Core;
 using Cake.Core.Annotations;
 using Cake.Core.IO;
+using Microsoft.Data.SqlClient;
+
 // ReSharper disable MemberCanBePrivate.Global
-
-
 namespace Cake.SqlServer
 {
     /// <summary>
     /// <para>
     /// Contains functionality to deal with SQL Server: DropDatabase, CreateDatabase, execute SQL, execute SQL from files, etc.
-    /// Provides functionality to manage LocalDb instances: Create, Start, Stop, Delete instances;
+    /// Provides functionality to manage LocalDb instances: Create, Start, Stop, Delete instances.
     /// </para>
     /// <para>
     /// In order to use the commands for this addin, include the following in your build.cake file to download and
@@ -25,11 +24,12 @@ namespace Cake.SqlServer
     public static class SqlServerAliases
     {
         /// <summary>
-        /// Test if the database exists
+        /// Test if the database exists.
         /// </summary>
         /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
-        /// <param name="databaseName">Database name to test</param>
+        /// <param name="databaseName">Database name to test.</param>
+        /// <returns>True if database exists.</returns>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
@@ -65,7 +65,7 @@ namespace Cake.SqlServer
         /// </summary>
         /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
-        /// <param name="databaseName">Database name to be dropped</param>
+        /// <param name="databaseName">Database name to be dropped.</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
@@ -89,15 +89,13 @@ namespace Cake.SqlServer
             SqlServerAliasesImpl.DropDatabase(context, connectionString, databaseName);
         }
 
-
-
         /// <summary>
         /// Creates an empty database. If database with this name already exists, throws a SqlException.
-        /// <see cref="CreateDatabaseIfNotExists(ICakeContext, String, String)"/> if you would like to check if database already exists.
+        /// <see cref="CreateDatabaseIfNotExists(ICakeContext, string, string)"/> if you would like to check if database already exists.
         /// </summary>
-        /// <param name="context">The Cake context</param>
+        /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
-        /// <param name="databaseName">Database name to be created</param>
+        /// <param name="databaseName">Database name to be created.</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
@@ -121,15 +119,14 @@ namespace Cake.SqlServer
             SqlServerAliasesImpl.CreateDatabase(context, connectionString, databaseName);
         }
 
-
         /// <summary>
         /// Creates an empty database. If database with this name already exists, throws a SqlException.
         /// Allows to specify primary and log files location.
         /// </summary>
-        /// <param name="context">The Cake context</param>
+        /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
-        /// <param name="databaseName">Database name to be created</param>
-        /// <param name="settings">Settings object with parameters</param>
+        /// <param name="databaseName">Database name to be created.</param>
+        /// <param name="settings">Settings object with parameters.</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
@@ -154,16 +151,15 @@ namespace Cake.SqlServer
             Guard.ArgumentIsNotNull(databaseName, nameof(databaseName));
             Guard.ArgumentIsNotNull(settings, nameof(settings));
 
-
             SqlServerAliasesImpl.CreateDatabase(context, connectionString, databaseName, settings);
         }
 
         /// <summary>
         /// Creates an empty database if another database with the same does not already exist.
         /// </summary>
-        /// <param name="context">The Cake context</param>
+        /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
-        /// <param name="databaseName">Database name to be created</param>
+        /// <param name="databaseName">Database name to be created.</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
@@ -190,10 +186,10 @@ namespace Cake.SqlServer
         /// <summary>
         /// Creates an empty database if another database with the same does not already exist.
         /// </summary>
-        /// <param name="context">The Cake context</param>
+        /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
-        /// <param name="databaseName">Database name to be created</param>
-        /// <param name="settings">Settings object with parameters</param>
+        /// <param name="databaseName">Database name to be created.</param>
+        /// <param name="settings">Settings object with parameters.</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
@@ -222,11 +218,11 @@ namespace Cake.SqlServer
         }
 
         /// <summary>
-        /// First drops, then recreates the database
+        /// First drops, then recreates the database.
         /// </summary>
         /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
-        /// <param name="databaseName">Database to be dropped and re-created</param>
+        /// <param name="databaseName">Database to be dropped and re-created.</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
@@ -253,15 +249,13 @@ namespace Cake.SqlServer
             SqlServerAliasesImpl.DropAndCreateDatabase(context, connectionString, databaseName);
         }
 
-
-
         /// <summary>
-        /// First drops, then recreates the database
+        /// First drops, then recreates the database.
         /// </summary>
         /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">The connection string. For this operation, it is recommended to connect to the master database (default). If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
-        /// <param name="databaseName">Database to be dropped and re-created</param>
-        /// <param name="settings">Settings object with parameters</param>
+        /// <param name="databaseName">Database to be dropped and re-created.</param>
+        /// <param name="settings">Settings object with parameters.</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
@@ -289,14 +283,12 @@ namespace Cake.SqlServer
             SqlServerAliasesImpl.DropAndCreateDatabase(context, connectionString, databaseName, settings);
         }
 
-
-
         /// <summary>
         /// Execute any SQL command.
         /// </summary>
         /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">The connection string. You may want to specify Initial Catalog. If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
-        /// <param name="sqlCommands">SQL to be executed</param>
+        /// <param name="sqlCommands">SQL to be executed.</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
@@ -320,13 +312,12 @@ namespace Cake.SqlServer
             SqlServerAliasesImpl.ExecuteSqlCommand(context, connectionString, sqlCommands);
         }
 
-
         /// <summary>
         /// Execute any SQL command.
         /// </summary>
         /// <param name="context">The Cake context.</param>
         /// <param name="connection">The connection to use. The connection must be open. See <see cref="OpenSqlConnection"/>.</param>
-        /// <param name="sqlCommands">SQL to be executed</param>
+        /// <param name="sqlCommands">SQL to be executed.</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
@@ -351,7 +342,6 @@ namespace Cake.SqlServer
 
             SqlServerAliasesImpl.ExecuteSqlCommand(context, connection, sqlCommands);
         }
-
 
         /// <summary>
         /// Reads SQL commands from a file and executes them.
@@ -381,7 +371,6 @@ namespace Cake.SqlServer
 
             SqlServerAliasesImpl.ExecuteSqlFile(context, connectionString, sqlFile);
         }
-
 
         /// <summary>
         /// Reads SQL commands from a file and executes them.
@@ -414,12 +403,12 @@ namespace Cake.SqlServer
             SqlServerAliasesImpl.ExecuteSqlFile(context, connection, sqlFile);
         }
 
-
         /// <summary>
         /// Opens a new <see cref="SqlConnection"/> with the given connection string.
         /// </summary>
         /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">The connection string. You may want to specify Initial Catalog. If there are changing parameters, <see cref="SqlConnectionStringBuilder"/> is recommended to escape input.</param>
+        /// <returns><see cref="SqlConnection"/> instance.</returns>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
@@ -444,12 +433,11 @@ namespace Cake.SqlServer
             return SqlServerAliasesImpl.OpenSqlConnection(context, connectionString);
         }
 
-
         /// <summary>
-        /// Sets the CommandTimeout property for all SqlCommands used internally
+        /// Sets the CommandTimeout property for all SqlCommands used internally.
         /// </summary>
         /// <param name="context">The Cake context.</param>
-        /// <param name="commandTimeout">The time in seconds to wait for the command to execute. Used to set CommandTimeout property to when creating <see cref="SqlCommand"/></param>
+        /// <param name="commandTimeout">The time in seconds to wait for the command to execute. Used to set CommandTimeout property to when creating <see cref="SqlCommand"/>.</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"

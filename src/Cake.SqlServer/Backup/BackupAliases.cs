@@ -3,11 +3,10 @@ using Cake.Core;
 using Cake.Core.Annotations;
 using Cake.Core.IO;
 
-
 namespace Cake.SqlServer
 {
     /// <summary>
-    /// Contains functionality to backup and restore SQL Server database
+    /// Contains functionality to backup and restore SQL Server database.
     /// </summary>
     [CakeAliasCategory(nameof(SqlServer))]
     public static class BackupAliases
@@ -17,9 +16,9 @@ namespace Cake.SqlServer
         /// </summary>
         /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">The connection string. You may want to connect to master database for this operation.</param>
-        /// <param name="settings">Settings for restoring database</param>
-        /// <param name="backupFiles">Absolute path to (multiple) .bak files</param>
-        /// <param name="differentialBackupFiles">Absolute path to (multiple) additional differential .bak files</param>
+        /// <param name="settings">Settings for restoring database.</param>
+        /// <param name="backupFiles">Absolute path to (multiple) .bak files.</param>
+        /// <param name="differentialBackupFiles">Absolute path to (multiple) additional differential .bak files.</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
@@ -64,8 +63,8 @@ namespace Cake.SqlServer
         /// </summary>
         /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">The connection string. You may want to connect to master database for this operation.</param>
-        /// <param name="backupFile">Absolute path to .bak file</param>
-        /// <param name="settings">Settings for restoring database</param>
+        /// <param name="backupFile">Absolute path to .bak file.</param>
+        /// <param name="settings">Settings for restoring database.</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"
@@ -99,7 +98,7 @@ namespace Cake.SqlServer
         /// </summary>
         /// <param name="context">The Cake context.</param>
         /// <param name="connectionString">The connection string. You may want to connect to master database for this operation.</param>
-        /// <param name="backupFile">Absolute path to .bak file</param>
+        /// <param name="backupFile">Absolute path to .bak file.</param>
         /// <example>
         /// <code>
         ///     #addin "nuget:?package=Cake.SqlServer"

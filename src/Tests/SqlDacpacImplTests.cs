@@ -2,10 +2,10 @@
 using System.IO;
 using System.Linq;
 using Cake.Core;
-using NUnit.Framework;
 using Cake.SqlServer;
 using FluentAssertions;
 using NSubstitute;
+using NUnit.Framework;
 
 namespace Tests
 {
@@ -25,7 +25,7 @@ namespace Tests
             const string dbName = "DacpacTestDb";
             try
             {
-                // Arrange 
+                // Arrange
                 SqlHelpers.ExecuteSql(ConnectionString, $"create database {dbName}");
 
                 // Act
@@ -72,7 +72,7 @@ namespace Tests
         [Test]
         public void GetPublishOptions_MapsDictionary_Correctly()
         {
-            //Arrange
+            // Arrange
             var publishSettings = new PublishDacpacSettings();
             publishSettings.SqlCommandVariableValues["Hello"] = "World";
             publishSettings.SqlCommandVariableValues["31Oct"] = "25Dec";

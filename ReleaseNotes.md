@@ -1,3 +1,10 @@
+### New in 4.0.0
+* Using Cake 2.0.0
+* Following rules from Cake Guidelines
+* Target frameworks netcoreapp3.1, net5.0, net6.0
+* Adjusted to StyleCop rules
+* For .net6.0 depending on DacFX preview due to known issue https://github.com/microsoft/DacFx/issues/33
+
 ### New in 3.0.0
 * Updating to netstandard 2.0
 * Using Cake 1.0.0

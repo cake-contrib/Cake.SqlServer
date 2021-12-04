@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using Cake.Core;
 using Cake.Core.Diagnostics;
 using Cake.Core.IO;
 using Cake.Core.Tooling;
-
 
 namespace Cake.SqlServer
 {
@@ -27,37 +25,13 @@ namespace Cake.SqlServer
             this.contextLog = contextLog;
         }
 
-        protected override string GetToolName()
-        {
-            return "SqlLocalDB";
-        }
-
-        protected override IEnumerable<string> GetToolExecutableNames()
-        {
-            yield return "SqlLocalDB.exe";
-        }
-
-        protected override IEnumerable<FilePath> GetAlternativeToolPaths(LocalDbSettings settings)
-        {
-            // http://forum.ai-dot.net/viewtopic.php?t=4966
-            // HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MicrosoftSQL Server Local DB\Installed Version
-
-            return new List<FilePath>
-            {
-                @"C:\Program Files\Microsoft SQL Server\150\Tools\Binn\",
-                @"C:\Program Files\Microsoft SQL Server\140\Tools\Binn\",
-                @"c:\Program Files\Microsoft SQL Server\130\Tools\Binn\",
-                @"c:\Program Files\Microsoft SQL Server\120\Tools\Binn\",
-                @"c:\Program Files\Microsoft SQL Server\110\Tools\Binn\",
-            };
-        }
-
         internal void Run(LocalDbSettings settings)
         {
             if (string.IsNullOrEmpty(settings.InstanceName))
             {
                 throw new InstanceNameEmptyException("settings.InstanceName");
             }
+
             var argumentBuilder = new ProcessArgumentBuilder();
 
             argumentBuilder.Append(settings.Action.ToString().ToLower(CultureInfo.InvariantCulture));
@@ -103,6 +77,31 @@ namespace Cake.SqlServer
             {
                 throw new LocalDBExecutionFailedException("LocalDB execution failed. Please see message above.");
             }
+        }
+
+        protected override string GetToolName()
+        {
+            return "SqlLocalDB";
+        }
+
+        protected override IEnumerable<string> GetToolExecutableNames()
+        {
+            yield return "SqlLocalDB.exe";
+        }
+
+        protected override IEnumerable<FilePath> GetAlternativeToolPaths(LocalDbSettings settings)
+        {
+            //// http://forum.ai-dot.net/viewtopic.php?t=4966
+            //// HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\MicrosoftSQL Server Local DB\Installed Version
+
+            return new List<FilePath>
+            {
+                @"C:\Program Files\Microsoft SQL Server\150\Tools\Binn\",
+                @"C:\Program Files\Microsoft SQL Server\140\Tools\Binn\",
+                @"c:\Program Files\Microsoft SQL Server\130\Tools\Binn\",
+                @"c:\Program Files\Microsoft SQL Server\120\Tools\Binn\",
+                @"c:\Program Files\Microsoft SQL Server\110\Tools\Binn\",
+            };
         }
     }
 }

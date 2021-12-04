@@ -1,5 +1,4 @@
-﻿using NUnit.Framework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,6 +7,7 @@ using Cake.Core.IO;
 using Cake.SqlServer;
 using FluentAssertions;
 using NSubstitute;
+using NUnit.Framework;
 
 namespace Tests
 {
@@ -27,7 +27,7 @@ namespace Tests
             const string originalDbName = "CakeRestoreTest";
             try
             {
-                //Arrange
+                // Arrange
                 var path = GetBackupFilePath();
 
                 // Act
@@ -49,7 +49,7 @@ namespace Tests
             const string originalDbName = "CakeRestoreTest";
             try
             {
-                //Arrange
+                // Arrange
                 var pathList = GetMultipleBackupFilePaths();
                 var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
 
@@ -72,7 +72,7 @@ namespace Tests
             const string originalDbName = "CakeRestoreTest";
             try
             {
-                //Arrange
+                // Arrange
                 var path = GetBackupFilePath();
                 var settings = new RestoreSqlBackupSettings { SwitchToUserMode = DbUserMode.MultiUser };
 
@@ -95,7 +95,7 @@ namespace Tests
             const string originalDbName = "CakeRestoreTest";
             try
             {
-                //Arrange
+                // Arrange
                 var pathList = GetMultipleBackupFilePaths();
                 var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
                 var settings = new RestoreSqlBackupSettings { SwitchToUserMode = DbUserMode.MultiUser };
@@ -119,7 +119,7 @@ namespace Tests
             const string databaseName = "NewRandomDatabase";
             try
             {
-                //Arrange
+                // Arrange
                 var path = GetBackupFilePath();
 
                 RestoreSqlBackupImpl.RestoreSqlBackup(_context, ConnectionString, new RestoreSqlBackupSettings { NewDatabaseName = databaseName }, new List<FilePath> { new FilePath(path) });
@@ -140,7 +140,7 @@ namespace Tests
             const string databaseName = "NewRandomDatabase";
             try
             {
-                //Arrange
+                // Arrange
                 var pathList = GetMultipleBackupFilePaths();
                 var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
 
@@ -162,7 +162,7 @@ namespace Tests
             const string newDatabaseName = "RestoredFromTest.Cake";
             try
             {
-                //Arrange
+                // Arrange
                 var path = GetBackupFilePath();
                 var settings = new RestoreSqlBackupSettings { NewDatabaseName = newDatabaseName, NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()) };
 
@@ -185,7 +185,7 @@ namespace Tests
             const string newDatabaseName = "RestoredFromTest.Cake";
             try
             {
-                //Arrange
+                // Arrange
                 var pathList = GetMultipleBackupFilePaths();
                 var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
                 var settings = new RestoreSqlBackupSettings { NewDatabaseName = newDatabaseName, NewStorageFolder = new DirectoryPath(System.IO.Path.GetTempPath()) };
@@ -209,7 +209,7 @@ namespace Tests
             const string originalDbName = "CakeRestoreTest";
             try
             {
-                //Arrange
+                // Arrange
                 var path = GetBackupFilePath();
 
                 // Act
@@ -231,7 +231,7 @@ namespace Tests
             const string originalDbName = "CakeRestoreTest";
             try
             {
-                //Arrange
+                // Arrange
                 var pathList = GetMultipleBackupFilePaths();
                 var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
 
@@ -281,7 +281,7 @@ namespace Tests
         {
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(_context, ConnectionString))
             {
-                //Arrange
+                // Arrange
                 var path = GetBackupFilePath("multiFilesBackup1.bak");
 
                 // Act
@@ -297,7 +297,7 @@ namespace Tests
         {
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(_context, ConnectionString))
             {
-                //Arrange
+                // Arrange
                 var path = GetBackupFilePath("multiFilesBackup1.bak");
 
                 // Act
@@ -314,7 +314,7 @@ namespace Tests
             const string newDatabaseName = "RestoredFromTest.Cake";
             try
             {
-                //Arrange
+                // Arrange
                 var path = GetBackupFilePath();
                 var settings = new RestoreSqlBackupSettings
                 {
@@ -343,7 +343,7 @@ namespace Tests
             const string newDatabaseName = "RestoredFromTest.Cake";
             try
             {
-                //Arrange
+                // Arrange
                 var pathList = GetMultipleBackupFilePaths();
                 var differentialPathList = GetMultipleBackupFilePaths("differentialMultiFilesBackup*.bak");
                 var settings = new RestoreSqlBackupSettings
@@ -353,7 +353,7 @@ namespace Tests
                     WithReplace = true,
                     SwitchToUserMode = DbUserMode.MultiUser,
                     BackupSetFile = 1,
-                    DifferentialBackupSetFile = 1
+                    DifferentialBackupSetFile = 1,
                 };
 
                 // Act

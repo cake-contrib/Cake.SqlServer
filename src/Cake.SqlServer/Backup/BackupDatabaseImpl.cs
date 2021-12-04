@@ -1,6 +1,4 @@
-﻿#if NET5_0
-using System;
-#endif
+﻿using System;
 using System.IO;
 using Cake.Core;
 using Cake.Core.Diagnostics;
@@ -41,21 +39,18 @@ namespace Cake.SqlServer
 
         private static string GetBackupFileName(string databaseName, string? path)
         {
-#if NET5_0
             var fileName = databaseName
                 .Replace("[", string.Empty, StringComparison.OrdinalIgnoreCase)
                 .Replace("]", string.Empty, StringComparison.OrdinalIgnoreCase) + ".bak";
-#else
-            var fileName = databaseName
-                .Replace("[", string.Empty)
-                .Replace("]", string.Empty) + ".bak";
-#endif
+
             if (string.IsNullOrWhiteSpace(path))
+            {
                 return fileName;
+            }
 
             return Directory.Exists(path!)
-                ? Path.Combine(path!, fileName)
-                : path!;
+                    ? Path.Combine(path!, fileName)
+                    : path!;
         }
     }
 }

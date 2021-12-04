@@ -1,6 +1,6 @@
-﻿using NUnit.Framework;
-using Cake.SqlServer;
+﻿using Cake.SqlServer;
 using FluentAssertions;
+using NUnit.Framework;
 
 namespace Tests
 {

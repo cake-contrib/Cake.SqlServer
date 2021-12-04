@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Globalization;
-using Microsoft.Data.SqlClient;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using Cake.Core;
 using Cake.Core.Diagnostics;
 using Cake.Core.IO;
-
+using Microsoft.Data.SqlClient;
 
 namespace Cake.SqlServer
 {
@@ -48,6 +47,7 @@ namespace Cake.SqlServer
                     context.Log.Error($"Database {databaseName} does not exits");
                     return;
                 }
+
                 throw;
             }
         }
@@ -111,7 +111,6 @@ namespace Cake.SqlServer
             }
         }
 
-
         internal static void CreateDatabase(ICakeContext context, string connectionString, string databaseName)
         {
             Initializer.InitializeNativeSearchPath();
@@ -150,31 +149,6 @@ namespace Cake.SqlServer
             }
         }
 
-        private static string GenerateCreateDbSql(string databaseName, CreateDatabaseSettings settings)
-        {
-            var sb = new StringBuilder($" create database {Sql.EscapeName(databaseName)}");
-            if (settings.PrimaryFile != null || settings.LogFile != null)
-            {
-                sb.Append(" ON ");
-            }
-            if (settings.PrimaryFile != null)
-            {
-
-#pragma warning disable S1135 // Track uses of "TODO" tags
-#pragma warning disable MA0026 // Fix TODO comment
-                // TODO replace with param
-                sb.Append($" PRIMARY (Name = {Sql.EscapeName(settings.PrimaryFile.Name)}, FILENAME = '{settings.PrimaryFile.FileName}') ");
-#pragma warning restore MA0026 // Fix TODO comment
-#pragma warning restore S1135 // Track uses of "TODO" tags
-            }
-            if (settings.LogFile != null)
-            {
-                sb.Append($" LOG ON (NAME = {Sql.EscapeName(settings.LogFile.Name)}, FILENAME = '{settings.LogFile.FileName}') ");
-            }
-            return sb.ToString();
-        }
-
-
         internal static void DropAndCreateDatabase(ICakeContext context, string connectionString, string databaseName)
         {
             Initializer.InitializeNativeSearchPath();
@@ -198,7 +172,6 @@ namespace Cake.SqlServer
             }
         }
 
-
         internal static void ExecuteSqlCommand(ICakeContext context, SqlConnection connection, string sqlCommands)
         {
             Initializer.InitializeNativeSearchPath();
@@ -208,10 +181,9 @@ namespace Cake.SqlServer
                 RegexOptions.Multiline | RegexOptions.IgnoreCase,
                 TimeSpan.FromSeconds(5));
 
-
             foreach (var sqlCommand in commandStrings)
             {
-                if (sqlCommand.Trim() != "")
+                if (sqlCommand.Trim() != string.Empty)
                 {
                     context.Log.Debug($"Executing SQL : {sqlCommand}");
                     try
@@ -230,7 +202,6 @@ namespace Cake.SqlServer
             }
         }
 
-
         internal static void ExecuteSqlFile(ICakeContext context, string connectionString, FilePath sqlFile)
         {
             Initializer.InitializeNativeSearchPath();
@@ -239,7 +210,6 @@ namespace Cake.SqlServer
                 ExecuteSqlFile(context, connection, sqlFile);
             }
         }
-
 
         internal static void ExecuteSqlFile(ICakeContext context, SqlConnection connection, FilePath sqlFile)
         {
@@ -255,7 +225,6 @@ namespace Cake.SqlServer
             context.Log.Information($"Finished executing SQL from {sqlFilePath}");
         }
 
-
         internal static SqlConnection OpenSqlConnection(ICakeContext context, string connectionString)
         {
             Initializer.InitializeNativeSearchPath();
@@ -268,33 +237,25 @@ namespace Cake.SqlServer
             }
             catch (SqlException exception)
             {
-#if NET5_0
                 if (exception.Message.StartsWith("A network-related or instance-specific error", StringComparison.InvariantCultureIgnoreCase)
                     && (connectionString.ToLower(CultureInfo.InvariantCulture).Contains("localdb", StringComparison.OrdinalIgnoreCase)
-                    || connectionString.ToLower(CultureInfo.InvariantCulture).Contains("\v", StringComparison.OrdinalIgnoreCase)))
-#else
-                if (exception.Message.StartsWith("A network-related or instance-specific error", StringComparison.InvariantCultureIgnoreCase)
-                    && (connectionString.ToLower(CultureInfo.InvariantCulture).Contains("localdb")
-                        || connectionString.ToLower(CultureInfo.InvariantCulture).Contains("\v")))
-#endif
+                        || connectionString.ToLower(CultureInfo.InvariantCulture).Contains('\v', StringComparison.OrdinalIgnoreCase)))
                 {
                     const string errorMessage = "Looks like you are trying to connect to LocalDb. Have you correctly escaped your connection string with '@'? It should look like 'var connString = @\"(localDb)\\v12.0\"'";
                     context.Log.Error(errorMessage);
                     var newException = new Exception(errorMessage, exception);
                     throw newException;
                 }
+
                 throw;
             }
         }
-
-
 
         internal static void SetSqlCommandTimeout(ICakeContext context, int commandTimeout)
         {
             context.Log.Debug($"Default SQL timeout have been changed to {commandTimeout} seconds");
             SqlServerAliasesImpl.commandTimeout = commandTimeout;
         }
-
 
         internal static SqlCommand CreateSqlCommand(string sql, SqlConnection connection)
         {
@@ -306,6 +267,40 @@ namespace Cake.SqlServer
             }
 
             return command;
+        }
+
+        private static string GenerateCreateDbSql(string databaseName, CreateDatabaseSettings settings)
+        {
+            var sb = new StringBuilder($" create database {Sql.EscapeName(databaseName)}");
+            if (settings.PrimaryFile != null || settings.LogFile != null)
+            {
+                sb.Append(" ON ");
+            }
+
+#pragma warning disable S1135 // Track uses of "TODO" tags
+#pragma warning disable MA0026 // Fix TODO comment
+            if (settings.PrimaryFile != null)
+            {
+                // TODO replace with param
+                sb.Append(" PRIMARY (Name = ")
+                    .Append(Sql.EscapeName(settings.PrimaryFile.Name))
+                    .Append(", FILENAME = '")
+                    .Append(settings.PrimaryFile.FileName)
+                    .Append("') ");
+            }
+#pragma warning restore MA0026 // Fix TODO comment
+#pragma warning restore S1135 // Track uses of "TODO" tags
+
+            if (settings.LogFile != null)
+            {
+                sb.Append(" LOG ON (NAME = ")
+                    .Append(Sql.EscapeName(settings.LogFile.Name))
+                    .Append(", FILENAME = '")
+                    .Append(settings.LogFile.FileName)
+                    .Append("') ");
+            }
+
+            return sb.ToString();
         }
     }
 }

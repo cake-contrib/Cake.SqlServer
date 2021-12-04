@@ -1,6 +1,6 @@
-﻿using NUnit.Framework;
-using Cake.SqlServer;
+﻿using Cake.SqlServer;
 using FluentAssertions;
+using NUnit.Framework;
 
 namespace Tests
 {
@@ -9,12 +9,12 @@ namespace Tests
         [Test]
         public void V12_Create_CorrectParameters()
         {
-            //Arrange
+            // Arrange
             var fixture = new LocalDbToolRunnerFixture
             {
                 Action = LocalDbAction.Create,
                 Version = LocalDbVersion.V12,
-                InstanceName = "Cake-Test"
+                InstanceName = "Cake-Test",
             };
 
             // Act
@@ -27,12 +27,12 @@ namespace Tests
         [Test]
         public void V11_Create_CorrectParameters()
         {
-            //Arrange
+            // Arrange
             var fixture = new LocalDbToolRunnerFixture
             {
                 Action = LocalDbAction.Create,
                 Version = LocalDbVersion.V11,
-                InstanceName = "Cake-Test"
+                InstanceName = "Cake-Test",
             };
 
             // Act
@@ -45,7 +45,7 @@ namespace Tests
         [Test]
         public void Delete_Instance_Deletes()
         {
-            //Arrange
+            // Arrange
             var fixture = new LocalDbToolRunnerFixture
             {
                 Action = LocalDbAction.Delete,
@@ -63,7 +63,7 @@ namespace Tests
         [Test]
         public void Start_Instance_Starts()
         {
-            //Arrange
+            // Arrange
             var fixture = new LocalDbToolRunnerFixture
             {
                 Action = LocalDbAction.Start,
@@ -81,7 +81,7 @@ namespace Tests
         [Test]
         public void Stop_Instance()
         {
-            //Arrange
+            // Arrange
             var fixture = new LocalDbToolRunnerFixture
             {
                 Action = LocalDbAction.Stop,

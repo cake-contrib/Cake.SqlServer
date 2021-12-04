@@ -1,5 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
-using Dapper;
+﻿using Dapper;
+using Microsoft.Data.SqlClient;
 
 namespace Tests
 {
@@ -25,7 +25,6 @@ namespace Tests
             }
         }
 
-
         public static bool TableExists(string connectionString, string dbName, string tableName)
         {
             using (var connection = new SqlConnection(connectionString))
@@ -36,7 +35,6 @@ namespace Tests
                 return db.Id.HasValue;
             }
         }
-
 
         public static void DropDatabase(string connectionString, string databaseName)
         {
