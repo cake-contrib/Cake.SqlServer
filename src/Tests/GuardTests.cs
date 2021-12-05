@@ -1,7 +1,7 @@
-﻿using Cake.SqlServer;
-using NUnit.Framework;
-using System;
+﻿using System;
+using Cake.SqlServer;
 using FluentAssertions;
+using NUnit.Framework;
 
 namespace Tests
 {
@@ -24,7 +24,7 @@ namespace Tests
         [Test]
         public void NullObject_Throws_Exception()
         {
-            //Arrange
+            // Arrange
             const object? value = null;
 
             Action act = () => Guard.ArgumentIsNotNull(value!, "value");

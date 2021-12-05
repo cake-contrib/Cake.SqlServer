@@ -7,15 +7,18 @@ namespace Tests
 {
     internal class LocalDbToolRunnerFixture : ToolFixture<LocalDbSettings>
     {
-        internal string InstanceName { get; set; }
-        internal LocalDbVersion Version { get; set; }
-        internal LocalDbAction Action { get; set; }
-
-        public LocalDbToolRunnerFixture() : base("SqlLocalDB.exe")
+        public LocalDbToolRunnerFixture()
+            : base("SqlLocalDB.exe")
         {
             InstanceName = "Cake-Testing";
             Version = LocalDbVersion.V12;
         }
+
+        internal string InstanceName { get; set; }
+
+        internal LocalDbVersion Version { get; set; }
+
+        internal LocalDbAction Action { get; set; }
 
         protected override void RunTool()
         {

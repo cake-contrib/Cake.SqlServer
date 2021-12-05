@@ -2,6 +2,9 @@
 
 namespace Cake.SqlServer
 {
+    /// <summary>
+    /// Local DB settings.
+    /// </summary>
     internal class LocalDbSettings : ToolSettings
     {
         public LocalDbSettings()

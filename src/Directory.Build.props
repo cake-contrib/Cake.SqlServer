@@ -3,7 +3,7 @@
   <!-- Based on article https://www.thomaslevesque.com/2017/09/18/common-msbuild-properties-and-items-with-directory-build-props/ -->
   <PropertyGroup>
     <!-- Common ruleset shared by all projects -->
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
     <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningsAsErrors />
@@ -22,54 +22,60 @@
     <PackageReference Include="codecracker.CSharp" Version="1.1.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="ConcurrencyLab.ParallelChecker" Version="1.9.0" >
+    <PackageReference Include="ConcurrencyLab.ParallelChecker" Version="2.2.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="IDisposableAnalyzers" Version="3.4.13" >
+    <PackageReference Include="IDisposableAnalyzers" Version="4.0.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Meziantou.Analyzer" Version="1.0.666" >
+    <PackageReference Include="Meziantou.Analyzer" Version="1.0.679" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.10.0" >
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="4.0.1" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.2" >
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.3" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.10.0" >
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.0.1" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.10.0" >
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="3.10.0" >
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.0.1" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="3.10.0" >
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.0.1" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3" >
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="6.0.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="3.10.0" >
+    <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.Common" Version="4.0.1" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="16.10.56">
+    <PackageReference Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.0.64">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.Analyzers" Version="3.2.0" >
+    <PackageReference Include="Roslynator.Analyzers" Version="3.3.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="1.0.0" >
+    <PackageReference Include="Roslynator.CodeAnalysis.Analyzers" Version="3.3.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="1.2.0" >
+    <PackageReference Include="Roslynator.Formatting.Analyzers" Version="3.3.0" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.25.0.33663" >
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.32.0.39516" >
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.354" >
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+
+    <!-- Common StyleCop configuration -->
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" />
 
   </ItemGroup>
 

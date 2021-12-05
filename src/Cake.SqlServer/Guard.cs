@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("Tests")]
+
 namespace Cake.SqlServer
 {
     internal static class Guard

@@ -23,7 +23,6 @@ namespace Cake.SqlServer
             context.Log.Information($"Finished creating dacpac file from database {targetDatabaseName}. File location is {settings.OutputFile}");
         }
 
-
         internal static void PublishDacpacFile(
             ICakeContext context,
             string connectionString,

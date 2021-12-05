@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29409.12
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cake.SqlServer", "Cake.SqlServer\Cake.SqlServer.csproj", "{98FC2609-EABB-45F4-A3E0-A25E9F5B0584}"
 EndProject
@@ -9,13 +9,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B34D69A6-F7AE-415F-872D-53CBDAC35A37}"
 	ProjectSection(SolutionItems) = preProject
+		..\.editorconfig = ..\.editorconfig
+		..\appveyor.ps1 = ..\appveyor.ps1
 		..\appveyor.yml = ..\appveyor.yml
 		..\build.cake = ..\build.cake
+		..\build.ps1 = ..\build.ps1
 		Directory.Build.props = Directory.Build.props
 		..\install.sql = ..\install.sql
 		..\parameters.cake = ..\parameters.cake
 		..\README.md = ..\README.md
 		..\ReleaseNotes.md = ..\ReleaseNotes.md
+		stylecop.json = stylecop.json
 		..\tests.cake = ..\tests.cake
 	EndProjectSection
 EndProject
