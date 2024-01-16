@@ -432,10 +432,5 @@ namespace Tests
             var testDataDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory!, "TestData");
             return Directory.GetFiles(testDataDirectory, "Script.sql", SearchOption.AllDirectories).FirstOrDefault();
         }
-
-        private class SqlObject
-        {
-            public int? Id { get; set; }
-        }
     }
 }

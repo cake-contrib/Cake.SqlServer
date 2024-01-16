@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
 
 namespace Cake.SqlServer
 {
     [ExcludeFromCodeCoverage]
     [Serializable]
+#pragma warning disable S3925 // "ISerializable" should be implemented correctly
     public class InstanceNameEmptyException
+#pragma warning restore S3925 // "ISerializable" should be implemented correctly
         : Exception
     {
         public InstanceNameEmptyException()
@@ -20,13 +21,6 @@ namespace Cake.SqlServer
 
         public InstanceNameEmptyException(string message, Exception innerException)
             : base(message, innerException)
-        {
-        }
-
-        protected InstanceNameEmptyException(
-            SerializationInfo info,
-            StreamingContext context)
-            : base(info, context)
         {
         }
     }

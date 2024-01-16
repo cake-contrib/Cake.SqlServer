@@ -41,7 +41,9 @@ namespace Cake.SqlServer
         ///
         /// This property has been obsoleted by SwitchToUserMode which allows for a third option.
         /// </summary>
+#pragma warning disable S1133 // Deprecated code should be removed
         [Obsolete("Use SwitchToUserMode instead")]
+#pragma warning restore S1133 // Deprecated code should be removed
         public bool SwitchToSingleUserMode
         {
             get => SwitchToUserMode == DbUserMode.SingleUser;

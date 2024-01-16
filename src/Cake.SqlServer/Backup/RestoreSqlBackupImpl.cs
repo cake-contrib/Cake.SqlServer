@@ -24,7 +24,7 @@ namespace Cake.SqlServer
             Initializer.InitializeNativeSearchPath();
             using (var connection = SqlServerAliasesImpl.OpenSqlConnection(context, connectionString))
             {
-                var firstBackupFile = backupFiles.First();
+                var firstBackupFile = backupFiles[0];
                 var oldDbName = GetDatabaseName(firstBackupFile, connection);
                 var databaseName = settings.NewDatabaseName ?? oldDbName;
                 if (settings.SwitchToUserMode != DbUserMode.MultiUser)
@@ -152,7 +152,7 @@ namespace Cake.SqlServer
             DirectoryPath newStorageFolder,
             params FilePath[] backupFiles)
         {
-            var firstBackupFile = backupFiles.First();
+            var firstBackupFile = backupFiles[0];
             var oldDbName = GetDatabaseName(firstBackupFile, connection);
             var databaseName = newDatabaseName ?? oldDbName;
             context.Log.Information($"Using database name '{databaseName}' to be a name for the restored database");

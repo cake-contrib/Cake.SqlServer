@@ -9,19 +9,11 @@ namespace Cake.SqlServer
 {
     internal class LocalDbToolRunner : Tool<LocalDbSettings>
     {
-        private readonly IFileSystem fileSystem;
-        private readonly ICakeEnvironment environment;
-        private readonly IProcessRunner processRunner;
-        private readonly IToolLocator toolsLocator;
         private readonly ICakeLog contextLog;
 
         public LocalDbToolRunner(IFileSystem fileSystem, ICakeEnvironment environment, IProcessRunner processRunner, IToolLocator tools, ICakeLog contextLog)
             : base(fileSystem, environment, processRunner, tools)
         {
-            this.fileSystem = fileSystem;
-            this.environment = environment;
-            this.processRunner = processRunner;
-            toolsLocator = tools;
             this.contextLog = contextLog;
         }
 
@@ -50,6 +42,15 @@ namespace Cake.SqlServer
                         break;
                     case LocalDbVersion.V13:
                         argumentBuilder.Append("13.0");
+                        break;
+                    case LocalDbVersion.V14:
+                        argumentBuilder.Append("14.0");
+                        break;
+                    case LocalDbVersion.V15:
+                        argumentBuilder.Append("15.0");
+                        break;
+                    case LocalDbVersion.V16:
+                        argumentBuilder.Append("16.0");
                         break;
                     default:
                         throw new InstanceVersionUnknownException();
@@ -96,6 +97,7 @@ namespace Cake.SqlServer
 
             return new List<FilePath>
             {
+                @"C:\Program Files\Microsoft SQL Server\160\Tools\Binn\",
                 @"C:\Program Files\Microsoft SQL Server\150\Tools\Binn\",
                 @"C:\Program Files\Microsoft SQL Server\140\Tools\Binn\",
                 @"c:\Program Files\Microsoft SQL Server\130\Tools\Binn\",
