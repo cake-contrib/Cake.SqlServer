@@ -26,7 +26,9 @@ namespace Cake.SqlServer
 
             while (true)
             {
+#pragma warning disable S2583, S2589
                 var nextQuote = name?.IndexOf(']', lastQuote + 1) ?? -1;
+#pragma warning restore S2589, S2583
                 if (nextQuote == -1)
                 {
                     break;
@@ -36,7 +38,9 @@ namespace Cake.SqlServer
                 lastQuote = nextQuote;
             }
 
+#pragma warning disable S2583, S2589
             return sb.Append(name, lastQuote, (name?.Length ?? 0) - lastQuote).Append(']').ToString();
+#pragma warning restore S2589, S2583
         }
 
         internal static string EscapeNameQuotes(string name)

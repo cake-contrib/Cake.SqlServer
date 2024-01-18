@@ -218,7 +218,9 @@ namespace Cake.SqlServer
 
             context.Log.Information($"Executing sql file {sqlFilePath}");
 
+#pragma warning disable SEC0116
             var allSqlCommands = File.ReadAllText(sqlFilePath);
+#pragma warning restore SEC0116
 
             context.ExecuteSqlCommand(connection, allSqlCommands);
 
